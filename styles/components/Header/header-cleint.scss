@@ -1,0 +1,10 @@
+.bg-home-dark {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(rgba(22, 28, 36, 0.94), rgba(22, 28, 36, 0.94)) center center / cover no-repeat, url(../../../public/images/overlay_2.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+}

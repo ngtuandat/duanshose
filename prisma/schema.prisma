@@ -1,0 +1,129 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String        @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String        @unique
+  admin     Boolean       @default(false)
+  password  String
+  profile   Profile?
+  cart      Cart[]
+  vouchers  UserVoucher[]
+  createdAt DateTime      @default(now()) @map(name: "created_at")
+  updatedAt DateTime      @updatedAt @map(name: "updated_at")
+
+  @@map(name: "users")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  price       Int
+  color       String[]
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  description String
+  size        Int[]
+  gender      String
+  listImage   String[]
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+  review      Review[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  nameUser  String
+  content   String
+  rating    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+}
+
+model Cart {
+  id           String   @id @default(cuid())
+  idProd       String
+  nameProd     String
+  sizeProd     Int
+  priceProd    Int
+  finalPrice   Int?
+  colorProd    String
+  quantityProd Int
+  imageProd    String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  bought       Boolean  @default(false)
+  status       String   @default("pending")
+  createdAt    DateTime @default(now()) @map(name: "created_at")
+  updatedAt    DateTime @updatedAt @map(name: "updated_at")
+}
+
+model Profile {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userEmail], references: [email])
+  userEmail   String    @unique
+  avatar      String?
+  phoneNumber Int?
+  sex         String?
+  birthDay    DateTime?
+  address     String?
+  city        String?
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+}
+
+model Voucher {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  discount     Int
+  expiryDate   String
+  userVouchers UserVoucher[]
+  publishDate  String?
+  type         String
+  createdAt    DateTime      @default(now()) @map(name: "created_at")
+  updatedAt    DateTime      @updatedAt @map(name: "updated_at")
+}
+
+model UserVoucher {
+  id        String  @id @default(cuid())
+  userId    String
+  voucherId String
+  used      Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id])
+  voucher   Voucher @relation(fields: [voucherId], references: [id])
+
+  @@unique([userId, voucherId])
+}
+
+model GuestOrder {
+  id         String @id @default(cuid())
+  products   Json
+  finalPrice Int?
+
+  buyerName    String?
+  buyerAddress String?
+  buyerPhone   String?
+  status       String  @default("pending")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now()) @map(name: "created_at")
+  updatedAt DateTime  @updatedAt @map(name: "updated_at")
+}

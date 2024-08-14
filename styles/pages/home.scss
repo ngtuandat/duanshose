@@ -1,0 +1,61 @@
+@import '../animation.scss';
+
+.bg-text {
+  color:transparent;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; 
+  font-weight: 900;
+  background-image:linear-gradient(300deg,rgb(0,171,85) 0% ,rgb(255,171,0) 25%, rgb(0,171,85) 50%, rgb(255,171,0) 75%, rgb(0,171,85) 100%) ;
+  background-size: 120%; 
+  animation: bg-text-animation 8s linear infinite;
+  -webkit-animation: bg-text-animation 8s linear infinite;
+  animation-direction: alternate;
+  font-family: 'Barlow', sans-serif;
+  letter-spacing: 8px;
+}
+
+.img-hero-top {
+  animation: img-run-top 115s linear infinite;
+  -webkit-animation: img-run-top 115s linear infinite;
+  animation-direction: alternate;
+}
+
+.img-hero-bot {
+  animation: img-run-bot 115s linear infinite;
+  -webkit-animation: img-run-bot 115s linear infinite;
+  animation-direction: alternate;
+}
+
+
+.img-hero-top-r {
+  animation: img-run-top 115s linear infinite;
+  -webkit-animation: img-run-top 115s linear infinite;
+  animation-direction: alternate-reverse;
+}
+
+.img-hero-bot-r {
+  animation: img-run-bot 115s linear infinite;
+  -webkit-animation: img-run-bot 115s linear infinite;
+  animation-direction: alternate-reverse;
+}
+
+.progress-bar {
+  position: fixed;
+  z-index: 1300;
+  top: 0px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgb(0, 171, 85);
+  transform-origin: 0%;
+}
+
+.shadow-ui {
+  box-shadow: rgb(0 0 0 / 40%) -40px 40px 80px;
+}
+
+.drop-shadow-clip-path {
+  filter: drop-shadow(30px 20px 0 red);
+}
+

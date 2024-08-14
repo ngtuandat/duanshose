@@ -1,0 +1,42 @@
+@import './components/Header/header-cleint.scss';
+@import './main.scss';
+@import './pages/home.scss';
+@import './animation.scss';
+@import './pages/sign.scss';
+@import './pages/product.scss';
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/scrollbar';
+@import './components/tiptap.scss';
+@import './scrollbar/index.scss';
+@import './pages/profile.scss';
+@import './apex.scss';
+@import './loading.scss';
+
+
+* {
+    scroll-behavior: smooth;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Public Sans', sans-serif;
+}
+
+  ::-moz-selection { /* Code for Firefox */
+    color: white;
+    background: rgb(0, 171, 85); 
+  }
+  
+  ::selection {
+    color: white;
+    background: rgb(0, 171, 85); 
+  }
+
+.mdl-js {
+  padding: 0 !important;
+}

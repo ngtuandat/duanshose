@@ -1,0 +1,12 @@
+@import './animation.scss';
+.animate-scale {
+    animation: scale 3s linear infinite;
+}
+
+.animate-spin-increase {
+    animation: spin-increase 3s linear infinite;
+}
+
+.animate-spin-abatement {
+    animation: spin-abatement 3s linear infinite;
+}
