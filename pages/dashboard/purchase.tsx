@@ -187,7 +187,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           <Table
             columns={columnPurchase}
             dataSource={dataSourcePurchase}
-            onRowClick={handleRowClick}
+            // onRowClick={handleRowClick}
           />
         </Card.Content>
       </Card>

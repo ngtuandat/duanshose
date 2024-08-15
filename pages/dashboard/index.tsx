@@ -51,10 +51,16 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
 
       // Tính toán các giá trị cần thiết
       setTemporaryQuantity(
-        nonDeliveredProducts.reduce((acc, curr) => acc + curr.quantityProd, 0)
+        nonDeliveredProducts.reduce(
+          (acc: any, curr: any) => acc + curr.quantityProd,
+          0
+        )
       );
       setCountProd(
-        deliveredProducts.reduce((acc, curr) => acc + curr.quantityProd, 0)
+        deliveredProducts.reduce(
+          (acc: any, curr: any) => acc + curr.quantityProd,
+          0
+        )
       );
 
       const totalEstimatedRevenue = deliveredProducts.reduce(
