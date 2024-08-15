@@ -49,15 +49,9 @@ const ContentHome = () => {
   const [products, setProducts] = useState<ListProduct[]>();
   const [totalProduct, setTotalProduct] = useState(0);
   const images = [
-    // "./images/logo.png",
-    // "./images/logo1.jpg",
-    // "./images/bannerhotel.jpeg",
     "./images/banner1.png",
     "./images/banner2.png",
     "./images/banner3.png",
-
-    // "./images/anh3.png",
-    // "./images/anh4.png",
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -138,15 +132,34 @@ const ContentHome = () => {
   const categorys = Categorys.slice(startIndex, startIndex + 8);
 
   // const categoryProducts = ["kids", "men", "women", "all"];
+
+  // let categoryProducts: any[] = [];
+  // products?.forEach((item) => {
+  //   const categr = item.category.name;
+  //   categoryProducts.push(categr);
+  // });
+  // if (!categoryProducts.includes("all")) {
+  //   categoryProducts.push("all");
+  // }
+  // categoryProducts = [...(new Set(categoryProducts) as any)];
+
   let categoryProducts: any[] = [];
   products?.forEach((item) => {
     const categr = item.category.name;
     categoryProducts.push(categr);
   });
-  if (!categoryProducts.includes("all")) {
-    categoryProducts.push("all");
-  }
+
+  // Loại bỏ các giá trị trùng lặp trong mảng
+
   categoryProducts = [...(new Set(categoryProducts) as any)];
+
+  // Đảm bảo rằng 'all' luôn xuất hiện ở đầu mảng
+  categoryProducts = [
+    "all",
+    ...categoryProducts.filter((item) => item !== "all"),
+  ];
+
+  console.log(categoryProducts, "Danh mục sản phẩm sau khi sắp xếp");
 
   console.log(categoryProducts, "jdshdkads");
 
@@ -274,16 +287,16 @@ const ContentHome = () => {
                 className="flex flex-col items-center"
                 style={{ minWidth: "124px" }}
               >
-                <img
+                {/* <img
                   className="w-[124px] h-[124px] rounded-full object-cover"
                   src="./images/anh6.jpg"
                   alt=""
-                />
-                <div className="text-white mt-2">{item}</div>
+                /> */}
+                <div className="text-white mt-2">{item.toUpperCase()}</div>
               </div>
             ))}
           </div>
-          <div className="text-white">
+          {/* <div className="text-white">
             <button onClick={handlePrevious} disabled={startIndex === 0}>
               Previous
             </button>
@@ -293,7 +306,7 @@ const ContentHome = () => {
             >
               Next
             </button>
-          </div>
+          </div> */}
         </div>
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Danh Sách Sản Phẩm
@@ -355,24 +368,25 @@ const ContentHome = () => {
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Tin Tức FitFusionZone
         </div>
-        <div className="grid grid-cols-3 gap-5 mb-10">
-          {News.map((item, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-10">
+          {News.map((item) => (
             <div
               onClick={() => handleClick(item.id)}
               key={item.id}
-              className="flex flex-col items-center space-y-4"
+              className="flex flex-col items-center space-y-4 cursor-pointer"
             >
-              <div className="w-[300px] h-[300px]">
+              <div className="w-full h-[300px]">
                 <img
                   src={item.image}
-                  alt=""
-                  className="w-full h-full object-cover"
+                  alt={item.title}
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
-              <div className="text-white">{item.title}</div>
+              <div className="text-white text-center">{item.title}</div>
             </div>
           ))}
         </div>
+
         <PaginationClient
           current={Number(router.query.page || 1)}
           pageSize={limitValue}
