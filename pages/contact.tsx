@@ -1,6 +1,7 @@
 import React, { ReactElement } from "react";
 import MainClient from "../components/Layouts/MainClient";
 import { CustomHeader } from "../components/Header/CustomHeader";
+import Footer from "../components/Footer";
 
 const Contact = () => {
   return (
@@ -8,19 +9,22 @@ const Contact = () => {
       <CustomHeader>
         <title>Liên Hệ | Cuc Shoes</title>
       </CustomHeader>
-      <div className="bg-dark w-full z-[1200] relative pb-16">
-        <h1>Trang Liên Hệ</h1>
-        <div className="grid grid-cols-2 gap-8">
+      <div className="bg-dark w-full z-[1200] relative pb-16 px-4 lg:px-0 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="text-white">
-            <img src="./images/imgcontact.jpg" alt="" />
-            <div className="mt-5">
+            <img
+              className="w-full h-auto object-cover rounded-lg"
+              src="./images/imgcontact.jpg"
+              alt=""
+            />
+            <div className="mt-5 text-justify">
               FitFusionZone <br />
               Được thành lập từ năm 2015, là chuỗi bán lẻ Sneaker, Streetwear và
               phụ kiện thời trang chính hãng có thị phần số 1 Việt Nam với số
               lượt truy cập mua hàng tại website FitFusionZone.com lên tới trên
               10.000 lượt mỗi ngày từ khắp 63 tỉnh thành trên cả nước.
             </div>
-            <div className="border-b-[1px] pb-4 border-[#7e7878]">
+            <div className="border-b-[1px] pb-4 border-[#7e7878] mt-5">
               <div className="font-bold py-6">TỪ MỘT NHÀ SƯU TẦM SNEAKER</div>
               <div className="space-y-3 px-4">
                 <p>
@@ -59,12 +63,17 @@ const Contact = () => {
                 </span>
               </div>
             </div>
-            <div>
-              <img src="./images/map.jpg" alt="" />
+            <div className="mt-8">
+              <img
+                className="w-full h-auto object-cover rounded-lg"
+                src="./images/map.jpg"
+                alt=""
+              />
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -43,6 +43,10 @@ const DEFAULT_PRODUCTS_LIMIT = 52;
 const ContentHome = () => {
   const [focused, setFocused] = useState(false);
   const [limitValue, setLimitValue] = useState(DEFAULT_PRODUCTS_LIMIT);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const handleCategoryClick = (category: any) => {
+    setSelectedCategory(category);
+  };
 
   const [searchValue, setSearchValue] = useState("");
   console.log({ searchValue });
@@ -201,14 +205,13 @@ const ContentHome = () => {
           </form>
         ) : (
           <motion.div
-            onClick={() => setOpenSearch(true)}
             className="flex items-center justify-end text-white hover:cursor-pointer mb-5"
             variants={iconVariants}
             initial="closed"
             animate={openSearch ? "open" : "closed"}
             transition={{ duration: 0.3 }}
           >
-            <IoSearch size={26} />
+            <IoSearch onClick={() => setOpenSearch(true)} size={26} />
           </motion.div>
         )}
 
@@ -280,33 +283,20 @@ const ContentHome = () => {
           Danh Mục Sản Phẩm.
         </div>
         <div>
-          <div className="flex gap-x-[38px] whitespace-nowrap overflow-hidden">
-            {categoryProducts.map((item, index) => (
+          <div className="flex gap-x-[38px] justify-center whitespace-nowrap overflow-hidden">
+            {categoryProducts.slice(0, 6).map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center"
+                onClick={() => handleCategoryClick(item)}
+                className={`flex flex-col items-center cursor-pointer font-bold text-xl ${
+                  selectedCategory === item ? "text-[#20AB55]" : "text-white"
+                }`}
                 style={{ minWidth: "124px" }}
               >
-                {/* <img
-                  className="w-[124px] h-[124px] rounded-full object-cover"
-                  src="./images/anh6.jpg"
-                  alt=""
-                /> */}
-                <div className="text-white mt-2">{item.toUpperCase()}</div>
+                <div className="mt-2">{item.toUpperCase()}</div>
               </div>
             ))}
           </div>
-          {/* <div className="text-white">
-            <button onClick={handlePrevious} disabled={startIndex === 0}>
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={startIndex + 8 >= Categorys.length}
-            >
-              Next
-            </button>
-          </div> */}
         </div>
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Danh Sách Sản Phẩm
