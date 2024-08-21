@@ -32,8 +32,9 @@ const listStatus = [
   { title: "Đang giao hàng", value: "shipped" },
   { title: "Đã giao thành công", value: "delivered" },
   { title: "Đã hủy", value: "cancelled" },
-  { title: "Trả Hàng", value: "returns" },
+  { title: "Trả hàng", value: "returns" },
 ];
+
 const statusOrder = [
   "pending",
   "processing",
@@ -51,10 +52,10 @@ const getFilteredStatusList = (currentStatus: string) => {
       (status) => statusOrder.indexOf(status.value) >= currentIndex
     );
   }
+
+  // Hiển thị tất cả các trạng thái, bao gồm "cancelled"
   return listStatus.filter(
-    (status) =>
-      statusOrder.indexOf(status.value) >= currentIndex &&
-      status.value !== "cancelled"
+    (status) => statusOrder.indexOf(status.value) >= currentIndex
   );
 };
 
@@ -154,7 +155,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm người mua,sản phẩm..."
+              placeholder="Tìm kiếm người mua, sản phẩm..."
               className="border p-2 w-[300px] text-white bg-black border-green-500 rounded-lg"
             />
           </form>
@@ -170,15 +171,11 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
             className="rounded-xl p-2 bg-black border-[1px] border-green-500 text-white"
           >
             <option value="">Tất cả</option>
-
-            <option value="pending">Đang chờ</option>
-            <option value="processing">Đang xử lý</option>
-            <option value="shipped">Đang giao hàng</option>
-            <option value="delivered">Đã giao thành công</option>
-            <option value="cancelled">Đã hủy</option>
-            <option value="returns">Trả Hàng</option>
-
-            {/* Add more options as needed */}
+            {listStatus.map((status) => (
+              <option key={status.value} value={status.value}>
+                {status.title}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -187,7 +184,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           <Table
             columns={columnPurchase}
             dataSource={dataSourcePurchase}
-            // onRowClick={handleRowClick}
+            // onRowClick={handleRowClick} // Uncomment to enable row click handling
           />
         </Card.Content>
       </Card>

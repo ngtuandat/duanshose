@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CiSearch } from "react-icons/ci";
 import { useRouter } from "next/router";
@@ -44,9 +44,9 @@ const ContentHome = () => {
   const [focused, setFocused] = useState(false);
   const [limitValue, setLimitValue] = useState(DEFAULT_PRODUCTS_LIMIT);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const handleCategoryClick = (category: any) => {
-    setSelectedCategory(category);
-  };
+  // const handleCategoryClick = (category: any) => {
+  //   setSelectedCategory(category);
+  // };
 
   const [searchValue, setSearchValue] = useState("");
   console.log({ searchValue });
@@ -174,6 +174,15 @@ const ContentHome = () => {
   const iconVariants = {
     open: { rotate: 180, scale: 1.2 }, // Thay đổi tùy ý
     closed: { rotate: 0, scale: 1 },
+  };
+
+  const categoryRefs: React.MutableRefObject<
+    Record<string, HTMLDivElement | null>
+  > = useRef({});
+
+  const handleCategoryClick = (item: any) => {
+    setSelectedCategory(item);
+    categoryRefs.current[item]?.scrollIntoView({ behavior: "smooth" });
   };
   return (
     <div className="max-w-sm md:max-w-2xl lg:max-w-[1200px] mx-auto">
@@ -304,9 +313,14 @@ const ContentHome = () => {
         {products && products.length > 0 ? (
           <div>
             {categoryProducts.map((categoryProduct, idx) => (
-              <div key={idx}>
-                <h2 className="text-white">{categoryProduct.toUpperCase()}</h2>
-                <div className="grid grid-cols-4 gap-6 mb-10">
+              <div
+                key={idx}
+                ref={(el) => (categoryRefs.current[categoryProduct] = el)}
+              >
+                <h2 className="text-white text-xl md:text-2xl lg:text-3xl">
+                  {categoryProduct.toUpperCase()}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
                   {products.map(
                     (product, index) =>
                       (categoryProduct === "all" ||
@@ -314,30 +328,30 @@ const ContentHome = () => {
                         <div key={index}>
                           <Link
                             href={`/product/${product?.id}`}
-                            className="bg-product col-span-4 lg:col-span-1 rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
+                            className="bg-product rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
                           >
                             <div className="p-2">
                               <img
-                                className="rounded-lg w-[262px] h-[262px] object-cover"
+                                className="rounded-lg w-full h-[200px] sm:h-[262px] object-cover"
                                 src={product?.listImage[0]}
                                 alt={product?.name}
                               />
                             </div>
-                            <div className="py-6 px-2">
-                              <h1 className="text-base font-semibold text-white">
+                            <div className="py-4 px-2">
+                              <h1 className="text-base sm:text-lg font-semibold text-white">
                                 {product?.name}
                               </h1>
-                              <div className="flex items-center justify-between mt-5 px-3">
-                                <div className="flex items-center">
+                              <div className="flex items-center justify-between mt-3 sm:mt-5 px-3">
+                                <div className="flex items-center space-x-1">
                                   {product?.color.map((col, idx) => (
                                     <div
-                                      className="h-3 w-3 rounded-full"
+                                      className="h-3 w-3 sm:h-4 sm:w-4 rounded-full"
                                       key={idx}
                                       style={{ backgroundColor: col }}
                                     />
                                   ))}
                                 </div>
-                                <p className="text-base font-semibold text-white">
+                                <p className="text-base sm:text-lg font-semibold text-white">
                                   {product?.price.toLocaleString("vi")} đ
                                 </p>
                               </div>
@@ -355,6 +369,7 @@ const ContentHome = () => {
             Không có sản phẩm bạn đang tìm!!
           </p>
         )}
+
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Tin Tức FitFusionZone
         </div>

@@ -1,7 +1,6 @@
 import { OrderStatus } from "../lib/enum";
 
 export const getStatusColor = (status: string) => {
-  console.log({ OrderStatus: OrderStatus.Pending });
   switch (status) {
     case OrderStatus.Pending:
       return "text-yellow-500";
@@ -13,24 +12,64 @@ export const getStatusColor = (status: string) => {
       return "text-green-500";
     case OrderStatus.Cancelled:
       return "text-red-500";
+    case OrderStatus.Returns: // Thêm trường hợp cho "Trả hàng"
+      return "text-orange-500"; // Chọn màu phù hợp
     default:
       return "text-gray-500";
   }
 };
 
+// export const getOrderStatusInVietnamese = (status: string) => {
+//   switch (status) {
+//     case OrderStatus.Pending:
+//       return "Đang chờ";
+//     case OrderStatus.Processing:
+//       return "Đang xử lý";
+//     case OrderStatus.Shipped:
+//       return "Đang giao hàng";
+//     case OrderStatus.Delivered:
+//       return "Đã giao thành công";
+//     case OrderStatus.Cancelled:
+//       return "Đã hủy";
+//     default:
+//       return status;
+//   }
+// };
+
+// export const getOrderStatusInVietnamese = (status: string) => {
+//   console.log("Status received:", status);
+
+//   switch (status) {
+//     case OrderStatus.Pending:
+//       return "Đang chờ";
+//     case OrderStatus.Processing:
+//       return "Đang xử lý";
+//     case OrderStatus.Shipped:
+//       return "Đang giao hàng";
+//     case OrderStatus.Delivered:
+//       return "Đã giao thành công";
+//     case OrderStatus.Cancelled:
+//       return "Đã hủy";
+//     default:
+//       return status;
+//   }
+// };
+
 export const getOrderStatusInVietnamese = (status: string) => {
   switch (status) {
-    case OrderStatus.Pending:
+    case "pending":
       return "Đang chờ";
-    case OrderStatus.Processing:
+    case "processing":
       return "Đang xử lý";
-    case OrderStatus.Shipped:
-      return "Đã giao hàng";
-    case OrderStatus.Delivered:
+    case "shipped":
+      return "Đang giao hàng";
+    case "delivered":
       return "Đã giao thành công";
-    case OrderStatus.Cancelled:
+    case "cancelled":
       return "Đã hủy";
+    case "returns":
+      return "Trả hàng";
     default:
-      return status;
+      return status; // Nếu trạng thái không khớp, trả về giá trị gốc
   }
 };

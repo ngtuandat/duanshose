@@ -75,6 +75,10 @@ export const getPurchaseAll = async () => {
   return await axios.get("/api/product/purchase-all");
 };
 
-export const deletePurchase = async (id: string) => {
-  return await axios.delete("/api/product/purchase", { data: { id } });
+// export const deletePurchase = async (id: string) => {
+//   return await axios.delete("/api/product/purchase", { data: { id } });
+// };
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  return await axios.patch("/api/product/purchase", { id, status });
 };
