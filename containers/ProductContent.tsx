@@ -73,23 +73,29 @@ const ProductContent = () => {
   return (
     <>
       {products && products?.length > 0 ? (
-        <div className="grid grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-6 mb-10">
           {products.map((product, idx) => (
             <Link
               href={`/product/${product?.id}`}
-              className="bg-product col-span-4 lg:col-span-1 rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
+              className="bg-product rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
               key={idx}
             >
               <div className="p-2">
                 <img
-                  className="rounded-lg w-[262px] h-[262px] object-cover"
-                  src={product?.listImage[0]}
+                  className="rounded-lg w-full h-64 object-cover" // Tăng chiều cao ảnh
+                  src={
+                    product?.listImage[0]
+                      ? product?.listImage[0]
+                      : "./images/product_default.jpeg"
+                  }
                   alt={product?.name}
                 />
               </div>
-              <div className="py-6 px-2">
-                <h1 className="text-base font-semibold">{product?.name}</h1>
-                <div className="flex items-center justify-between mt-5 px-3">
+              <div className="py-4 px-2">
+                <h1 className="text-sm sm:text-base font-semibold">
+                  {product?.name}
+                </h1>
+                <div className="flex items-center justify-between mt-3 sm:mt-5 px-3">
                   <div className="flex items-center">
                     {product?.color.map((col, idx) => (
                       <div
@@ -99,7 +105,7 @@ const ProductContent = () => {
                       />
                     ))}
                   </div>
-                  <p className="text-base font-semibold">
+                  <p className="text-sm sm:text-base font-semibold">
                     {product?.price.toLocaleString("vi")} đ
                   </p>
                 </div>
@@ -108,7 +114,7 @@ const ProductContent = () => {
           ))}
         </div>
       ) : (
-        <p className="flex w-full justify-center items-center text-xl sm:text-2xl font-bold py-40 opacity-20">
+        <p className="flex w-full justify-center items-center text-lg sm:text-xl font-bold py-20 opacity-20">
           Không có sản phẩm bạn đang tìm!!
         </p>
       )}

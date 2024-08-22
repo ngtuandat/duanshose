@@ -74,6 +74,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
+  console.log(
+    typeof listProductBuy.map((item) =>
+      item.price ? console.log(123) : console.log(456)
+    ),
+    "listProductBuy"
+  );
   const [quantityProdGuest, setQuantityProdGuest] = useState(1);
   const [listTabOver, setListTabOver] = useState<string[]>([]);
   const [countCard, setCountCard] = useState<number>();
@@ -87,6 +93,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [mailAddress, setMailAddress] = useState<ChooseAddress>();
   const [validatorMess, setValidatorMess] = useState<ValidatorAddress>();
   const [voucherUsed, setVoucherUsed] = useState<DataVoucherProps>();
+  console.log(voucherUsed, "voucherUsed");
   const [optionDelivery, setOptionDelivery] = useState<string>(
     "Giao hàng tiêu chuẩn (Miễn Phí)"
   );
@@ -522,10 +529,53 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     }
   }, [router.query, token]);
 
+  console.log(listProductBuy, "listProductBuy");
+  const totalHauntPriceOrder = useMemo(() => {
+    const deliveryFee =
+      optionDelivery === "Giao hàng nhanh (30.000đ)" ? 30000 : 0;
+    {
+      console.log(voucherUsed?.discount, "testbug");
+    }
+    const isValidDiscount = !isNaN(voucherUsed?.discount || 0);
+    console.log(isValidDiscount, "isValidDiscount");
+
+    if (isValidDiscount) {
+      const totalProductPrice = listProductBuy.reduce(
+        (acc, cur: any) => acc + cur.price * cur.quantity,
+        0
+      );
+
+      let discountAmount = 0;
+      if (voucherUsed?.type === "vnd") {
+        discountAmount = voucherUsed.discount;
+      } else if (voucherUsed?.type === "percent") {
+        console.log(totalProductPrice, "totalProductPrice");
+        console.log(voucherUsed, "voucherUsed");
+
+        discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+      }
+
+      const totalPrice = totalProductPrice + deliveryFee - discountAmount;
+
+      return Math.max(totalPrice, 0);
+    }
+
+    return 0;
+  }, [
+    listProductBuy,
+    optionDelivery,
+    voucherUsed?.discount,
+    voucherUsed?.type,
+  ]);
+
   const totalPriceOrder = useMemo(() => {
     const deliveryFee =
       optionDelivery === "Giao hàng nhanh (30.000đ)" ? 30000 : 0;
+    {
+      console.log(voucherUsed?.discount, "testbug");
+    }
     const isValidDiscount = !isNaN(voucherUsed?.discount || 0);
+    console.log(isValidDiscount, "isValidDiscount");
 
     if (isValidDiscount) {
       const totalProductPrice = listProductBuy.reduce(
@@ -556,6 +606,11 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     voucherUsed?.type,
   ]);
 
+  // const totalPriceOrder = listProductBuy.reduce((acc, cur) => {
+  //   const price = Number(cur.price) || 0;
+  //   const quantity = Number(cur.quantity) || 0;
+  //   return acc + price * quantity;
+  // }, 0);
   console.log({ voucherUsed });
   return (
     <>
@@ -1071,7 +1126,10 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
               <div className="flex items-center justify-between mt-4">
                 <p className="font-bold">Tổng đơn hàng</p>
                 <span className="font-semibold text-red-500">
-                  {totalPriceOrder.toLocaleString("vi")} đ
+                  {token
+                    ? totalPriceOrder.toLocaleString("vi")
+                    : totalHauntPriceOrder.toLocaleString("vi")}
+                  đ
                 </span>
               </div>
             </div>

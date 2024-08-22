@@ -333,7 +333,11 @@ const ContentHome = () => {
                             <div className="p-2">
                               <img
                                 className="rounded-lg w-full h-[200px] sm:h-[262px] object-cover"
-                                src={product?.listImage[0]}
+                                src={
+                                  product?.listImage[0]
+                                    ? product?.listImage[0]
+                                    : "./images/product_default.jpeg"
+                                }
                                 alt={product?.name}
                               />
                             </div>
