@@ -4,30 +4,30 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
 .text-icon {
-  color:rgb(145, 158, 171)
+  color: rgb(145, 158, 171);
 }
 
 .product-images-slide {
   .swiper-button-prev {
     left: 30;
-    color: white
+    color: #ccc;
   }
 
   .swiper-button-next {
     right: 30;
-    color: white
+    color: #ccc;
   }
 }
 
 .product-images-slide-thumbs {
   .swiper-slide-active {
     border: 2px solid #ff02f2;
-    border-radius:12px;
+    border-radius: 12px;
   }
 }
 

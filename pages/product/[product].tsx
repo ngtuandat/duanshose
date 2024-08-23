@@ -198,7 +198,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
       <section className="text-white pb-10">
         <div className="grid grid-cols-12">
           <div className="col-span-12 lg:col-span-7">
-            <div className="h-full">
+            <div className="h-full bg-white flex items-center rounded-md">
               <Swiper
                 loop
                 navigation
@@ -208,31 +208,23 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
               >
                 {dataProduct &&
                   dataProduct.listImage.map((image, idx) => (
-                    <SwiperSlide key={idx}>
-                      <img src={image} alt="" />
-                    </SwiperSlide>
-                  ))}
-              </Swiper>
-
-              {/* <Swiper
-                loop
-                spaceBetween={10}
-                slidesPerView={dataProduct?.listImage.length}
-                modules={[Navigation, Thumbs]}
-                className="select-none product-images-slide-thumbs max-w-sm mx-auto mt-6"
-              >
-                <div>
-                  {dataProduct?.listImage.map((image, idx) => (
-                    <SwiperSlide key={idx}>
+                    <SwiperSlide
+                      key={idx}
+                      className="flex items-center justify-center relative"
+                    >
                       <img
-                        className="cursor-pointer rounded-xl object-cover"
                         src={image}
                         alt=""
+                        className="w-full max-w-[80%] h-auto max-h-[400px] object-cover rounded-lg"
+                        style={{
+                          objectFit: "cover",
+                          width: "auto",
+                          height: "auto",
+                        }}
                       />
                     </SwiperSlide>
                   ))}
-                </div>
-              </Swiper> */}
+              </Swiper>
             </div>
           </div>
           <div className="px-0 lg:px-10 pt-8 col-span-12 lg:col-span-5 space-y-5">
