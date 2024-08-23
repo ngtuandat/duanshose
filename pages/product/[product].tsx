@@ -46,6 +46,10 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
   const [sizeValue, setSizeValue] = useState<number>();
   const [quantity, setQuantity] = useState<number>(1);
   const [dataProduct, setDataProduct] = useState<ListProduct>();
+  {
+    console.log(dataProduct, "logkkaka");
+  }
+
   const [selectTab, setSelectTab] = useState("description");
   const [offsetLeftLine, setOffsetLeftLine] = useState<string>("-9px");
   const [offsetWidthLine, setOffsetWidthLine] = useState<string>("76px");
@@ -121,8 +125,11 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
           price: dataProduct?.price,
           color: colorCheck,
           quantity: quantity,
+
           image: dataProduct?.listImage[0],
+          warehouse: dataProduct?.quantity ?? 0,
         };
+        console.log(productBuy, "productBuy");
 
         await addToCart(productBuy);
         await fetchCart(decoded.id);
@@ -150,6 +157,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
           color: colorCheck,
           quantity: quantity,
           image: dataProduct?.listImage[0],
+          warehouse: dataProduct?.quantity ?? 0,
         };
         await addToCart(productBuy);
         fetchCart(decoded.id);
@@ -332,6 +340,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                 <div className="flex items-center justify-between h-10">
                   <p className="text-base font-semibold">Số lượng trong kho</p>
                   <div className="relative hover:border-white select-none flex items-center rounded-lg w-[78px] py-1 justify-around">
+                    {console.log(dataProduct?.quantity, "soluonglog")}
                     {dataProduct?.quantity}
                   </div>
                 </div>

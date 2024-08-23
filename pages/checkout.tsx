@@ -10,6 +10,7 @@ import dateFormat from "dateformat";
 import {
   boughtProduct,
   deleteProdCart,
+  getDetailProduct,
   getProductCart,
   plusQuantityCart,
 } from "../services/product";
@@ -42,7 +43,7 @@ import { useRouter } from "next/router";
 import { createOrderGuest } from "../services/guest";
 
 const tabs = ["Giỏ hàng", "Địa chỉ và thông tin", "Thanh toán"];
-const column = ["Sản phẩm", "Giá", "Số lượng", "Tổng tiền", ""];
+const column = ["Sản phẩm", "Giá", "Số lượng", "Tổng kho", "Tổng tiền", ""];
 const payment = [
   {
     title: "Thanh toán khi nhận hàng",
@@ -74,12 +75,14 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
-  console.log(
-    typeof listProductBuy.map((item) =>
-      item.price ? console.log(123) : console.log(456)
-    ),
-    "listProductBuy"
+
+  const [dataProduct, setDataProduct] = useState<any[]>([]);
+
+  const idsListProductBuy = new Set(listProductBuy.map((item) => item.idProd));
+  const commonProduct = dataProduct?.filter((product) =>
+    idsListProductBuy.has(product.id)
   );
+  const [saveQuantity, setSaveQuantity] = useState();
   const [quantityProdGuest, setQuantityProdGuest] = useState(1);
   const [listTabOver, setListTabOver] = useState<string[]>([]);
   const [countCard, setCountCard] = useState<number>();
@@ -93,6 +96,13 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [mailAddress, setMailAddress] = useState<ChooseAddress>();
   const [validatorMess, setValidatorMess] = useState<ValidatorAddress>();
   const [voucherUsed, setVoucherUsed] = useState<DataVoucherProps>();
+  const idPrd = useMemo(
+    () => listProductBuy.map((item) => item.idProd),
+    [listProductBuy]
+  );
+
+  console.log(idPrd, "logidPrd");
+  console.log(dataProduct, "dataProduct");
   console.log(voucherUsed, "voucherUsed");
   const [optionDelivery, setOptionDelivery] = useState<string>(
     "Giao hàng tiêu chuẩn (Miễn Phí)"
@@ -337,6 +347,9 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           </button>
         </div>,
         <div>
+          {dataProduct.map((elm) => elm.id === item.idProd && elm.quantity)}
+        </div>,
+        <div>
           {(item?.priceProd * item?.quantityProd).toLocaleString("vi")} đ
         </div>,
         <div
@@ -438,6 +451,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
             code: voucherUsed?.code,
           });
         }
+        console.log(123123878, "hshs");
         setOpenModalBought(true);
       } else {
         console.log({ mailAddress });
@@ -454,6 +468,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           if (typeof window !== "undefined") {
             sessionStorage.removeItem("guest-prod");
           }
+          console.log(12312389, "hshs");
           setOpenModalBought(true);
         }
       }
@@ -612,6 +627,39 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   //   return acc + price * quantity;
   // }, 0);
   console.log({ voucherUsed });
+
+  // const fetchDetailProduct = async (id: string | string[]) => {
+  //   try {
+  //     const res = await getDetailProduct(String(id));
+  //     setDataProduct(res.data.detail);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   // fetchDetailProduct(idPrd);
+  // }, []);
+
+  const getDetailProducts = async (ids: string[]) => {
+    try {
+      const responses = await Promise.all(
+        ids.map(async (id) => {
+          const res = await getDetailProduct(id);
+          return res.data.detail;
+        })
+      );
+      setDataProduct(responses.flat());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (idPrd.length > 0) {
+      getDetailProducts(idPrd);
+    }
+  }, [idPrd]);
+
   return (
     <>
       {loading && <LoadingPage />}
