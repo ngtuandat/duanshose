@@ -75,14 +75,19 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
-
   const [dataProduct, setDataProduct] = useState<any[]>([]);
+  const [saveQuantity, setSaveQuantity] = useState<number | null>(null);
+  console.log(saveQuantity, "saveQuantity");
 
-  const idsListProductBuy = new Set(listProductBuy.map((item) => item.idProd));
-  const commonProduct = dataProduct?.filter((product) =>
-    idsListProductBuy.has(product.id)
-  );
-  const [saveQuantity, setSaveQuantity] = useState();
+  useEffect(() => {
+    listProductBuy.forEach((item) => {
+      const product = dataProduct.find((elm) => elm.id === item.idProd);
+      if (product && saveQuantity !== product.quantity) {
+        setSaveQuantity(product.quantity);
+      }
+    });
+  }, [dataProduct, listProductBuy]);
+
   const [quantityProdGuest, setQuantityProdGuest] = useState(1);
   const [listTabOver, setListTabOver] = useState<string[]>([]);
   const [countCard, setCountCard] = useState<number>();
@@ -347,8 +352,18 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           </button>
         </div>,
         <div>
-          {dataProduct.map((elm) => elm.id === item.idProd && elm.quantity)}
+          {dataProduct.map((elm) => {
+            if (elm.id === item.idProd) {
+              return <span key={elm.id}>{elm.quantity}</span>;
+            }
+            return null;
+          })}
         </div>,
+
+        // <div>
+        //   {dataProduct.map((elm) => elm.id === item.idProd && elm.quantity)}
+        // </div>,
+
         <div>
           {(item?.priceProd * item?.quantityProd).toLocaleString("vi")} đ
         </div>,
@@ -439,18 +454,89 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     });
   }, [listProductBuy]);
 
+  // const handleBoughtProd = async ({ isPay }: { isPay?: boolean }) => {
+  //   console.log({ voucherUsed });
+  //   try {
+  //     if (token) {
+  //       const decoded: any = jwt_decode(token);
+  //       await boughtProduct(String(decoded.id), voucherUsed?.id, isPay);
+  //       if (voucherUsed && Object.keys(voucherUsed).length !== 0) {
+  //         await UserUsedVoucher({
+  //           userId: decoded.id,
+  //           code: voucherUsed?.code,
+  //         });
+  //       }
+  //       if (saveQuantity !== null) {
+  //         listProductBuy.forEach((item) => {
+  //           const product = dataProduct.find((elm) => elm.id === item.idProd);
+  //           if (product) {
+  //             const remainingQuantity = saveQuantity - item.quantityProd;
+  //             setSaveQuantity(remainingQuantity);
+  //           } else {
+  //             console.log("Product not found in dataProduct.");
+  //           }
+  //         });
+  //       } else {
+  //         console.log(
+  //           "saveQuantity is null, cannot update the remaining quantity."
+  //         );
+  //       }
+
+  //       console.log(123123878, "hshs");
+  //       setOpenModalBought(true);
+  //     } else {
+  //       console.log({ mailAddress });
+  //       const res = await createOrderGuest({
+  //         buyerAddress: mailAddress?.address ?? "",
+  //         buyerName: mailAddress?.name ?? "",
+  //         buyerPhone: String(mailAddress?.phone ?? ""),
+  //         finalPrice: isPay
+  //           ? 0
+  //           : listProductBuy[0].price * listProductBuy[0].quantity,
+  //         products: JSON.stringify(listProductBuy[0]),
+  //       });
+  //       if (res.status === 200) {
+  //         if (typeof window !== "undefined") {
+  //           sessionStorage.removeItem("guest-prod");
+  //         }
+  //         console.log(12312389, "hshs");
+  //         setOpenModalBought(true);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const handleBoughtProd = async ({ isPay }: { isPay?: boolean }) => {
     console.log({ voucherUsed });
     try {
       if (token) {
         const decoded: any = jwt_decode(token);
         await boughtProduct(String(decoded.id), voucherUsed?.id, isPay);
+
         if (voucherUsed && Object.keys(voucherUsed).length !== 0) {
           await UserUsedVoucher({
             userId: decoded.id,
             code: voucherUsed?.code,
           });
         }
+
+        if (saveQuantity !== null) {
+          listProductBuy.forEach((item) => {
+            const product = dataProduct.find((elm) => elm.id === item.idProd);
+            if (product) {
+              const remainingQuantity = product.quantity - item.quantityProd;
+              setSaveQuantity(remainingQuantity);
+            } else {
+              console.log("Product not found in dataProduct.");
+            }
+          });
+        } else {
+          console.log(
+            "saveQuantity is null, cannot update the remaining quantity."
+          );
+        }
+
         console.log(123123878, "hshs");
         setOpenModalBought(true);
       } else {
@@ -461,9 +547,13 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           buyerPhone: String(mailAddress?.phone ?? ""),
           finalPrice: isPay
             ? 0
-            : listProductBuy[0].price * listProductBuy[0].quantity,
-          products: JSON.stringify(listProductBuy[0]),
+            : listProductBuy.reduce(
+                (acc, item) => acc + item.price * item.quantityProd,
+                0
+              ),
+          products: JSON.stringify(listProductBuy),
         });
+
         if (res.status === 200) {
           if (typeof window !== "undefined") {
             sessionStorage.removeItem("guest-prod");

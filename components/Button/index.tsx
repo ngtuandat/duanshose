@@ -21,6 +21,8 @@ export interface ButtonProps {
   /**
    * html submit form
    */
+  icon?: React.ReactNode;
+
   submit?: boolean;
   variant?: "primary" | "outline";
 }
@@ -31,6 +33,7 @@ const Button = ({
   className,
   submit,
   onClick,
+  icon,
   variant = "primary",
 }: ButtonProps): JSX.Element => {
   return (

@@ -40,6 +40,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
 
   const token = Cookies.get("token");
   const [openModalCancel, setOpenModalCancel] = useState(false);
+  const [openModalReturn, setOpenModalReturn] = useState(false); // New state for return modal
   const [itemCancel, setItemCancel] = useState<PurchaseProps>();
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [phoneFind, setPhoneFind] = useState("");
@@ -54,6 +55,34 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     }
   };
 
+  // const handleUpdateOrderStatus = async (id: string, status: string) => {
+  //   setLoadingCancel(true);
+  //   try {
+  //     if (token) {
+  //       const res = await updateOrderStatus(id, status);
+  //       if (res.status === 200) {
+  //         const decoded: any = jwt_decode(token);
+  //         await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
+  //         setOpenModalCancel(false);
+  //         setOpenModalReturn(false); // Close return modal if open
+  //         toast.success("Đã cập nhật trạng thái đơn hàng");
+  //       }
+  //     } else {
+  //       const res = await deleteOrderGuest(id);
+  //       if (res.status === 200) {
+  //         await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
+  //         setOpenModalCancel(false);
+  //         setOpenModalReturn(false); // Close return modal if open
+  //         toast.success("Đã cập nhật trạng thái đơn hàng");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
+  //   }
+  //   setLoadingCancel(false);
+  // };
+
   const handleUpdateOrderStatus = async (id: string, status: string) => {
     setLoadingCancel(true);
     try {
@@ -61,15 +90,18 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         const res = await updateOrderStatus(id, status);
         if (res.status === 200) {
           const decoded: any = jwt_decode(token);
-          await fetchPurchase(decoded.id);
+          await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
           setOpenModalCancel(false);
+          setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
+
           toast.success("Đã cập nhật trạng thái đơn hàng");
         }
       } else {
         const res = await deleteOrderGuest(id);
         if (res.status === 200) {
-          await handleFindOrderGuest();
+          await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
           setOpenModalCancel(false);
+          setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
           toast.success("Đã cập nhật trạng thái đơn hàng");
         }
       }
@@ -135,6 +167,29 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           />
         </div>
       </ModalCancel>
+      {/* New Modal for Return Confirmation */}
+      <ModalCancel
+        open={openModalReturn}
+        setOpen={setOpenModalReturn}
+        title="Bạn có muốn trả hàng không?"
+      >
+        <div className="flex items-center justify-center gap-10 mt-10">
+          <Button
+            onClick={() => setOpenModalReturn(false)}
+            className="w-40"
+            label="Không"
+            variant="outline"
+          />
+          <Button
+            onClick={() => {
+              itemCancel && handleUpdateOrderStatus(itemCancel?.id, "returns");
+            }}
+            className="w-40"
+            label="Trả Hàng"
+            loading={loadingCancel}
+          />
+        </div>
+      </ModalCancel>
       {!token && (
         <div className="flex items-center justify-center gap-2 mb-5">
           <input
@@ -195,13 +250,16 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           style={{ backgroundColor: item?.colorProd }}
                         />
                       </p>
-                      <p className="text-sm font-semibold">
-                        x{item?.quantityProd}
+                      <p className="text-sm text-[rgb(145,158,171)]">
+                        Giá: {item?.priceProd}đ
+                      </p>
+                      <p className="text-sm text-[rgb(145,158,171)]">
+                        Số lượng: {item?.quantityProd}
                       </p>
                     </div>
                   </div>
-                  <div className="flex lg:flex-col lg:w-fit w-full mt-5 lg:mt-0 justify-between items-center lg:items-end lg:space-y-5">
-                    <div className="flex items-start space-x-2 text-white">
+                  <div>
+                    <div className="flex items-start justify-end space-x-2 text-white mb-5">
                       <p className="text-sm font-semibold whitespace-nowrap">
                         Thành tiền:
                       </p>
@@ -223,45 +281,52 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                         )}
                       </div>
                     </div>
-                    {item.status === "pending" && (
-                      <button
-                        onClick={() => {
-                          setItemCancel(item);
-                          setOpenModalCancel(true);
-                        }}
-                        className="text-white hover:bg-red-700 hover:bg-opacity-10 max-w-[140
-px] border-2 border-red-500 px-4 py-2 rounded-md text-sm"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <MdOutlineDeleteSweep />
-                          <p>Huỷ Đơn</p>
+                    <div className="flex flex-col items-end">
+                      {item?.status === "pending" && (
+                        <div className="flex items-center space-x-4">
+                          <Button
+                            onClick={() => {
+                              setItemCancel(item);
+                              setOpenModalCancel(true);
+                            }}
+                            icon={<MdOutlineDeleteSweep />}
+                            label="Huỷ Đơn"
+                          />
                         </div>
-                      </button>
-                    )}
-                    {item.status === "shipped" && (
-                      <button
-                        onClick={() => {
-                          setItemCancel(item);
-                          setOpenModalCancel(true);
-                        }}
-                        className="text-white hover
-hover
-max-w-[140px] border-2 border-red-500 px-4 py-2 rounded-md text-sm"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <FaPencilAlt />
-                          <p>Trả hàng</p>
+                      )}
+                      {item?.status === "delivered" && (
+                        <div className="flex items-center space-x-4">
+                          <Button
+                            onClick={() => {
+                              setItemCancel(item);
+                              setOpenModalReturn(true); // Open return modal
+                            }}
+                            icon={<FaPencilAlt />}
+                            label="Trả Hàng"
+                          />
                         </div>
-                      </button>
-                    )}
+                      )}
+                      {/* {item?.status === "processing" && (
+                        <div className="flex items-center space-x-4">
+                          <Button
+                            onClick={() => {
+                              setItemCancel(item);
+                              setOpenModalReturn(true); // Open return modal
+                            }}
+                            icon={<FaPencilAlt />}
+                            label="Trả Hàng"
+                          />
+                        </div>
+                      )} */}
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-white text-center text-lg font-semibold">
-            Không có đơn hàng nào
+          <div className="w-full text-center">
+            <p className="text-[#8692A6]">Không có đơn hàng nào</p>
           </div>
         )}
       </div>
