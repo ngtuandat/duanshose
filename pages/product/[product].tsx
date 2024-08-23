@@ -340,7 +340,6 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                 <div className="flex items-center justify-between h-10">
                   <p className="text-base font-semibold">Số lượng trong kho</p>
                   <div className="relative hover:border-white select-none flex items-center rounded-lg w-[78px] py-1 justify-around">
-                    {console.log(dataProduct?.quantity, "soluonglog")}
                     {dataProduct?.quantity}
                   </div>
                 </div>
