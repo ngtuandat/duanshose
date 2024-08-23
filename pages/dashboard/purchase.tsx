@@ -44,8 +44,14 @@ const statusOrder = [
   "returns",
 ];
 
+// Function to get filtered status list based on current status
 const getFilteredStatusList = (currentStatus: string) => {
   const currentIndex = statusOrder.indexOf(currentStatus);
+
+  if (currentStatus === "delivered") {
+    // If status is "delivered", do not allow reverting to previous states or changing to "cancelled" or "returns"
+    return listStatus.filter((status) => status.value === "delivered");
+  }
 
   if (currentStatus === "pending" || currentStatus === "processing") {
     return listStatus.filter(
@@ -53,7 +59,7 @@ const getFilteredStatusList = (currentStatus: string) => {
     );
   }
 
-  // Hiển thị tất cả các trạng thái, bao gồm "cancelled"
+  // For other cases, allow changing to any status including "cancelled" and "returns"
   return listStatus.filter(
     (status) => statusOrder.indexOf(status.value) >= currentIndex
   );
