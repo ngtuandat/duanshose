@@ -40,7 +40,9 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
 
   const token = Cookies.get("token");
   const [openModalCancel, setOpenModalCancel] = useState(false);
-  const [openModalReturn, setOpenModalReturn] = useState(false); // New state for return modal
+  const [openModalReturn, setOpenModalReturn] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false); // New state for return modal
+
   const [itemCancel, setItemCancel] = useState<PurchaseProps>();
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [phoneFind, setPhoneFind] = useState("");
@@ -93,6 +95,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
           setOpenModalCancel(false);
           setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
+          setOpenModalConfirm(false);
 
           toast.success("Đã cập nhật trạng thái đơn hàng");
         }
@@ -101,7 +104,8 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         if (res.status === 200) {
           await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
           setOpenModalCancel(false);
-          setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
+          setOpenModalReturn(false);
+          setOpenModalConfirm(false); // Đóng modal trả hàng nếu mở
           toast.success("Đã cập nhật trạng thái đơn hàng");
         }
       }
@@ -121,12 +125,65 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     }
   };
 
+  const checkAndUpdateOrderStatus = async (orders: PurchaseProps[]) => {
+    const now = new Date();
+    for (const order of orders) {
+      {
+        console.log(order, "orderr");
+      }
+      const orderDate = new Date(order.createdAt);
+      const diffDays = Math.floor(
+        (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (order.status === "shipped" && diffDays >= 1) {
+        await handleUpdateOrderStatus(order.id, "delivered");
+      }
+    }
+  };
+
+  // const checkAndUpdateOrderStatus = async (orders: PurchaseProps[]) => {
+  //   const now = new Date();
+  //   for (const order of orders) {
+  //     console.log(order, "orderr");
+  //     const orderDate = new Date(order.createdAt);
+  //     const diffMinutes = Math.floor(
+  //       (now.getTime() - orderDate.getTime()) / (1000 * 60) // Tính bằng phút
+  //     );
+  //     if (order.status === "shipped" && diffMinutes >= 3) {
+  //       // Kiểm tra sau 3 phút
+  //       await handleUpdateOrderStatus(order.id, "delivered");
+  //     }
+  //   }
+  // };
+
+  // const isReturnable = (orderDate: Date) => {
+  //   const now = new Date();
+  //   const diffMinutes = Math.floor(
+  //     (now.getTime() - orderDate.getTime()) / (1000 * 60)
+  //   );
+  //   return diffMinutes <= 3;
+  // };
+
+  const isReturnable = (orderDate: Date) => {
+    const now = new Date();
+    const diffDays = Math.floor(
+      (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return diffDays <= 7;
+  };
+
   useEffect(() => {
     if (token) {
       const decoded: any = jwt_decode(token);
       fetchPurchase(decoded.id);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (listPurchase) {
+      checkAndUpdateOrderStatus(listPurchase);
+    }
+  }, [listPurchase]);
 
   const filterOrders = (orders: any) => {
     if (selectedStatus === "all") {
@@ -147,7 +204,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       <ModalCancel
         open={openModalCancel}
         setOpen={setOpenModalCancel}
-        title="Cập nhật trạng thái đơn hàng này?"
+        title="Xác nhận huỷ đơn hàng này?"
       >
         <div className="flex items-center justify-center gap-10 mt-10">
           <Button
@@ -186,6 +243,29 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
             }}
             className="w-40"
             label="Trả Hàng"
+            loading={loadingCancel}
+          />
+        </div>
+      </ModalCancel>
+      <ModalCancel
+        open={openModalConfirm}
+        setOpen={setOpenModalConfirm}
+        title="Xác nhận đã nhận hàng?"
+      >
+        <div className="flex items-center justify-center gap-10 mt-10">
+          <Button
+            onClick={() => setOpenModalConfirm(false)}
+            className="w-40"
+            label="Đóng"
+            variant="outline"
+          />
+          <Button
+            onClick={() => {
+              itemCancel &&
+                handleUpdateOrderStatus(itemCancel?.id, "delivered");
+            }}
+            className="w-40"
+            label="Đã Nhận"
             loading={loadingCancel}
           />
         </div>
@@ -294,30 +374,31 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           />
                         </div>
                       )}
-                      {item?.status === "delivered" && (
+                      {item?.status === "shipped" && (
                         <div className="flex items-center space-x-4">
                           <Button
                             onClick={() => {
                               setItemCancel(item);
-                              setOpenModalReturn(true); // Open return modal
+                              setOpenModalConfirm(true);
                             }}
                             icon={<FaPencilAlt />}
-                            label="Trả Hàng"
+                            label="Đã Nhận Hàng"
                           />
                         </div>
                       )}
-                      {/* {item?.status === "processing" && (
-                        <div className="flex items-center space-x-4">
-                          <Button
-                            onClick={() => {
-                              setItemCancel(item);
-                              setOpenModalReturn(true); // Open return modal
-                            }}
-                            icon={<FaPencilAlt />}
-                            label="Trả Hàng"
-                          />
-                        </div>
-                      )} */}
+                      {isReturnable(new Date(item.createdAt)) &&
+                        item?.status === "delivered" && (
+                          <div className="flex items-center space-x-4">
+                            <Button
+                              onClick={() => {
+                                setItemCancel(item);
+                                setOpenModalReturn(true); // Open return modal
+                              }}
+                              icon={<FaPencilAlt />}
+                              label="Trả Hàng"
+                            />
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
