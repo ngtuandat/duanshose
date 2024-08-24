@@ -23,6 +23,14 @@ const NavClient = () => {
       url: "/product",
       label: "Xem sản phẩm",
     },
+    {
+      url: "/category",
+      label: "Danh mục",
+    },
+    {
+      url: "/news",
+      label: "Tin tức - Sự kiện",
+    },
 
     {
       url: "/contact",

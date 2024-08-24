@@ -453,91 +453,140 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           )}
         </div>
       ) : (
+        ///đây là phần khách hàng vãn lai
         <div className="w-full lg:w-2/3 mx-auto pb-8">
-          {filteredPurchaseGuest && filteredPurchaseGuest?.length > 0 ? (
+          {console.log(filteredPurchaseGuest, "filteredPurchaseGuest")}
+          {filteredPurchaseGuest && filteredPurchaseGuest.length > 0 ? (
             <div>
-              {filteredPurchaseGuest?.map((item: any, idx: any) => {
-                const product = JSON.parse(item.products);
-                return (
-                  <div
-                    className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 "
-                    key={idx}
-                  >
-                    <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
-                      <BsTruck />{" "}
-                      <p>{getOrderStatusInVietnamese(item.status)}</p>
-                    </div>
-                    <div className="flex flex-col lg:flex-row items-start justify-between">
-                      <div className="flex items-start space-x-5 lg:w-fit">
-                        <div className="bg-white w-20 h-20 rounded-md flex items-center justify-center overflow-hidden">
-                          <img
-                            className="object-contain w-full h-full"
-                            src={product.image}
-                            alt={product.name}
-                          />
-                        </div>
-                        <div className="text-white">
-                          <p className="text-base lg:text-xl font-bold max-w-[400px]">
-                            {product?.name}
-                          </p>
-                          <p className="text-sm text-[rgb(145,158,171)]">
-                            Size: {product?.size}
-                          </p>
-                          <p className="text-sm text-[rgb(145,158,171)] flex items-center">
-                            Màu sắc:{" "}
-                            <span
-                              className="ml-2 w-4 h-4 rounded-full block"
-                              style={{ backgroundColor: product?.color }}
-                            />
-                          </p>
-                          <p className="text-sm font-semibold">
-                            x{product?.quantity}
-                          </p>
-                        </div>
+              {filteredPurchaseGuest
+                .slice() // Tạo bản sao của mảng để không làm thay đổi mảng gốc
+                .reverse() // Đảo ngược mảng
+                .map((item: any, idx: any) => {
+                  const product = Array.isArray(JSON.parse(item.products))
+                    ? JSON.parse(item.products)
+                    : []; // Đảm bảo product luôn là một mảng
+
+                  // Tính tổng giá trị sản phẩm
+                  const totalPrice = product.reduce(
+                    (total: number, productItem: any) =>
+                      total + productItem.price * productItem.quantity,
+                    0
+                  );
+
+                  return (
+                    <div
+                      className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6"
+                      key={idx}
+                    >
+                      <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
+                        <BsTruck />{" "}
+                        <p>{getOrderStatusInVietnamese(item.status)}</p>
                       </div>
-                      <div className="flex lg:flex-col lg:w-fit w-full mt-5 lg:mt-0 justify-between items-center lg:items-end lg:space-y-5">
-                        <div className="flex items-start space-x-2 text-white">
-                          <p className="text-sm font-semibold whitespace-nowrap">
-                            Thành tiền:
-                          </p>
-                          <div className="flex flex-col gap-1">
-                            <p
-                              className={`text-base text-red-500 font-semibold whitespace-nowrap ${
-                                item.finalPrice !==
-                                  product.price * product.quantity &&
-                                "line-through"
-                              }`}
+                      <div className="flex flex-col lg:flex-row items-start justify-between">
+                        <div className="flex flex-col space-y-4 lg:w-fit">
+                          {product.map((productItem: any, index: number) => (
+                            <div
+                              className="flex items-start space-x-5"
+                              key={index}
                             >
-                              {(
-                                product?.quantity * product?.price
-                              ).toLocaleString("vi")}{" "}
-                              đ
+                              <div className="bg-white w-20 h-20 rounded-md flex items-center justify-center overflow-hidden">
+                                <img
+                                  className="object-contain w-full h-full"
+                                  src={productItem.image}
+                                  alt={productItem.name}
+                                />
+                              </div>
+                              <div className="text-white">
+                                <p className="text-base lg:text-xl font-bold max-w-[400px]">
+                                  {productItem.name}
+                                </p>
+                                <p className="text-sm text-[rgb(145,158,171)]">
+                                  Size: {productItem.size}
+                                </p>
+                                <p className="text-sm text-[rgb(145,158,171)] flex items-center">
+                                  Màu sắc:{" "}
+                                  <span
+                                    className="ml-2 w-4 h-4 rounded-full block"
+                                    style={{
+                                      backgroundColor: productItem.color,
+                                    }}
+                                  />
+                                </p>
+                                <p className="text-sm font-semibold">
+                                  x{productItem.quantity}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div>
+                          <div className="flex items-start justify-end space-x-2 text-white mb-5">
+                            <p className="text-sm font-semibold whitespace-nowrap">
+                              Thành tiền:
                             </p>
-                            {item.finalPrice !==
-                              product.price * product.quantity && (
-                              <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
-                                {item.finalPrice?.toLocaleString("vi")} đ
+                            <div className="flex flex-col gap-1">
+                              <p
+                                className={`text-base font-semibold whitespace-nowrap ${
+                                  item.finalPrice !== totalPrice
+                                    ? "text-red-500"
+                                    : "text-white"
+                                }`}
+                              >
+                                {totalPrice.toLocaleString("vi")}
+                                {item.finalPrice !== totalPrice &&
+                                  item.finalPrice && (
+                                    <>
+                                      {" "}
+                                      {item.finalPrice.toLocaleString("vi")} đ
+                                    </>
+                                  )}
                               </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            {item?.status === "pending" && (
+                              <div className="flex items-center space-x-4">
+                                <Button
+                                  onClick={() => {
+                                    setItemCancel(item);
+                                    setOpenModalCancel(true);
+                                  }}
+                                  icon={<MdOutlineDeleteSweep />}
+                                  label="Huỷ Đơn"
+                                />
+                              </div>
                             )}
+                            {item?.status === "shipped" && (
+                              <div className="flex items-center space-x-4">
+                                <Button
+                                  onClick={() => {
+                                    setItemCancel(item);
+                                    setOpenModalConfirm(true);
+                                  }}
+                                  icon={<FaPencilAlt />}
+                                  label="Đã Nhận Hàng"
+                                />
+                              </div>
+                            )}
+                            {isReturnable(new Date(item.createdAt)) &&
+                              item?.status === "delivered" && (
+                                <div className="flex items-center space-x-4">
+                                  <Button
+                                    onClick={() => {
+                                      setItemCancel(item);
+                                      setOpenModalReturn(true); // Open return modal
+                                    }}
+                                    icon={<FaPencilAlt />}
+                                    label="Trả Hàng"
+                                  />
+                                </div>
+                              )}
                           </div>
                         </div>
-                        <button
-                          // onClick={() => handleDeletePurchase(item?.id)}
-                          onClick={() => {
-                            setItemCancel(item);
-                            setOpenModalCancel(true);
-                          }}
-                          className="text-white hover:bg-red-700 hover:bg-opacity-10 max-w-[140px] flex items-center justify-center space-x-2 border border-color-primary px-1 py-2 rounded-md"
-                        >
-                          <span className="font-bold text-sm flex items-center space-x-1">
-                            <MdOutlineDeleteSweep /> <p>Hủy đơn</p>
-                          </span>
-                        </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           ) : (
             <div>

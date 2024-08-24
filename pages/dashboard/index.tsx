@@ -20,33 +20,58 @@ const columnProduct = [
 ];
 
 const Dashboard = ({ loading }: { loading: Boolean }) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.toISOString().slice(0, 7); // YYYY-MM
+  const currentDay = currentDate.toISOString().slice(0, 10); // YYYY-MM-DD
+
   const [countProd, setCountProd] = useState(0);
   const [temporaryQuantity, setTemporaryQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalEstimatedPrice, setTotalEstimatedPrice] = useState(0);
   const [selling, setSelling] = useState<any[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(
+    currentMonth
+  );
+  const [selectedDate, setSelectedDate] = useState<string | null>(currentDay);
+  const [selectedEndDate, setSelectedEndDate] = useState<string | null>(
+    currentDay
+  );
 
-  const fetchAllPurchase = async (month: string | null) => {
+  const fetchAllPurchase = async (
+    month: string | null,
+    date: string | null,
+    endDate: string | null
+  ) => {
     try {
       const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
       const allProducts = res.data.result;
 
-      // Lọc sản phẩm đã giao và chưa giao trong tháng được chọn
-      const deliveredProducts = allProducts.filter(
-        (product: PurchaseProps) =>
-          product.status === "delivered" &&
-          (month === null ||
-            new Date(product.createdAt).getMonth() ===
-              new Date(month).getMonth())
+      // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
+      const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
+      const endDateParsed = endDate
+        ? new Date(endDate + "T23:59:59")
+        : new Date(); // Ngày kết thúc, bao gồm toàn bộ ngày
+
+      // Lọc sản phẩm đã giao và chưa giao trong ngày và tháng được chọn
+      const filteredProducts = allProducts.filter((product: PurchaseProps) => {
+        const productDate = new Date(product.createdAt);
+
+        // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
+        const isWithinMonth =
+          month === null ||
+          productDate.getMonth() === new Date(month).getMonth();
+        const isWithinDateRange =
+          productDate >= startDate && productDate <= endDateParsed;
+
+        return isWithinMonth && isWithinDateRange;
+      });
+
+      const deliveredProducts = filteredProducts.filter(
+        (product: PurchaseProps) => product.status === "delivered"
       );
 
-      const nonDeliveredProducts = allProducts.filter(
-        (product: PurchaseProps) =>
-          product.status !== "delivered" &&
-          (month === null ||
-            new Date(product.createdAt).getMonth() ===
-              new Date(month).getMonth())
+      const nonDeliveredProducts = filteredProducts.filter(
+        (product: PurchaseProps) => product.status !== "delivered"
       );
 
       // Tính toán các giá trị cần thiết
@@ -111,12 +136,22 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   };
 
   useEffect(() => {
-    fetchAllPurchase(selectedMonth); // Gọi hàm fetchAllPurchase khi selectedMonth thay đổi
-  }, [selectedMonth]);
+    fetchAllPurchase(selectedMonth, selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedMonth, selectedDate hoặc selectedEndDate thay đổi
+  }, [selectedMonth, selectedDate, selectedEndDate]);
 
   // Hàm xử lý khi người dùng thay đổi tháng
   const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedMonth(event.target.value); // Cập nhật giá trị selectedMonth khi người dùng thay đổi tháng
+  };
+
+  // Hàm xử lý khi người dùng thay đổi ngày
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value); // Cập nhật giá trị selectedDate khi người dùng thay đổi ngày
+  };
+
+  // Hàm xử lý khi người dùng thay đổi ngày kết thúc
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedEndDate(event.target.value); // Cập nhật giá trị selectedEndDate khi người dùng thay đổi ngày kết thúc
   };
 
   return (
@@ -132,6 +167,24 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
           value={selectedMonth || ""}
           onChange={handleMonthChange}
+        />
+      </div>
+      <div className="flex my-6 items-center">
+        <label className="mr-2">Chọn ngày bắt đầu:</label>
+        <input
+          type="date"
+          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+          value={selectedDate || ""}
+          onChange={handleDateChange}
+        />
+      </div>
+      <div className="flex my-6 items-center">
+        <label className="mr-2">Chọn ngày kết thúc:</label>
+        <input
+          type="date"
+          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+          value={selectedEndDate || ""}
+          onChange={handleEndDateChange}
         />
       </div>
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">

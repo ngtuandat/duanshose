@@ -47,6 +47,14 @@ const NavClientMb = ({
       icon: <GiRunningShoe />,
     },
     {
+      url: "/category",
+      label: "Danh mục",
+    },
+    {
+      url: "/news",
+      label: "Tin tức - Sự kiện",
+    },
+    {
       url: "/contact",
       label: "Liên Hệ",
     },
