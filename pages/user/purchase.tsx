@@ -92,7 +92,12 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         const res = await updateOrderStatus(id, status);
         if (res.status === 200) {
           const decoded: any = jwt_decode(token);
-          await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
+          // Cập nhật đơn hàng trong danh sách hiện tại mà không thay đổi vị trí
+          setListPurchase((prevList: any) => {
+            return prevList.map((order: any) =>
+              order.id === id ? { ...order, status } : order
+            );
+          });
           setOpenModalCancel(false);
           setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
           setOpenModalConfirm(false);
@@ -115,6 +120,37 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     }
     setLoadingCancel(false);
   };
+
+  // const handleUpdateOrderStatus = async (id: string, status: string) => {
+  //   setLoadingCancel(true);
+  //   try {
+  //     if (token) {
+  //       const res = await updateOrderStatus(id, status);
+  //       if (res.status === 200) {
+  //         const decoded: any = jwt_decode(token);
+  //         await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
+  //         setOpenModalCancel(false);
+  //         setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
+  //         setOpenModalConfirm(false);
+
+  //         toast.success("Đã cập nhật trạng thái đơn hàng");
+  //       }
+  //     } else {
+  //       const res = await deleteOrderGuest(id);
+  //       if (res.status === 200) {
+  //         await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
+  //         setOpenModalCancel(false);
+  //         setOpenModalReturn(false);
+  //         setOpenModalConfirm(false); // Đóng modal trả hàng nếu mở
+  //         toast.success("Đã cập nhật trạng thái đơn hàng");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
+  //   }
+  //   setLoadingCancel(false);
+  // };
 
   const handleFindOrderGuest = async () => {
     const res = await getOrderGuestByPhone(phoneFind.slice(1));
@@ -282,135 +318,238 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         </div>
       )}
 
-      <div className="w-full lg:w-2/3 mx-auto pb-8">
-        <div className="flex text-white justify-between py-7 bg-[#212B36] mb-5 px-4 rounded-xl">
-          {listStatus.map((item) => (
-            <div
-              key={item.value}
-              className={`hover:cursor-pointer hover:text-green-500 ${
-                selectedStatus === item.value ? "text-green-500" : ""
-              }`}
-              onClick={() => setSelectedStatus(item.value)}
-            >
-              {item.title}
-            </div>
-          ))}
-        </div>
-        {filteredPurchase.length > 0 || filteredPurchaseGuest.length > 0 ? (
-          <div>
-            {(filteredPurchase.length > 0
-              ? filteredPurchase
-              : filteredPurchaseGuest
-            ).map((item: any, idx: any) => (
+      {token ? (
+        <div className="w-full lg:w-2/3 mx-auto pb-8">
+          <div className="flex text-white justify-between py-7 bg-[#212B36] mb-5 px-4 rounded-xl">
+            {listStatus.map((item) => (
               <div
-                className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 "
-                key={idx}
+                key={item.value}
+                className={`hover:cursor-pointer hover:text-green-500 ${
+                  selectedStatus === item.value ? "text-green-500" : ""
+                }`}
+                onClick={() => setSelectedStatus(item.value)}
               >
-                <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
-                  <BsTruck /> <p>{getOrderStatusInVietnamese(item.status)}</p>
-                </div>
-                <div className="flex flex-col lg:flex-row items-start justify-between">
-                  <div className="flex items-start space-x-5 lg:w-fit">
-                    <img
-                      className="w-20 h-20 object-cover rounded-md border border-dashed border-color-primary"
-                      src={item?.imageProd}
-                      alt={item?.nameProd}
-                    />
-                    <div className="text-white">
-                      <p className="text-base lg:text-xl font-bold">
-                        {item?.nameProd}
-                      </p>
-                      <p className="text-sm text-[rgb(145,158,171)]">
-                        Size: {item?.sizeProd}
-                      </p>
-                      <p className="text-sm text-[rgb(145,158,171)] flex items-center">
-                        Màu sắc:{" "}
-                        <span
-                          className="ml-2 w-4 h-4 rounded-full block"
-                          style={{ backgroundColor: item?.colorProd }}
-                        />
-                      </p>
-                      <p className="text-sm text-[rgb(145,158,171)]">
-                        Giá: {item?.priceProd}đ
-                      </p>
-                      <p className="text-sm text-[rgb(145,158,171)]">
-                        Số lượng: {item?.quantityProd}
-                      </p>
-                    </div>
+                {item.title}
+              </div>
+            ))}
+          </div>
+          {filteredPurchase.length > 0 || filteredPurchaseGuest.length > 0 ? (
+            <div>
+              {(filteredPurchase.length > 0
+                ? filteredPurchase
+                : filteredPurchaseGuest
+              ).map((item: any, idx: any) => (
+                <div
+                  className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 "
+                  key={idx}
+                >
+                  <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
+                    <BsTruck /> <p>{getOrderStatusInVietnamese(item.status)}</p>
                   </div>
-                  <div>
-                    <div className="flex items-start justify-end space-x-2 text-white mb-5">
-                      <p className="text-sm font-semibold whitespace-nowrap">
-                        Thành tiền:
-                      </p>
-                      <div className="flex flex-col gap-1">
-                        <p
-                          className={`text-base text-red-500 font-semibold whitespace-nowrap ${
-                            item.finalPrice !== item.priceProd && "line-through"
-                          }`}
-                        >
-                          {(
-                            item?.quantityProd * item?.priceProd
-                          ).toLocaleString("vi")}{" "}
-                          đ
+                  <div className="flex flex-col lg:flex-row items-start justify-between">
+                    <div className="flex items-start space-x-5 lg:w-fit">
+                      <div className="bg-white w-20 h-20 rounded-md flex items-center justify-center overflow-hidden">
+                        <img
+                          className="object-contain w-full h-full"
+                          src={item?.imageProd}
+                          alt={item?.nameProd}
+                        />
+                      </div>
+
+                      <div className="text-white">
+                        <p className="text-base lg:text-xl font-bold max-w-[400px]">
+                          {item?.nameProd}
                         </p>
-                        {item.finalPrice !== item.priceProd && (
-                          <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
-                            {item.finalPrice?.toLocaleString("vi")} đ
-                          </p>
-                        )}
+                        <p className="text-sm text-[rgb(145,158,171)]">
+                          Size: {item?.sizeProd}
+                        </p>
+                        <p className="text-sm text-[rgb(145,158,171)] flex items-center">
+                          Màu sắc:{" "}
+                          <span
+                            className="ml-2 w-4 h-4 rounded-full block"
+                            style={{ backgroundColor: item?.colorProd }}
+                          />
+                        </p>
+                        <p className="text-sm text-[rgb(145,158,171)]">
+                          Giá: {item?.priceProd}đ
+                        </p>
+                        <p className="text-sm text-[rgb(145,158,171)]">
+                          Số lượng: {item?.quantityProd}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                      {item?.status === "pending" && (
-                        <div className="flex items-center space-x-4">
-                          <Button
-                            onClick={() => {
-                              setItemCancel(item);
-                              setOpenModalCancel(true);
-                            }}
-                            icon={<MdOutlineDeleteSweep />}
-                            label="Huỷ Đơn"
-                          />
+                    <div>
+                      <div className="flex items-start justify-end space-x-2 text-white mb-5">
+                        <p className="text-sm font-semibold whitespace-nowrap">
+                          Thành tiền:
+                        </p>
+                        <div className="flex flex-col gap-1">
+                          <p
+                            className={`text-base text-red-500 font-semibold whitespace-nowrap ${
+                              item.finalPrice !== item.priceProd &&
+                              "line-through"
+                            }`}
+                          >
+                            {(
+                              item?.quantityProd * item?.priceProd
+                            ).toLocaleString("vi")}{" "}
+                            đ
+                          </p>
+                          {item.finalPrice !== item.priceProd && (
+                            <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
+                              {item.finalPrice?.toLocaleString("vi")} đ
+                            </p>
+                          )}
                         </div>
-                      )}
-                      {item?.status === "shipped" && (
-                        <div className="flex items-center space-x-4">
-                          <Button
-                            onClick={() => {
-                              setItemCancel(item);
-                              setOpenModalConfirm(true);
-                            }}
-                            icon={<FaPencilAlt />}
-                            label="Đã Nhận Hàng"
-                          />
-                        </div>
-                      )}
-                      {isReturnable(new Date(item.createdAt)) &&
-                        item?.status === "delivered" && (
+                      </div>
+                      <div className="flex flex-col items-end">
+                        {item?.status === "pending" && (
                           <div className="flex items-center space-x-4">
                             <Button
                               onClick={() => {
                                 setItemCancel(item);
-                                setOpenModalReturn(true); // Open return modal
+                                setOpenModalCancel(true);
                               }}
-                              icon={<FaPencilAlt />}
-                              label="Trả Hàng"
+                              icon={<MdOutlineDeleteSweep />}
+                              label="Huỷ Đơn"
                             />
                           </div>
                         )}
+                        {item?.status === "shipped" && (
+                          <div className="flex items-center space-x-4">
+                            <Button
+                              onClick={() => {
+                                setItemCancel(item);
+                                setOpenModalConfirm(true);
+                              }}
+                              icon={<FaPencilAlt />}
+                              label="Đã Nhận Hàng"
+                            />
+                          </div>
+                        )}
+                        {isReturnable(new Date(item.createdAt)) &&
+                          item?.status === "delivered" && (
+                            <div className="flex items-center space-x-4">
+                              <Button
+                                onClick={() => {
+                                  setItemCancel(item);
+                                  setOpenModalReturn(true); // Open return modal
+                                }}
+                                icon={<FaPencilAlt />}
+                                label="Trả Hàng"
+                              />
+                            </div>
+                          )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="w-full text-center">
-            <p className="text-[#8692A6]">Không có đơn hàng nào</p>
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          ) : (
+            <div className="w-full text-center">
+              <p className="text-[#8692A6]">Không có đơn hàng nào</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="w-full lg:w-2/3 mx-auto pb-8">
+          {filteredPurchaseGuest && filteredPurchaseGuest?.length > 0 ? (
+            <div>
+              {filteredPurchaseGuest?.map((item: any, idx: any) => {
+                const product = JSON.parse(item.products);
+                return (
+                  <div
+                    className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 "
+                    key={idx}
+                  >
+                    <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
+                      <BsTruck />{" "}
+                      <p>{getOrderStatusInVietnamese(item.status)}</p>
+                    </div>
+                    <div className="flex flex-col lg:flex-row items-start justify-between">
+                      <div className="flex items-start space-x-5 lg:w-fit">
+                        <div className="bg-white w-20 h-20 rounded-md flex items-center justify-center overflow-hidden">
+                          <img
+                            className="object-contain w-full h-full"
+                            src={product.image}
+                            alt={product.name}
+                          />
+                        </div>
+                        <div className="text-white">
+                          <p className="text-base lg:text-xl font-bold max-w-[400px]">
+                            {product?.name}
+                          </p>
+                          <p className="text-sm text-[rgb(145,158,171)]">
+                            Size: {product?.size}
+                          </p>
+                          <p className="text-sm text-[rgb(145,158,171)] flex items-center">
+                            Màu sắc:{" "}
+                            <span
+                              className="ml-2 w-4 h-4 rounded-full block"
+                              style={{ backgroundColor: product?.color }}
+                            />
+                          </p>
+                          <p className="text-sm font-semibold">
+                            x{product?.quantity}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex lg:flex-col lg:w-fit w-full mt-5 lg:mt-0 justify-between items-center lg:items-end lg:space-y-5">
+                        <div className="flex items-start space-x-2 text-white">
+                          <p className="text-sm font-semibold whitespace-nowrap">
+                            Thành tiền:
+                          </p>
+                          <div className="flex flex-col gap-1">
+                            <p
+                              className={`text-base text-red-500 font-semibold whitespace-nowrap ${
+                                item.finalPrice !==
+                                  product.price * product.quantity &&
+                                "line-through"
+                              }`}
+                            >
+                              {(
+                                product?.quantity * product?.price
+                              ).toLocaleString("vi")}{" "}
+                              đ
+                            </p>
+                            {item.finalPrice !==
+                              product.price * product.quantity && (
+                              <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
+                                {item.finalPrice?.toLocaleString("vi")} đ
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          // onClick={() => handleDeletePurchase(item?.id)}
+                          onClick={() => {
+                            setItemCancel(item);
+                            setOpenModalCancel(true);
+                          }}
+                          className="text-white hover:bg-red-700 hover:bg-opacity-10 max-w-[140px] flex items-center justify-center space-x-2 border border-color-primary px-1 py-2 rounded-md"
+                        >
+                          <span className="font-bold text-sm flex items-center space-x-1">
+                            <MdOutlineDeleteSweep /> <p>Hủy đơn</p>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div>
+              <p className="flex text-white w-full justify-center items-center text-xl sm:text-2xl font-bold py-40 opacity-50">
+                {token
+                  ? "Bạn chưa từng mua đơn hàng nào!!"
+                  : "Tra cứu đơn của bạn"}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

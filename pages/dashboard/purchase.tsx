@@ -5,7 +5,7 @@ import LoadingPage from "../../components/Loading/LoadingPage";
 import ContentHeader from "../../components/Header/ContentHeader";
 import Card from "../../components/Card";
 import Table from "../../components/Table";
-import ModalImg from "../../components/Modal/ModalImg";
+import ModalDetail from "../../components/Modal/ModalDetail";
 import { useRouter } from "next/router";
 import { PurchaseProps } from "../../interfaces/product";
 import dateFormat from "dateformat";
@@ -24,6 +24,7 @@ const columnPurchase = [
   "Số lượng",
   "Ngày bán",
   "Trạng thái",
+  "Chi Tiết",
 ];
 
 const listStatus = [
@@ -44,12 +45,32 @@ const statusOrder = [
   "returns",
 ];
 
-// Function to get filtered status list based on current status
+// const getFilteredStatusList = (currentStatus: string) => {
+//   const currentIndex = statusOrder.indexOf(currentStatus);
+
+//   if (currentStatus === "delivered") {
+//     return listStatus.filter((status) => status.value === "delivered");
+//   }
+
+//   if (currentStatus === "pending" || currentStatus === "processing") {
+//     return listStatus.filter(
+//       (status) => statusOrder.indexOf(status.value) >= currentIndex
+//     );
+//   }
+
+//   return listStatus.filter(
+//     (status) => statusOrder.indexOf(status.value) >= currentIndex
+//   );
+// };
+
 const getFilteredStatusList = (currentStatus: string) => {
   const currentIndex = statusOrder.indexOf(currentStatus);
 
+  if (currentStatus === "cancelled") {
+    return [{ title: "Đã hủy", value: "cancelled" }];
+  }
+
   if (currentStatus === "delivered") {
-    // If status is "delivered", do not allow reverting to previous states or changing to "cancelled" or "returns"
     return listStatus.filter((status) => status.value === "delivered");
   }
 
@@ -59,7 +80,6 @@ const getFilteredStatusList = (currentStatus: string) => {
     );
   }
 
-  // For other cases, allow changing to any status including "cancelled" and "returns"
   return listStatus.filter(
     (status) => statusOrder.indexOf(status.value) >= currentIndex
   );
@@ -67,6 +87,13 @@ const getFilteredStatusList = (currentStatus: string) => {
 
 const Purchase = ({ loading }: { loading: Boolean }) => {
   const [dataPurchase, setDataPurchase] = useState<PurchaseProps[]>([]);
+  console.log(dataPurchase, "dataPurchase");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<PurchaseProps | null>(
+    null
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -84,6 +111,21 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     fetchAllPurchase();
   }, []);
 
+  // const handleItemSelected = async (
+  //   selectedItem: { title: string; value: string },
+  //   id: string
+  // ) => {
+  //   try {
+  //     const res = await updateStatus({ id, status: selectedItem.value });
+  //     if (res.status === 200) {
+  //       toast.success("Cập nhật trạng thái đơn hàng thành công!");
+  //       fetchAllPurchase();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const handleItemSelected = async (
     selectedItem: { title: string; value: string },
     id: string
@@ -92,18 +134,24 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       const res = await updateStatus({ id, status: selectedItem.value });
       if (res.status === 200) {
         toast.success("Cập nhật trạng thái đơn hàng thành công!");
-        fetchAllPurchase();
+        // Cập nhật dữ liệu mà không làm mới toàn bộ bảng
+        setDataPurchase((prevData: any) =>
+          prevData.map((item: any) =>
+            item.id === id ? { ...item, status: selectedItem.value } : item
+          )
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleRowClick = (id: string) => {
-    router.push(`/purchase/${id}`); // Điều hướng đến trang chi tiết
+  const handleRowClick = (product: PurchaseProps) => {
+    setSelectedProduct(product);
+    setOpenModal(true);
   };
 
-  const dataSourcePurchase = useMemo(() => {
+  const paginatedData = useMemo(() => {
     const filteredPurchases = dataPurchase.filter((item) => {
       const fullName = `${item.user.firstName} ${item.user.lastName}`;
       const matchesSearchTerm =
@@ -114,19 +162,24 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       return matchesSearchTerm && matchesStatus;
     });
 
-    return filteredPurchases.map((item, index) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    return filteredPurchases.slice(startIndex, endIndex).map((item, index) => {
       return [
-        <> {index + 1}</>,
+        <> {startIndex + index + 1}</>,
         <div className="text-primary font-bold">
           {item.user.firstName} {item.user.lastName}
         </div>,
         <div>{item.nameProd}</div>,
         <div>{item.sizeProd}</div>,
         <div>{item.colorProd}</div>,
-        <img
-          className="w-1/2 cursor-pointer rounded-lg object-cover"
-          src={item.imageProd}
-        />,
+        <div className="bg-white rounded-md p-3 ">
+          <img
+            className="w-[57px] h-6 cursor-pointer rounded-lg object-cover"
+            src={item.imageProd}
+          />
+        </div>,
         <p>{item?.priceProd.toLocaleString("vi")} đ</p>,
         <p>{item.quantityProd}</p>,
         <>{dateFormat(item?.updatedAt, "HH:MM dd/mm/yyyy")}</>,
@@ -142,9 +195,27 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
             itemId={item.id}
           />
         </span>,
+        <button
+          className="text-blue-500 hover:underline"
+          onClick={() => handleRowClick(item)}
+        >
+          Chi tiết
+        </button>,
       ];
     });
-  }, [dataPurchase, searchTerm, selectedStatus]);
+  }, [dataPurchase, searchTerm, selectedStatus, currentPage]);
+
+  const totalPages = Math.ceil(
+    dataPurchase.filter((item) => {
+      const fullName = `${item.user.firstName} ${item.user.lastName}`;
+      const matchesSearchTerm =
+        fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.nameProd.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        selectedStatus === "" || item.status === selectedStatus;
+      return matchesSearchTerm && matchesStatus;
+    }).length / itemsPerPage
+  );
 
   return (
     <>
@@ -185,15 +256,40 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           </select>
         </div>
       </div>
+
       <Card>
         <Card.Content>
-          <Table
-            columns={columnPurchase}
-            dataSource={dataSourcePurchase}
-            // onRowClick={handleRowClick} // Uncomment to enable row click handling
-          />
+          <Table columns={columnPurchase} dataSource={paginatedData} />
         </Card.Content>
       </Card>
+      <div className="flex justify-between items-center mt-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          disabled={currentPage === 1}
+        >
+          Trang trước
+        </button>
+        <div className="text-white  ">
+          Trang {currentPage} / {totalPages}
+        </div>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          disabled={currentPage === totalPages}
+        >
+          Trang sau
+        </button>
+      </div>
+
+      {/* Modal for Product Detail */}
+      <ModalDetail
+        open={openModal}
+        setOpen={setOpenModal}
+        product={selectedProduct}
+      />
     </>
   );
 };

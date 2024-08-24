@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { PurchaseProps } from "../../interfaces/product";
 
 interface TableProps {
   /**
@@ -17,7 +18,6 @@ interface TableProps {
 }
 
 const Table = ({ dataSource, columns, loading, className }: TableProps) => {
-  console.log({ dataSource });
   return (
     <div>
       <div className={`flex flex-col ${className}`}>
@@ -34,7 +34,7 @@ const Table = ({ dataSource, columns, loading, className }: TableProps) => {
                       <th
                         key={index}
                         scope="col"
-                        className={`py-3.5 pl-4 pr-3 w-fit text-left text-sm font-semibold ${
+                        className={`py-3.5 pl-4 pr-3 w-fit text-left text-sm font-semibold whitespace-nowrap ${
                           String(column).includes("Tên")
                             ? "text-white"
                             : "text-[rgb(145,158,171)]"
