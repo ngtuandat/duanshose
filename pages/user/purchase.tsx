@@ -110,7 +110,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
           setOpenModalCancel(false);
           setOpenModalReturn(false);
-          setOpenModalConfirm(false); // Đóng modal trả hàng nếu mở
+          setOpenModalConfirm(false);
           toast.success("Đã cập nhật trạng thái đơn hàng");
         }
       }
