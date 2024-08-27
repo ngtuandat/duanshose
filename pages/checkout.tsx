@@ -692,12 +692,13 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       let discountAmount = 0;
       if (voucherUsed?.type === "vnd") {
         discountAmount = voucherUsed.discount;
-      } else if (voucherUsed?.type === "percent") {
-        console.log(totalProductPrice, "totalProductPrice");
-        console.log(voucherUsed, "voucherUsed");
-
-        discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
       }
+      //  else if (voucherUsed?.type === "percent") {
+      //   console.log(totalProductPrice, "totalProductPrice");
+      //   console.log(voucherUsed, "voucherUsed");
+
+      //   discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+      // }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
 

@@ -295,22 +295,23 @@ const ContentHome = () => {
         <div className="text-xl text-white mt-2 mb-[30px]">
           Mặt hàng giày các thương hiệu nổi bật
         </div>
-        <div className="grid grid-cols-5 gap-5 py-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-6">
           {Brands.map((item, index) => (
             <div key={index}>
-              <div className="w-[210px] h-[140px] flex items-center justify-center  bg-[#F4F4F4] rounded-lg ">
+              <div className="w-full h-[140px] flex items-center justify-center bg-[#F4F4F4] rounded-lg">
                 <img
-                  className="object-cover px-6 py-6"
+                  className="object-contain max-w-full max-h-full px-4 py-4"
                   src={item.image}
-                  alt=""
+                  alt={item.title}
                 />
               </div>
-              <div className="flex justify-center mt-3 text-white">
+              <div className="flex justify-center mt-3 text-center text-white">
                 {item.title}
               </div>
             </div>
           ))}
         </div>
+
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Danh Mục Sản Phẩm.
         </div>
