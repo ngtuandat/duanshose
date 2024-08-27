@@ -113,7 +113,13 @@ export interface PurchaseProps {
   imageProd: string;
   userId: string;
   bought: boolean;
-  status: "pending" | "processing" | "cancelled" | "shipped" | "delivered";
+  status:
+    | "pending"
+    | "processing"
+    | "cancelled"
+    | "shipped"
+    | "delivered"
+    | "returns";
   createdAt: string;
   updatedAt: string;
   finalPrice?: number;

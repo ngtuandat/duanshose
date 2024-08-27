@@ -80,16 +80,18 @@ const ProductContent = () => {
               className="bg-product rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
               key={idx}
             >
-              <div className="p-2">
-                <img
-                  className="rounded-lg w-full h-64 object-cover" // Tăng chiều cao ảnh
-                  src={
-                    product?.listImage[0]
-                      ? product?.listImage[0]
-                      : "./images/product_default.jpeg"
-                  }
-                  alt={product?.name}
-                />
+              <div className="p-2 bg-white rounded-md">
+                <div className="w-full h-[200px] sm:h-[262px] rounded-lg overflow-hidden flex justify-center items-center">
+                  <img
+                    className="max-w-full max-h-full"
+                    src={
+                      product?.listImage[0]
+                        ? product?.listImage[0]
+                        : "./images/product_default.jpeg"
+                    }
+                    alt={product?.name}
+                  />
+                </div>
               </div>
               <div className="py-4 px-2">
                 <h1 className="text-sm sm:text-base font-semibold">

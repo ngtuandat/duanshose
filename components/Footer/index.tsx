@@ -6,7 +6,7 @@ import { TbBrandTwitter } from "react-icons/tb";
 
 const Footer = () => {
   return (
-    <div className="bg-gray-900 text-white py-10">
+    <div className=" text-white py-10 border-t border-[#7E7878] mt-2">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Phần Giới thiệu */}
         <div className="space-y-4">

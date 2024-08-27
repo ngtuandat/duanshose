@@ -172,3 +172,131 @@ export const News = [
     des: "",
   },
 ];
+
+export const NewEvents = [
+  {
+    image: "./images/new1.png",
+    title: "Nike P-6000: Chọn size như thế nào mới chuẩn?",
+  },
+  {
+    image: "./images/new2.jpeg",
+    title: "Skope Forever: Siêu phẩm mới từ cặp đôi vàng PUMA x Skepta",
+  },
+  {
+    image: "./images/new3.png",
+    title: "8 “siêu phẩm” sneaker lấy cảm hứng từ phim khoa học viễn tưởng",
+  },
+  {
+    image: "./images/new4.webp",
+    title: "Top 20 mẫu Nike SB Dunk ấn tượng nhất từ trước tới nay (Phần 1)",
+  },
+  {
+    image: "./images/new5.png",
+    title: "Sưu tầm túi Birkin: Hướng dẫn chi tiết cho người mới bắt đầu",
+  },
+  {
+    image: "./images/new6.png",
+    title: "Bán đồng hồ Rolex hiệu quả: Những điều cần biết về định giá",
+  },
+  {
+    image: "./images/new7.png",
+    title: "PUMA SPEEDCAT OG: Huyền thoại tốc độ tái sinh",
+  },
+  {
+    image: "./images/new8.png",
+    title: "Chiêm ngưỡng những chiếc túi xa xỉ của ngôi sao Hallyu Yoona",
+  },
+  {
+    image: "./images/new9.jpg",
+    title: "Cách phân biệt đồng hồ Rolex chính hãng và hàng giả",
+  },
+  {
+    image: "./images/new10.png",
+    title: "Messi và adidas: Sự kết hợp hoàn hảo của thể thao và thời trang",
+  },
+  {
+    image: "./images/new11.webp",
+    title: "Những quảng cáo thể thao bất hủ nhất mọi thời đại",
+  },
+  {
+    image: "./images/new12.jpg",
+    title: "Top 10 mẫu giày của bố tốt kinh điển mọi thời đại",
+  },
+  {
+    image: "./images/new13.png",
+    title: "Samba Golf: Sự kết hợp hoàn hảo giữa Malbon và adidas",
+  },
+  {
+    image: "./images/new14.png",
+    title: "Nike Auto Lacing: Tương lai của giày chạy đã đến",
+  },
+  {
+    image: "./images/new15.png",
+    title: "Câu chuyện đằng sau những đôi giày gây tranh cãi",
+  },
+];
+
+export const Brands = [
+  {
+    image: "./images/brand1.webp",
+    title: "Adidas",
+  },
+
+  {
+    image: "./images/brand2.png",
+    title: "Yeezy 350",
+  },
+  {
+    image: "./images/brand3.png",
+    title: "Nike",
+  },
+  {
+    image: "./images/brand4.png",
+    title: "Jordan 1",
+  },
+  {
+    image: "./images/brand5.png",
+    title: "Yeezy Slide",
+  },
+  {
+    image: "./images/brand6.png",
+    title: "Air Force 1",
+  },
+  {
+    image: "./images/brand7.png",
+    title: "New Balance",
+  },
+  {
+    image: "./images/brand8.png",
+    title: "MLB",
+  },
+  {
+    image: "./images/brand9.png",
+    title: "Onitsuka Tiger",
+  },
+
+  {
+    image: "./images/brand10.png",
+    title: "Dr. Martens",
+  },
+  {
+    image: "./images/brand11.png",
+    title: "Giày Lacoste",
+  },
+  {
+    image: "./images/brand12.png",
+    title: "Lebron 20",
+  },
+  {
+    image: "./images/brand13.png",
+    title: "Li-ning",
+  },
+  {
+    image: "./images/brand14.png",
+    title: "Kyrie 8",
+  },
+  {
+    image: "./images/brand15.png",
+    title: "Kobe",
+  },
+];
