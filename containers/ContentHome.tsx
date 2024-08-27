@@ -8,7 +8,7 @@ import { getAllProducts } from "../services/product";
 import Link from "next/link";
 import PaginationClient from "../components/Pagination/PaginationClient";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { Categorys, News, Support } from "../mockData";
+import { Brands, Categorys, News, Support } from "../mockData";
 import Footer from "../components/Footer";
 import { IoSearch } from "react-icons/io5";
 
@@ -288,6 +288,30 @@ const ContentHome = () => {
             <img className="h-[560px]" src="./images/anhsp.png" alt="" />
           </div>
         </div>
+
+        <div className="text-xl font-bold text-white mt-5 ">
+          Thương Hiệu Nổi Bật
+        </div>
+        <div className="text-xl text-white mt-2 mb-[30px]">
+          Mặt hàng giày các thương hiệu nổi bật
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-6">
+          {Brands.map((item, index) => (
+            <div key={index}>
+              <div className="w-full h-[140px] flex items-center justify-center bg-[#F4F4F4] rounded-lg">
+                <img
+                  className="object-contain max-w-full max-h-full px-4 py-4"
+                  src={item.image}
+                  alt={item.title}
+                />
+              </div>
+              <div className="flex justify-center mt-3 text-center text-white">
+                {item.title}
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Danh Mục Sản Phẩm.
         </div>
@@ -297,17 +321,21 @@ const ContentHome = () => {
               <div
                 key={index}
                 onClick={() => handleCategoryClick(item)}
-                className={`flex flex-col items-center cursor-pointer font-bold text-xl ${
-                  selectedCategory === item ? "text-[#20AB55]" : "text-white"
+                className={`flex  items-center cursor-pointer font-bold w-44 h-24 justify-center text-xl rounded-lg bg-white ${
+                  selectedCategory === item
+                    ? "text-[#20AB55] bg-black"
+                    : "text-black"
                 }`}
                 style={{ minWidth: "124px" }}
               >
-                <div className="mt-2">{item.toUpperCase()}</div>
+                <div className="mt-2 whitespace-normal text-center">
+                  {item.toUpperCase()}
+                </div>
               </div>
             ))}
           </div>
         </div>
-        <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
+        <div className="text-[30px] flex justify-center font-light text-white mt-10 mb-[30px]">
           Danh Sách Sản Phẩm
         </div>
         {products && products.length > 0 ? (

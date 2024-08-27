@@ -24,7 +24,7 @@ const Contact = () => {
               lượt truy cập mua hàng tại website FitFusionZone.com lên tới trên
               10.000 lượt mỗi ngày từ khắp 63 tỉnh thành trên cả nước.
             </div>
-            <div className="border-b-[1px] pb-4 border-[#7e7878] mt-5">
+            <div className=" pb-4  mt-5">
               <div className="font-bold py-6">TỪ MỘT NHÀ SƯU TẦM SNEAKER</div>
               <div className="space-y-3 px-4">
                 <p>

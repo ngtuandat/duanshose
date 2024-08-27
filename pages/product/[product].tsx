@@ -66,6 +66,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
   const fetchDetailProduct = async (id: string | string[]) => {
     try {
       const res = await getDetailProduct(String(id));
+      console.log(res), "dsfdsfgdsgfd";
       setDataProduct(res.data.detail);
       setSizeValue(res.data.detail.size[0]);
       setColorCheck(res.data.detail.color[0]);

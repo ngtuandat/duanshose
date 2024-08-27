@@ -36,7 +36,6 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   const [selectedEndDate, setSelectedEndDate] = useState<string | null>(
     currentDay
   );
-
   const fetchAllPurchase = async (
     month: string | null,
     date: string | null,
@@ -52,7 +51,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
         ? new Date(endDate + "T23:59:59")
         : new Date(); // Ngày kết thúc, bao gồm toàn bộ ngày
 
-      // Lọc sản phẩm đã giao và chưa giao trong ngày và tháng được chọn
+      // Lọc sản phẩm trong ngày và tháng được chọn
       const filteredProducts = allProducts.filter((product: PurchaseProps) => {
         const productDate = new Date(product.createdAt);
 
@@ -66,29 +65,36 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
         return isWithinMonth && isWithinDateRange;
       });
 
-      const deliveredProducts = filteredProducts.filter(
+      // Loại bỏ các đơn hàng ở trạng thái cancelled và returns
+      const validProducts = filteredProducts.filter(
+        (product: PurchaseProps) =>
+          product.status !== "cancelled" && product.status !== "returns"
+      );
+
+      const deliveredProducts = validProducts.filter(
         (product: PurchaseProps) => product.status === "delivered"
       );
 
-      const nonDeliveredProducts = filteredProducts.filter(
+      const nonDeliveredProducts = validProducts.filter(
         (product: PurchaseProps) => product.status !== "delivered"
       );
 
-      // Tính toán các giá trị cần thiết
-      setTemporaryQuantity(
-        nonDeliveredProducts.reduce(
-          (acc: any, curr: any) => acc + curr.quantityProd,
-          0
-        )
-      );
+      // Tính toán số lượng sản phẩm và doanh thu thực
       setCountProd(
         deliveredProducts.reduce(
-          (acc: any, curr: any) => acc + curr.quantityProd,
+          (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
           0
         )
       );
 
-      const totalEstimatedRevenue = deliveredProducts.reduce(
+      setTemporaryQuantity(
+        nonDeliveredProducts.reduce(
+          (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
+          0
+        )
+      );
+
+      const totalEstimatedRevenue = nonDeliveredProducts.reduce(
         (acc: number, cur: PurchaseProps) => {
           return acc + cur.priceProd * cur.quantityProd;
         },
@@ -96,7 +102,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       );
       setTotalEstimatedPrice(totalEstimatedRevenue);
 
-      const totalRevenue = nonDeliveredProducts.reduce(
+      const totalRevenue = deliveredProducts.reduce(
         (acc: number, cur: PurchaseProps) => {
           return acc + cur.priceProd * cur.quantityProd;
         },
@@ -134,6 +140,105 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       console.log(error);
     }
   };
+
+  // const fetchAllPurchase = async (
+  //   month: string | null,
+  //   date: string | null,
+  //   endDate: string | null
+  // ) => {
+  //   try {
+  //     const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
+  //     const allProducts = res.data.result;
+
+  //     // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
+  //     const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
+  //     const endDateParsed = endDate
+  //       ? new Date(endDate + "T23:59:59")
+  //       : new Date(); // Ngày kết thúc, bao gồm toàn bộ ngày
+
+  //     // Lọc sản phẩm trong ngày và tháng được chọn
+  //     const filteredProducts = allProducts.filter((product: PurchaseProps) => {
+  //       const productDate = new Date(product.createdAt);
+
+  //       // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
+  //       const isWithinMonth =
+  //         month === null ||
+  //         productDate.getMonth() === new Date(month).getMonth();
+  //       const isWithinDateRange =
+  //         productDate >= startDate && productDate <= endDateParsed;
+
+  //       return isWithinMonth && isWithinDateRange;
+  //     });
+
+  //     const deliveredProducts = filteredProducts.filter(
+  //       (product: PurchaseProps) => product.status === "delivered"
+  //     );
+
+  //     const nonDeliveredProducts = filteredProducts.filter(
+  //       (product: PurchaseProps) => product.status !== "delivered"
+  //     );
+
+  //     // Tính toán số lượng sản phẩm và doanh thu thực
+  //     setCountProd(
+  //       deliveredProducts.reduce(
+  //         (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
+  //         0
+  //       )
+  //     );
+
+  //     setTemporaryQuantity(
+  //       nonDeliveredProducts.reduce(
+  //         (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
+  //         0
+  //       )
+  //     );
+
+  //     const totalEstimatedRevenue = nonDeliveredProducts.reduce(
+  //       (acc: number, cur: PurchaseProps) => {
+  //         return acc + cur.priceProd * cur.quantityProd;
+  //       },
+  //       0
+  //     );
+  //     setTotalEstimatedPrice(totalEstimatedRevenue);
+
+  //     const totalRevenue = deliveredProducts.reduce(
+  //       (acc: number, cur: PurchaseProps) => {
+  //         return acc + cur.priceProd * cur.quantityProd;
+  //       },
+  //       0
+  //     );
+  //     setTotalPrice(totalRevenue);
+
+  //     // Tạo map để tính tổng doanh thu của từng sản phẩm đã bán
+  //     const productMap = new Map<string, any>();
+
+  //     deliveredProducts.forEach((item: PurchaseProps) => {
+  //       const key = `${item.nameProd}-${item.sizeProd}-${item.colorProd}`;
+  //       if (productMap.has(key)) {
+  //         const existingProduct = productMap.get(key);
+  //         existingProduct.quantitySold += item.quantityProd;
+  //         existingProduct.totalRevenue += item.priceProd * item.quantityProd;
+  //       } else {
+  //         productMap.set(key, {
+  //           productName: item.nameProd,
+  //           size: item.sizeProd,
+  //           color: item.colorProd,
+  //           quantitySold: item.quantityProd,
+  //           imagesProd: item.imageProd,
+  //           totalRevenue: item.priceProd * item.quantityProd,
+  //         });
+  //       }
+  //     });
+
+  //     // Sắp xếp sản phẩm theo số lượng bán được giảm dần
+  //     const soldProducts = Array.from(productMap.values()).sort(
+  //       (a, b) => b.quantitySold - a.quantitySold
+  //     );
+  //     setSelling(soldProducts);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     fetchAllPurchase(selectedMonth, selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedMonth, selectedDate hoặc selectedEndDate thay đổi
@@ -203,7 +308,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       </div>
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
         <Analysis
-          name="Sản phẩm được bán"
+          name="Sản phẩm đã bán"
           parameter={countProd}
           color="rgb(0,170,85)"
           percent="+2.6%"

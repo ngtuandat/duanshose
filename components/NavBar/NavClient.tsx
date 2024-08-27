@@ -21,12 +21,12 @@ const NavClient = () => {
     },
     {
       url: "/product",
-      label: "Xem sản phẩm",
+      label: "Sản phẩm",
     },
-    {
-      url: "/category",
-      label: "Danh mục",
-    },
+    // {
+    //   url: "/category",
+    //   label: "Danh mục",
+    // },
     {
       url: "/news",
       label: "Tin tức - Sự kiện",

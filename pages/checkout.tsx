@@ -41,6 +41,7 @@ import { DataVoucherProps } from "../interfaces/voucher";
 import PaymentForm from "../components/PaymentForm";
 import { useRouter } from "next/router";
 import { createOrderGuest } from "../services/guest";
+import { totalmem } from "os";
 
 const tabs = ["Giỏ hàng", "Địa chỉ và thông tin", "Thanh toán"];
 const column = ["Sản phẩm", "Giá", "Số lượng", "Tổng kho", "Tổng tiền", ""];
@@ -661,7 +662,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
-
+      console.log(totalPrice, "loggiatien");
       return Math.max(totalPrice, 0);
     }
 
@@ -691,12 +692,13 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       let discountAmount = 0;
       if (voucherUsed?.type === "vnd") {
         discountAmount = voucherUsed.discount;
-      } else if (voucherUsed?.type === "percent") {
-        console.log(totalProductPrice, "totalProductPrice");
-        console.log(voucherUsed, "voucherUsed");
-
-        discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
       }
+      //  else if (voucherUsed?.type === "percent") {
+      //   console.log(totalProductPrice, "totalProductPrice");
+      //   console.log(voucherUsed, "voucherUsed");
+
+      //   discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+      // }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
 
