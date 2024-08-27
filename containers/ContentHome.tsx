@@ -170,7 +170,7 @@ const ContentHome = () => {
   const handleClick = (id: number) => {
     router.push(`/article/${id}`);
   };
-  const [openSearch, setOpenSearch] = useState(false);
+  const [openSearch, setOpenSearch] = useState(true);
   const iconVariants = {
     open: { rotate: 180, scale: 1.2 }, // Thay đổi tùy ý
     closed: { rotate: 0, scale: 1 },
@@ -196,7 +196,7 @@ const ContentHome = () => {
               <div className="relative w-full max-w-lg">
                 <motion.input
                   onFocus={() => setOpenSearch(true)}
-                  onBlur={() => setOpenSearch(false)}
+                  // onBlur={() => setOpenSearch(false)}
                   variants={inputVariant}
                   initial="closed"
                   animate={openSearch ? "open" : "closed"}
@@ -315,26 +315,25 @@ const ContentHome = () => {
         <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-[30px]">
           Danh Mục Sản Phẩm.
         </div>
-        <div>
-          <div className="flex gap-x-[38px] justify-center whitespace-nowrap overflow-hidden">
+        <div className="flex justify-center overflow-x-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 justify-center items-center">
             {categoryProducts.slice(0, 6).map((item, index) => (
               <div
                 key={index}
                 onClick={() => handleCategoryClick(item)}
-                className={`flex  items-center cursor-pointer font-bold w-44 h-24 justify-center text-xl rounded-lg bg-white ${
+                className={`flex items-center cursor-pointer font-bold justify-center text-base whitespace-nowrap sm:text-lg md:text-xl lg:text-2xl rounded-lg bg-white px-4 py-2 ${
                   selectedCategory === item
                     ? "text-[#20AB55] bg-black"
                     : "text-black"
                 }`}
-                style={{ minWidth: "124px" }}
+                style={{ minWidth: "120px" }} // Adjust minWidth as needed
               >
-                <div className="mt-2 whitespace-normal text-center">
-                  {item.toUpperCase()}
-                </div>
+                <div className="text-center">{item.toUpperCase()}</div>
               </div>
             ))}
           </div>
         </div>
+
         <div className="text-[30px] flex justify-center font-light text-white mt-10 mb-[30px]">
           Danh Sách Sản Phẩm
         </div>

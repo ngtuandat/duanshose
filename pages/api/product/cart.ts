@@ -424,29 +424,6 @@ async function addProductToCart(res: NextApiResponse, product: ProductBuy) {
   }
 }
 
-// async function getListProductCart(res: NextApiResponse, id: string) {
-//   try {
-//     const result = await prisma.cart.findMany({
-//       where: {
-//         userId: id,
-//         bought: false,
-//       },
-//       orderBy: {
-//         createdAt: "asc",
-//       },
-//     });
-//     const count = await prisma.cart.count({
-//       where: {
-//         userId: id,
-//         bought: false,
-//       },
-//     });
-//     res.status(200).json({ result, count });
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// }
-
 async function getListProductCart(res: NextApiResponse, id: string) {
   try {
     const result = await prisma.cart.findMany({
@@ -457,47 +434,19 @@ async function getListProductCart(res: NextApiResponse, id: string) {
       orderBy: {
         createdAt: "asc",
       },
-      select: {
-        id: true,
-        idProd: true,
-        nameProd: true,
-        sizeProd: true,
-        priceProd: true,
-        finalPrice: true,
-        colorProd: true,
-        quantityProd: true,
-        imageProd: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
-
-    const productsWithQuantity = await Promise.all(
-      result.map(async (cartItem) => {
-        const product = await prisma.product.findUnique({
-          where: { id: cartItem.idProd },
-          select: { quantity: true },
-        });
-        return {
-          ...cartItem,
-          productQuantity: product?.quantity || 0,
-        };
-      })
-    );
-
     const count = await prisma.cart.count({
       where: {
         userId: id,
         bought: false,
       },
     });
-
-    res.status(200).json({ result: productsWithQuantity, count });
+    res.status(200).json({ result, count });
   } catch (error) {
     res.status(500).json(error);
   }
 }
+
 async function deleteProd(res: NextApiResponse, product: IdProdCart) {
   try {
     const productDelete = await prisma.cart.findFirst({
