@@ -391,7 +391,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     <div>
       {loading && <LoadingPage />}
       <CustomHeader title="Đơn mua">
-        <title>Đơn mua | Cuc Shoes</title>
+        <title>Đơn mua | FitFusionZone</title>
       </CustomHeader>
       <ModalCancel
         open={openModalCancel}

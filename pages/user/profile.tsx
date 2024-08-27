@@ -152,7 +152,7 @@ const Profile = ({ loading }: { loading: Boolean }) => {
     <>
       {loading && <LoadingPage />}
       <CustomHeader title="Profile">
-        <title>Profile | Cuc Shoes</title>
+        <title>Profile | FitFusionZone</title>
       </CustomHeader>
       <div className="grid grid-cols-12 gap-6">
         <div className="bg-[rgb(33,43,54)] flex flex-col justify-center items-center shadow-lg col-span-12 lg:col-span-4 px-6 py-16 rounded-lg">

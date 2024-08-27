@@ -9,7 +9,7 @@ const SignIn = ({ loading }: { loading: Boolean }) => {
     <div className="w-full">
       {loading && <LoadingPage />}
       <CustomHeader>
-        <title>Login | Cuc Shoes</title>
+        <title>Login | FitFusionZone</title>
       </CustomHeader>
       <Login />
     </div>

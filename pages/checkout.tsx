@@ -82,7 +82,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   useEffect(() => {
     listProductBuy.forEach((item) => {
-      const product = dataProduct.find((elm) => elm.id === item.idProd);
+      const product = dataProduct.find((elm) => elm?.id === item.idProd);
       if (product && saveQuantity !== product.quantity) {
         setSaveQuantity(product.quantity);
       }
@@ -354,7 +354,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
         </div>,
         <div>
           {dataProduct.map((elm) => {
-            if (elm.id === item.idProd) {
+            if (elm?.id === item.idProd) {
               return <span key={elm.id}>{elm.quantity}</span>;
             }
             return null;
@@ -692,13 +692,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       let discountAmount = 0;
       if (voucherUsed?.type === "vnd") {
         discountAmount = voucherUsed.discount;
-      }
-      //  else if (voucherUsed?.type === "percent") {
-      //   console.log(totalProductPrice, "totalProductPrice");
-      //   console.log(voucherUsed, "voucherUsed");
+      } else if (voucherUsed?.type === "percent") {
+        console.log(totalProductPrice, "totalProductPrice");
+        console.log(voucherUsed, "voucherUsed");
 
-      //   discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
-      // }
+        discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+      }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
 
@@ -756,7 +755,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     <>
       {loading && <LoadingPage />}
       <CustomHeader title="Checkout">
-        <title>Checkout | Cuc Shoes</title>
+        <title>Checkout | FitFusionZone</title>
       </CustomHeader>
       <ModalCancel
         open={openModalCancelProduct}

@@ -7,7 +7,7 @@ const Contact = () => {
   return (
     <div>
       <CustomHeader>
-        <title>Liên Hệ | Cuc Shoes</title>
+        <title>Liên Hệ | FitFusionZone</title>
       </CustomHeader>
       <div className="bg-dark w-full z-[1200] relative pb-16 px-4 lg:px-0 mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

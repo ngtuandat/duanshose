@@ -12,7 +12,7 @@ const Home = ({ loading }: { loading: Boolean }) => {
     <div>
       {loading && <LoadingPage />}
       <CustomHeader>
-        <title>Trang Chủ | Cuc Shoes</title>
+        <title>Trang Chủ | FitFusionZone</title>
       </CustomHeader>
       {/* <BackHome /> */}
       <div className="bg-dark w-full z-[1200] relative  ">

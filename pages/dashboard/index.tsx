@@ -306,7 +306,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           percent="-0.1%"
         />
       </div>
-      <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
         <Analysis
           name="Sản phẩm đã bán"
           parameter={countProd}
@@ -319,12 +319,12 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           color="rgb(0,184,217)"
           percent="-0.1%"
         />
-        <Analysis
+        {/* <Analysis
           name="Lợi nhuận bán hàng"
           parameter={totalPrice / 2 - 500}
           color="rgb(248,167,2)"
           percent="+0.6%"
-        />
+        /> */}
       </div>
       <div className="grid grid-cols-3 gap-6 mt-6">
         <div className="col-span-3 lg:col-span-1">

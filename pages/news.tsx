@@ -25,7 +25,7 @@ const News = () => {
   return (
     <div className="px-4 py-8">
       <CustomHeader>
-        <title>Tin Tức - Sự kiện | Cuc Shoes</title>
+        <title>Tin Tức - Sự kiện | FitFusionZone</title>
       </CustomHeader>
       <div className="text-white text-3xl font-bold mb-8 text-center">
         Tin Tức - Sự kiện
