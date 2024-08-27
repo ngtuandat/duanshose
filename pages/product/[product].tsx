@@ -412,7 +412,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                 <div className="grid grid-cols-3 border-b border-[rgba(145,158,171,0.24)]">
                   <div className="col-span-3 lg:col-span-1 flex flex-col justify-center items-center space-y-2">
                     <p className="text-[rgb(145,158,171)] text-base font-semibold mt-5 lg:mt-0">
-                      Đánh giá trung bình
+                      Bình luận trung bình
                     </p>
                     <span className="text-3xl lg:text-[44px] font-extrabold">
                       {averageStar ? averageStar.toFixed(1) : 5}/5
@@ -453,7 +453,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                       className="mb-8 flex items-center space-x-2 font-bold cursor-pointer border px-4 py-3 rounded-md border-[rgba(145,158,171,0.32)] hover:bg-[rgba(145,158,171,0.08)] hover:border-white"
                     >
                       <FaPencilAlt />
-                      <p>Đánh giá của bạn</p>
+                      <p>Đánh Luận Của Bạn</p>
                     </button>
                     <Modal
                       title="Thêm đánh giá"

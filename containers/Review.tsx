@@ -78,7 +78,7 @@ const Review = ({ setOpen, fetchDetail, fetchRating }: ReviewProps) => {
       <div className="flex flex-col  space-y-1 mb-10">
         <div className="flex space-x-2 items-center">
           <span className="text-sm font-normal text-white">
-            Đánh giá của bạn về sản phẩm:
+            Bình luận của bạn về sản phẩm:
           </span>
           <RatingReview
             currentStar={currentStar}
