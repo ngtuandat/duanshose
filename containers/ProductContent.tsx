@@ -16,9 +16,10 @@ const ProductContent = () => {
   const [limitValue, setLimitValue] = useState(DEFAULT_PRODUCTS_LIMIT);
   const [products, setProducts] = useState<ListProduct[]>();
   const [totalProduct, setTotalProduct] = useState(0);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const token = Cookies.get("token");
-
   const router = useRouter();
 
   const fetchProducts = async (query?: GetUsersQuery): Promise<void> => {
@@ -27,6 +28,7 @@ const ProductContent = () => {
         ...query,
         limit: limitValue,
         page: query?.page ? query?.page : 1,
+        category: selectedCategory || undefined, // Filter by selected category
       });
 
       setProducts(data.product);
@@ -47,6 +49,49 @@ const ProductContent = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchInitialProducts = async () => {
+      try {
+        const { data } = await getAllProducts({ limit: limitValue, page: 1 });
+        setProducts(data.product);
+        setTotalProduct(data.total);
+        const uniqueCategories = Array.from(
+          new Set(data.product.map((p: any) => p.category.name))
+        );
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchInitialProducts();
+  }, [limitValue]);
+
+  useEffect(() => {
+    fetchProducts(router.query);
+  }, [router.isReady, router.query, selectedCategory]);
+
+  useEffect(() => {
+    if (token) {
+      const decoded: any = jwt_decode(token);
+      fetchCart(decoded.id);
+    }
+  }, [token]);
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    // Reset to the first page when changing category
+    router.push(
+      {
+        query: {
+          page: 1,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   const onChangePage = (page: number) => {
     router.push(
       {
@@ -59,20 +104,30 @@ const ProductContent = () => {
     );
   };
 
-  useEffect(() => {
-    fetchProducts(router.query);
-  }, [router.isReady, router.query]);
-
-  useEffect(() => {
-    if (token) {
-      const decoded: any = jwt_decode(token);
-      fetchCart(decoded.id);
-    }
-  }, [token]);
-
   return (
     <>
-      {products && products?.length > 0 ? (
+<div className="text-[30px] flex justify-center font-light text-white mt-5 mb-5">
+        Danh Mục Sản Phẩm.
+      </div>
+      <div>
+        <div className="flex gap-x-[38px] justify-center whitespace-nowrap overflow-hidden">
+          {categories.slice(0, 6).map((item, index) => (
+            <div
+              key={index}
+              onClick={() => handleCategoryClick(item)}
+              className={`flex items-center cursor-pointer font-bold w-44 h-24 justify-center text-xl rounded-lg ${
+                selectedCategory === item ? "text-[#20AB55] " : " text-ưhite"
+              }`}
+              style={{ minWidth: "124px" }}
+            >
+              <div className="mt-2 whitespace-normal text-center">
+                {item.toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {products && products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-6 mb-10">
           {products.map((product, idx) => (
             <Link
@@ -80,16 +135,18 @@ const ProductContent = () => {
               className="bg-product rounded-lg cursor-pointer hover:-translate-y-1 transition-all duration-200"
               key={idx}
             >
-              <div className="p-2">
-                <img
-                  className="rounded-lg w-full h-64 object-cover" // Tăng chiều cao ảnh
-                  src={
-                    product?.listImage[0]
-                      ? product?.listImage[0]
-                      : "./images/product_default.jpeg"
-                  }
-                  alt={product?.name}
-                />
+              <div className="p-2 bg-white rounded-md">
+                <div className="w-full h-[200px] sm:h-[262px] rounded-lg overflow-hidden flex justify-center items-center">
+                  <img
+                    className="max-w-full max-h-full"
+                    src={
+                      product?.listImage[0]
+                        ? product?.listImage[0]
+                        : "./images/product_default.jpeg"
+                    }
+                    alt={product?.name}
+                  />
+                </div>
               </div>
               <div className="py-4 px-2">
                 <h1 className="text-sm sm:text-base font-semibold">
@@ -121,7 +178,7 @@ const ProductContent = () => {
       <PaginationClient
         current={Number(router.query.page || 1)}
         pageSize={limitValue}
-        total={totalProduct}
+total={totalProduct}
         onChange={onChangePage}
       />
       <Footer />
