@@ -76,18 +76,17 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
-  const [dataProduct, setDataProduct] = useState<any[]>([]);
+  // const [dataProduct, setDataProduct] = useState<any[]>([]);
   const [saveQuantity, setSaveQuantity] = useState<number | null>(null);
-  console.log(saveQuantity, "saveQuantity");
 
-  useEffect(() => {
-    listProductBuy.forEach((item) => {
-      const product = dataProduct.find((elm) => elm?.id === item.idProd);
-      if (product && saveQuantity !== product.quantity) {
-        setSaveQuantity(product.quantity);
-      }
-    });
-  }, [dataProduct, listProductBuy]);
+  // useEffect(() => {
+  //   listProductBuy.forEach((item) => {
+  //     const product = dataProduct.find((elm) => elm?.id === item.idProd);
+  //     if (product && saveQuantity !== product.quantity) {
+  //       setSaveQuantity(product.quantity);
+  //     }
+  //   });
+  // }, [dataProduct, listProductBuy]);
 
   const [quantityProdGuest, setQuantityProdGuest] = useState(1);
   const [listTabOver, setListTabOver] = useState<string[]>([]);
@@ -102,13 +101,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [mailAddress, setMailAddress] = useState<ChooseAddress>();
   const [validatorMess, setValidatorMess] = useState<ValidatorAddress>();
   const [voucherUsed, setVoucherUsed] = useState<DataVoucherProps>();
-  const idPrd = useMemo(
-    () => listProductBuy.map((item) => item.idProd),
-    [listProductBuy]
-  );
+  // const idPrd = useMemo(
+  //   () => listProductBuy.map((item) => item.idProd),
+  //   [listProductBuy]
+  // );
 
-  console.log(idPrd, "logidPrd");
-  console.log(dataProduct, "dataProduct");
+  // console.log(dataProduct, "dataProduct");
   console.log(voucherUsed, "voucherUsed");
   const [optionDelivery, setOptionDelivery] = useState<string>(
     "Giao hàng tiêu chuẩn (Miễn Phí)"
@@ -314,7 +312,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       return [
         <div className="flex items-center space-x-2">
           <img
-            className="w-16 h-16 rounded-lg"
+            className="w-16 h-16 rounded-lg "
             src={item?.imageProd}
             alt={item?.nameProd}
           />
@@ -352,14 +350,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
             <BiPlus onClick={() => handlePlus(item?.idProd, item?.userId)} />
           </button>
         </div>,
-        <div>
-          {dataProduct.map((elm) => {
-            if (elm?.id === item.idProd) {
-              return <span key={elm.id}>{elm.quantity}</span>;
-            }
-            return null;
-          })}
-        </div>,
+        <div>{item.productQuantity}</div>,
 
         // <div>
         //   {dataProduct.map((elm) => elm.id === item.idProd && elm.quantity)}
@@ -522,21 +513,21 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           });
         }
 
-        if (saveQuantity !== null) {
-          listProductBuy.forEach((item) => {
-            const product = dataProduct.find((elm) => elm.id === item.idProd);
-            if (product) {
-              const remainingQuantity = product.quantity - item.quantityProd;
-              setSaveQuantity(remainingQuantity);
-            } else {
-              console.log("Product not found in dataProduct.");
-            }
-          });
-        } else {
-          console.log(
-            "saveQuantity is null, cannot update the remaining quantity."
-          );
-        }
+        // if (saveQuantity !== null) {
+        //   listProductBuy.forEach((item) => {
+        //     const product = dataProduct.find((elm) => elm.id === item.idProd);
+        //     if (product) {
+        //       const remainingQuantity = product.quantity - item.quantityProd;
+        //       setSaveQuantity(remainingQuantity);
+        //     } else {
+        //       console.log("Product not found in dataProduct.");
+        //     }
+        //   });
+        // } else {
+        //   console.log(
+        //     "saveQuantity is null, cannot update the remaining quantity."
+        //   );
+        // }
 
         console.log(123123878, "hshs");
         setOpenModalBought(true);
@@ -739,17 +730,17 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           return res.data.detail;
         })
       );
-      setDataProduct(responses.flat());
+      // setDataProduct(responses.flat());
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    if (idPrd.length > 0) {
-      getDetailProducts(idPrd);
-    }
-  }, [idPrd]);
+  // useEffect(() => {
+  //   if (idPrd.length > 0) {
+  //     getDetailProducts(idPrd);
+  //   }
+  // }, [idPrd]);
 
   return (
     <>

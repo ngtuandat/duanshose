@@ -584,29 +584,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                             />
                           </div>
                         )}
-                        <div className="flex space-x-3">
-                          {item?.status === "delivered" && (
-                            <div className="flex items-center space-x-4">
-                              {/* <Button
-                                onClick={() => {
-                                  setItemCancel(item);
-                                  setOpenWriteReview(true); // Open return modal
-                                }}
-                                icon={<FaPencilAlt />}
-                                label="Đánh giá"
-                              /> */}
-                              <button
-                                onClick={() => {
-                                  setItemCancel(item);
-                                  // setOpenModalCancel(true);
-                                }}
-                              >
-                                <Link href="/product/cm06vkeu2000clb039xm8uv1v">
-                                  Đánh Giá
-                                </Link>
-                              </button>
-                            </div>
-                          )}
+                        <div className="">
                           {openWriteReview && <ReviewDone />}
                           {isReturnable(new Date(item.createdAt)) &&
                             item?.status === "delivered" && (

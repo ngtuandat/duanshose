@@ -32,6 +32,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   const [selectedMonth, setSelectedMonth] = useState<string | null>(
     currentMonth
   );
+  console.log(selectedMonth, "selectedMonth");
   const [selectedDate, setSelectedDate] = useState<string | null>(currentDay);
   const [selectedEndDate, setSelectedEndDate] = useState<string | null>(
     currentDay
@@ -265,32 +266,36 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       <CustomHeader>
         <title>DashBoard</title>
       </CustomHeader>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn tháng:</label>
-        <input
-          type="month"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedMonth || ""}
-          onChange={handleMonthChange}
-        />
-      </div>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn ngày bắt đầu:</label>
-        <input
-          type="date"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedDate || ""}
-          onChange={handleDateChange}
-        />
-      </div>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn ngày kết thúc:</label>
-        <input
-          type="date"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedEndDate || ""}
-          onChange={handleEndDateChange}
-        />
+      <div className="flex space-x-5 items-center justify-between">
+        <div className="flex flex-col items-start my-6 ">
+          <label className="mr-2">Chọn tháng:</label>
+          <input
+            type="month"
+            className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+            value={selectedMonth || ""}
+            onChange={handleMonthChange}
+          />
+        </div>
+        <div className="flex items-center space-x-5">
+          <div className="flex my-6 flex-col items-start">
+            <label className="mr-2">Chọn ngày bắt đầu:</label>
+            <input
+              type="date"
+              className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+              value={selectedDate || ""}
+              onChange={handleDateChange}
+            />
+          </div>
+          <div className="flex my-6 flex-col items-start">
+            <label className="mr-2">Chọn ngày kết thúc:</label>
+            <input
+              type="date"
+              className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+              value={selectedEndDate || ""}
+              onChange={handleEndDateChange}
+            />
+          </div>
+        </div>
       </div>
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
         <Analysis

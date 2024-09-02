@@ -158,7 +158,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
           color: colorCheck,
           quantity: quantity,
           image: dataProduct?.listImage[0],
-          warehouse: dataProduct?.quantity ?? 0,
+          // warehouse: dataProduct?.quantity ?? 0,
         };
         await addToCart(productBuy);
         fetchCart(decoded.id);
