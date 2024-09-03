@@ -21,6 +21,7 @@ const columnProduct = [
 
 const Dashboard = ({ loading }: { loading: Boolean }) => {
   const currentDate = new Date();
+  const [data, setData] = useState([]);
   const currentDay = currentDate.toISOString().slice(0, 10); // YYYY-MM-DD
 
   const [countProd, setCountProd] = useState(0);
@@ -40,6 +41,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
     try {
       const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
       const allProducts = res.data.result;
+      setData(allProducts);
       console.log(allProducts, "allProducts");
 
       // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
@@ -203,65 +205,68 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           percent="-0.1%"
         />
       </div>
-      <div className="grid grid-cols-3 gap-6 mt-6">
-        <div className="col-span-3 lg:col-span-1">
+      <div className=" mt-6">
+        {/* <div className="col-span-3 lg:col-span-1">
           <MultipleRadialbars />
-        </div>
+        </div> */}
         <div className="col-span-3 lg:col-span-2">
-          <Area />
+          <Area data={data} />
         </div>
       </div>
       <div className="text-lg flex justify-center py-6 font-bold">
         Sản phẩm bán Chạy
       </div>
-      <div>
-        <div className={`flex flex-col `}>
-          <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
-            <div
-              id="table-scroll"
-              className="inline-block w-[94%] overflow-x-auto py-2 align-middle md:mx-6 lg:mx-8"
-            >
-              <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="table-auto divide-y divide-gray-300 w-full">
-                  <thead className="bg-gray-900">
+      <div className="overflow-x-auto">
+        <div className="flex flex-col">
+          <div className="py-2 -mx-4 sm:-mx-6 lg:-mx-8 ">
+            <div className="inline-block min-w-full align-middle">
+              <div className="relative overflow-hidden shadow-lg rounded-lg ring-1 ring-black ring-opacity-10 rounded-lg">
+                <table className="table-auto divide-y divide-gray-300 min-w-full">
+                  <thead className="bg-gray-800 text-gray-200">
                     <tr>
                       {columnProduct.map((column, index) => (
                         <th
                           key={index}
                           scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-300 sm:pl-6"
+                          className="py-3.5 px-4 text-center text-sm font-semibold whitespace-nowrap min-w-[150px] max-w-[250px] overflow-auto text-ellipsis"
                         >
                           {column}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-[#212A36]">
+                  <tbody className="divide-y divide-gray-700 bg-gray-900">
                     {selling.map((item, index) => (
-                      <tr key={index}>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-300 sm:pl-6">
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-800 transition-colors duration-200"
+                      >
+                        <td className="whitespace-nowrap py-4 px-4 text-sm font-medium text-gray-300 text-center">
                           {index + 1}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-300">
                           {item.productName}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.size}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.color}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.quantitySold}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
-                          <img
-                            src={item.imagesProd[0]}
-                            alt={item.productName}
-                            className="h-20 w-20 object-cover"
-                          />
+                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-300  flex items-center justify-center">
+                          <div className="relative h-24 w-24">
+                            <img
+                              src={item.imagesProd}
+                              alt={item.productName}
+                              className="absolute inset-0 w-full h-full object-contain rounded-lg border bg-white border-gray-600 shadow-md"
+                            />
+                          </div>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.totalRevenue}
                         </td>
                       </tr>
