@@ -21,7 +21,6 @@ const columnProduct = [
 
 const Dashboard = ({ loading }: { loading: Boolean }) => {
   const currentDate = new Date();
-  const currentMonth = currentDate.toISOString().slice(0, 7); // YYYY-MM
   const currentDay = currentDate.toISOString().slice(0, 10); // YYYY-MM-DD
 
   const [countProd, setCountProd] = useState(0);
@@ -29,22 +28,19 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalEstimatedPrice, setTotalEstimatedPrice] = useState(0);
   const [selling, setSelling] = useState<any[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(
-    currentMonth
-  );
-  console.log(selectedMonth, "selectedMonth");
   const [selectedDate, setSelectedDate] = useState<string | null>(currentDay);
   const [selectedEndDate, setSelectedEndDate] = useState<string | null>(
     currentDay
   );
+
   const fetchAllPurchase = async (
-    month: string | null,
     date: string | null,
     endDate: string | null
   ) => {
     try {
       const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
       const allProducts = res.data.result;
+      console.log(allProducts, "allProducts");
 
       // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
       const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
@@ -56,14 +52,11 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       const filteredProducts = allProducts.filter((product: PurchaseProps) => {
         const productDate = new Date(product.createdAt);
 
-        // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
-        const isWithinMonth =
-          month === null ||
-          productDate.getMonth() === new Date(month).getMonth();
+        // Lọc theo ngày bắt đầu và ngày kết thúc
         const isWithinDateRange =
           productDate >= startDate && productDate <= endDateParsed;
 
-        return isWithinMonth && isWithinDateRange;
+        return isWithinDateRange;
       });
 
       // Loại bỏ các đơn hàng ở trạng thái cancelled và returns
@@ -142,113 +135,9 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
     }
   };
 
-  // const fetchAllPurchase = async (
-  //   month: string | null,
-  //   date: string | null,
-  //   endDate: string | null
-  // ) => {
-  //   try {
-  //     const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
-  //     const allProducts = res.data.result;
-
-  //     // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
-  //     const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
-  //     const endDateParsed = endDate
-  //       ? new Date(endDate + "T23:59:59")
-  //       : new Date(); // Ngày kết thúc, bao gồm toàn bộ ngày
-
-  //     // Lọc sản phẩm trong ngày và tháng được chọn
-  //     const filteredProducts = allProducts.filter((product: PurchaseProps) => {
-  //       const productDate = new Date(product.createdAt);
-
-  //       // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
-  //       const isWithinMonth =
-  //         month === null ||
-  //         productDate.getMonth() === new Date(month).getMonth();
-  //       const isWithinDateRange =
-  //         productDate >= startDate && productDate <= endDateParsed;
-
-  //       return isWithinMonth && isWithinDateRange;
-  //     });
-
-  //     const deliveredProducts = filteredProducts.filter(
-  //       (product: PurchaseProps) => product.status === "delivered"
-  //     );
-
-  //     const nonDeliveredProducts = filteredProducts.filter(
-  //       (product: PurchaseProps) => product.status !== "delivered"
-  //     );
-
-  //     // Tính toán số lượng sản phẩm và doanh thu thực
-  //     setCountProd(
-  //       deliveredProducts.reduce(
-  //         (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
-  //         0
-  //       )
-  //     );
-
-  //     setTemporaryQuantity(
-  //       nonDeliveredProducts.reduce(
-  //         (acc: number, curr: PurchaseProps) => acc + curr.quantityProd,
-  //         0
-  //       )
-  //     );
-
-  //     const totalEstimatedRevenue = nonDeliveredProducts.reduce(
-  //       (acc: number, cur: PurchaseProps) => {
-  //         return acc + cur.priceProd * cur.quantityProd;
-  //       },
-  //       0
-  //     );
-  //     setTotalEstimatedPrice(totalEstimatedRevenue);
-
-  //     const totalRevenue = deliveredProducts.reduce(
-  //       (acc: number, cur: PurchaseProps) => {
-  //         return acc + cur.priceProd * cur.quantityProd;
-  //       },
-  //       0
-  //     );
-  //     setTotalPrice(totalRevenue);
-
-  //     // Tạo map để tính tổng doanh thu của từng sản phẩm đã bán
-  //     const productMap = new Map<string, any>();
-
-  //     deliveredProducts.forEach((item: PurchaseProps) => {
-  //       const key = `${item.nameProd}-${item.sizeProd}-${item.colorProd}`;
-  //       if (productMap.has(key)) {
-  //         const existingProduct = productMap.get(key);
-  //         existingProduct.quantitySold += item.quantityProd;
-  //         existingProduct.totalRevenue += item.priceProd * item.quantityProd;
-  //       } else {
-  //         productMap.set(key, {
-  //           productName: item.nameProd,
-  //           size: item.sizeProd,
-  //           color: item.colorProd,
-  //           quantitySold: item.quantityProd,
-  //           imagesProd: item.imageProd,
-  //           totalRevenue: item.priceProd * item.quantityProd,
-  //         });
-  //       }
-  //     });
-
-  //     // Sắp xếp sản phẩm theo số lượng bán được giảm dần
-  //     const soldProducts = Array.from(productMap.values()).sort(
-  //       (a, b) => b.quantitySold - a.quantitySold
-  //     );
-  //     setSelling(soldProducts);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   useEffect(() => {
-    fetchAllPurchase(selectedMonth, selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedMonth, selectedDate hoặc selectedEndDate thay đổi
-  }, [selectedMonth, selectedDate, selectedEndDate]);
-
-  // Hàm xử lý khi người dùng thay đổi tháng
-  const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedMonth(event.target.value); // Cập nhật giá trị selectedMonth khi người dùng thay đổi tháng
-  };
+    fetchAllPurchase(selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedDate hoặc selectedEndDate thay đổi
+  }, [selectedDate, selectedEndDate]);
 
   // Hàm xử lý khi người dùng thay đổi ngày
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,35 +155,24 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       <CustomHeader>
         <title>DashBoard</title>
       </CustomHeader>
-      <div className="flex space-x-5 items-center justify-between">
-        <div className="flex flex-col items-start my-6 ">
-          <label className="mr-2">Chọn tháng:</label>
+      <div className="flex items-center space-x-5">
+        <div className="flex my-6 flex-col items-start">
+          <label className="mr-2">Chọn ngày bắt đầu:</label>
           <input
-            type="month"
+            type="date"
             className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-            value={selectedMonth || ""}
-            onChange={handleMonthChange}
+            value={selectedDate || ""}
+            onChange={handleDateChange}
           />
         </div>
-        <div className="flex items-center space-x-5">
-          <div className="flex my-6 flex-col items-start">
-            <label className="mr-2">Chọn ngày bắt đầu:</label>
-            <input
-              type="date"
-              className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-              value={selectedDate || ""}
-              onChange={handleDateChange}
-            />
-          </div>
-          <div className="flex my-6 flex-col items-start">
-            <label className="mr-2">Chọn ngày kết thúc:</label>
-            <input
-              type="date"
-              className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-              value={selectedEndDate || ""}
-              onChange={handleEndDateChange}
-            />
-          </div>
+        <div className="flex my-6 flex-col items-start">
+          <label className="mr-2">Chọn ngày kết thúc:</label>
+          <input
+            type="date"
+            className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+            value={selectedEndDate || ""}
+            onChange={handleEndDateChange}
+          />
         </div>
       </div>
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
@@ -324,12 +202,6 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           color="rgb(0,184,217)"
           percent="-0.1%"
         />
-        {/* <Analysis
-          name="Lợi nhuận bán hàng"
-          parameter={totalPrice / 2 - 500}
-          color="rgb(248,167,2)"
-          percent="+0.6%"
-        /> */}
       </div>
       <div className="grid grid-cols-3 gap-6 mt-6">
         <div className="col-span-3 lg:col-span-1">
@@ -349,77 +221,47 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
               id="table-scroll"
               className="inline-block w-[94%] overflow-x-auto py-2 align-middle md:mx-6 lg:mx-8"
             >
-              <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-[rgb(51,61,72)]">
+              <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <table className="table-auto divide-y divide-gray-300 w-full">
+                  <thead className="bg-gray-900">
                     <tr>
                       {columnProduct.map((column, index) => (
                         <th
                           key={index}
                           scope="col"
-                          className={`py-3.5 pl-4 pr-3 w-fit text-left text-sm font-semibold ${
-                            String(column).includes("Tên")
-                              ? "text-white"
-                              : "text-[rgb(145,158,171)]"
-                          }`}
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-300 sm:pl-6"
                         >
                           {column}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="bg-[rgb(33,43,54)]">
-                    {selling.map((item: any, index) => (
+                  <tbody className="divide-y divide-gray-200 bg-[#212A36]">
+                    {selling.map((item, index) => (
                       <tr key={index}>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-300 sm:pl-6">
                           {index + 1}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
-                          <div className="space-x-1 flex">
-                            {item.productName}
-                          </div>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                          {item.productName}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
                           {item.size}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
                           {item.color}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
-                          <div className="ml-8">{item.quantitySold}</div>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
+                          {item.quantitySold}
                         </td>
-                        <td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
                           <img
-                            className="w-10 h-10 rounded-md"
-                            src={item.imagesProd}
-                            alt=""
+                            src={item.imagesProd[0]}
+                            alt={item.productName}
+                            className="h-20 w-20 object-cover"
                           />
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">
                           {item.totalRevenue}
                         </td>
                       </tr>
