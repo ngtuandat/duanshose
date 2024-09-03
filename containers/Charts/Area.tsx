@@ -148,15 +148,7 @@ const Area = ({ data }: any) => {
         colors: "#fff",
         useSeriesColors: false,
       },
-      markers: {
-        width: 12,
-        height: 12,
-        strokeWidth: 0,
-        strokeColor: "#fff",
-        radius: 12,
-        offsetX: -5,
-        offsetY: 0,
-      },
+      // Removed 'markers' as it was causing type errors
       itemMargin: {
         horizontal: 10,
         vertical: 0,
