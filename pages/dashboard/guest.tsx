@@ -9,6 +9,8 @@ import { getOrderGuestAll, updateStatusGuest } from "../../services/guest";
 import toast from "react-hot-toast";
 import DropDown from "../../components/DropDown";
 import dateFormat from "dateformat";
+import ModalDetail from "../../components/Modal/ModalDetail";
+import ModalDetailVisitor from "../../components/Modal/ModalDetailVisitor";
 
 const Guest = ({ loading }: { loading: Boolean }) => {
   const columnPurchase = [
@@ -22,6 +24,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     "Số lượng",
     "Ngày bán",
     "Trạng thái",
+    "Chi tiết",
   ];
 
   const listStatus = [
@@ -32,15 +35,23 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     { title: "Đã hủy", value: "cancelled" },
   ];
 
+  const statusOrder = [
+    "pending",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled",
+    "returns",
+  ];
+
   const [dataPurchase, setDataPurchase] = useState<any[]>([]);
-  const dataPurchaseRef = useRef<any[]>([]); // Thêm ref để giữ trạng thái hiện tại
-  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null); // Thay `any` bằng kiểu dữ liệu cụ thể của bạn
 
   const fetchAllPurchase = async () => {
     try {
       const res = await getOrderGuestAll();
       setDataPurchase(res.data);
-      dataPurchaseRef.current = res.data; // Lưu dữ liệu vào ref
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +61,28 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     fetchAllPurchase();
   }, []);
 
+  const getFilteredStatusList = (currentStatus: string) => {
+    const currentIndex = statusOrder.indexOf(currentStatus);
+
+    if (currentStatus === "cancelled") {
+      return [{ title: "Đã hủy", value: "cancelled" }];
+    }
+
+    if (currentStatus === "delivered") {
+      return listStatus.filter((status) => status.value === "delivered");
+    }
+
+    if (currentStatus === "pending" || currentStatus === "processing") {
+      return listStatus.filter(
+        (status) => statusOrder.indexOf(status.value) >= currentIndex
+      );
+    }
+
+    return listStatus.filter(
+      (status) => statusOrder.indexOf(status.value) >= currentIndex
+    );
+  };
+
   const handleItemSelected = async (
     selectedItem: { title: string; value: string },
     id: string
@@ -58,20 +91,20 @@ const Guest = ({ loading }: { loading: Boolean }) => {
       const res = await updateStatusGuest({ id, status: selectedItem.value });
       if (res.status === 200) {
         toast.success("Cập nhật trạng thái đơn hàng thành công!");
-
-        // Cập nhật trạng thái trong dữ liệu hiện tại mà không cần tải lại từ API
-        setDataPurchase((prevData) =>
-          prevData.map((item) =>
+        setDataPurchase((prevData: any) =>
+          prevData.map((item: any) =>
             item.id === id ? { ...item, status: selectedItem.value } : item
           )
-        );
-        dataPurchaseRef.current = dataPurchaseRef.current.map((item) =>
-          item.id === id ? { ...item, status: selectedItem.value } : item
         );
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleViewDetails = (order: any) => {
+    setSelectedOrder(order);
+    setModalOpen(true);
   };
 
   const dataSourcePurchase = useMemo(() => {
@@ -103,12 +136,20 @@ const Guest = ({ loading }: { loading: Boolean }) => {
           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold`}
         >
           <DropDown
-            onChange={handleItemSelected}
-            listData={listStatus}
+            onChange={(selectedItem) =>
+              handleItemSelected(selectedItem, item.id)
+            }
+            listData={getFilteredStatusList(item.status)}
             defaultValue={item.status}
             itemId={item.id}
           />
         </span>,
+        <button
+          onClick={() => handleViewDetails(item)}
+          className="text-blue-500 hover:underline"
+        >
+          Chi tiết
+        </button>,
       ];
     });
   }, [dataPurchase]);
@@ -125,6 +166,13 @@ const Guest = ({ loading }: { loading: Boolean }) => {
           <Table columns={columnPurchase} dataSource={dataSourcePurchase} />
         </Card.Content>
       </Card>
+      {selectedOrder && (
+        <ModalDetailVisitor
+          open={modalOpen}
+          setOpen={() => setModalOpen(false)}
+          orderDetail={selectedOrder}
+        />
+      )}
     </div>
   );
 };
