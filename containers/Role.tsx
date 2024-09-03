@@ -3,12 +3,16 @@ import React, { Fragment, useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { toast } from "react-toastify";
 import { updateAdmin } from "../services/user";
+
 interface IProps {
   role: boolean;
   id: string;
+  count: number;
+  onRoleChange: () => void; // Thêm callback để làm mới count
 }
+
 const Role: React.FC<IProps> = (props) => {
-  const { role, id } = props;
+  const { role, id, count, onRoleChange } = props;
   const listMenu = ["Admin", "User"];
 
   const [selected, setSelected] = useState<boolean>(role);
@@ -16,12 +20,17 @@ const Role: React.FC<IProps> = (props) => {
 
   const handleUpdate = async (option: string) => {
     try {
-      setSelectValue(option);
-      if (selectValue === "Admin") {
+      if (option === "Admin") {
         setSelected(true);
-      } else if (selectValue === "User") {
+      } else if (option === "User" && count > 1) {
         setSelected(false);
+      } else if (option === "User" && count <= 1) {
+        toast.error("Phải có ít nhất một admin.");
+        return;
       }
+
+      setSelectValue(option);
+
       const user = {
         id: id,
         role: selected,
@@ -30,18 +39,17 @@ const Role: React.FC<IProps> = (props) => {
       const res = await updateAdmin(user);
       if (res.status === 200) {
         toast.success("Cập nhật quyền thành công!");
+        onRoleChange(); // Gọi callback để làm mới số lượng admin
       }
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    if (role) {
-      setSelectValue("Admin");
-    } else {
-      setSelectValue("User");
-    }
+    setSelectValue(role ? "Admin" : "User");
   }, [role]);
+
   return (
     <div>
       <Menu
