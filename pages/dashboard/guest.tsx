@@ -1,16 +1,14 @@
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState, useRef } from "react";
 import Card from "../../components/Card";
 import ContentHeader from "../../components/Header/ContentHeader";
 import MainAdmin from "../../components/Layouts/MainAdmin";
 import LoadingPage from "../../components/Loading/LoadingPage";
 import Table from "../../components/Table";
 import { useRouter } from "next/router";
-import { getPurchaseAll } from "../../services/product";
-import { updateStatus } from "../../services/purchase";
+import { getOrderGuestAll, updateStatusGuest } from "../../services/guest";
 import toast from "react-hot-toast";
 import DropDown from "../../components/DropDown";
 import dateFormat from "dateformat";
-import { getOrderGuestAll, updateStatusGuest } from "../../services/guest";
 
 const Guest = ({ loading }: { loading: Boolean }) => {
   const columnPurchase = [
@@ -33,13 +31,16 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     { title: "Đã giao thành công", value: "delivered" },
     { title: "Đã hủy", value: "cancelled" },
   ];
+
   const [dataPurchase, setDataPurchase] = useState<any[]>([]);
+  const dataPurchaseRef = useRef<any[]>([]); // Thêm ref để giữ trạng thái hiện tại
   const router = useRouter();
 
   const fetchAllPurchase = async () => {
     try {
       const res = await getOrderGuestAll();
       setDataPurchase(res.data);
+      dataPurchaseRef.current = res.data; // Lưu dữ liệu vào ref
     } catch (error) {
       console.log(error);
     }
@@ -57,18 +58,33 @@ const Guest = ({ loading }: { loading: Boolean }) => {
       const res = await updateStatusGuest({ id, status: selectedItem.value });
       if (res.status === 200) {
         toast.success("Cập nhật trạng thái đơn hàng thành công!");
-        fetchAllPurchase();
+
+        // Cập nhật trạng thái trong dữ liệu hiện tại mà không cần tải lại từ API
+        setDataPurchase((prevData) =>
+          prevData.map((item) =>
+            item.id === id ? { ...item, status: selectedItem.value } : item
+          )
+        );
+        dataPurchaseRef.current = dataPurchaseRef.current.map((item) =>
+          item.id === id ? { ...item, status: selectedItem.value } : item
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log({ dataPurchase });
-
   const dataSourcePurchase = useMemo(() => {
     return dataPurchase.map((item, index) => {
-      const product = JSON.parse(item.products);
+      let product;
+      try {
+        const productsArray = JSON.parse(item.products);
+        product = productsArray[0];
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        product = {};
+      }
+
       return [
         <> {index + 1}</>,
         <div className="text-primary font-bold">{item.buyerName}</div>,
@@ -76,8 +92,9 @@ const Guest = ({ loading }: { loading: Boolean }) => {
         <div>{product.size}</div>,
         <div>{product.color}</div>,
         <img
-          className="w-1/2 cursor-pointer rounded-lg object-cover"
+          className="w-full max-w-xs h-auto cursor-pointer rounded-lg object-cover"
           src={product.image}
+          alt={product.name || "Product Image"}
         />,
         <p>{(product?.quantity * product?.price).toLocaleString("vi")} đ</p>,
         <p>{product.quantity}</p>,
@@ -105,13 +122,13 @@ const Guest = ({ loading }: { loading: Boolean }) => {
       />
       <Card>
         <Card.Content>
-          {" "}
           <Table columns={columnPurchase} dataSource={dataSourcePurchase} />
         </Card.Content>
       </Card>
     </div>
   );
 };
+
 Guest.getLayout = function getLayout(page: ReactElement) {
   return <MainAdmin>{page}</MainAdmin>;
 };
