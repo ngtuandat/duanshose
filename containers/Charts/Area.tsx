@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-import ApexCharts from "react-apexcharts";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-interface ChartData {
-  series: { name: string; data: number[] }[];
-  categories: string[];
-}
+// Tải ApexCharts chỉ trên client-side
+const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const Area = ({ data }: any) => {
-  const [chartData, setChartData] = useState<ChartData>({
+  const [chartData, setChartData] = useState<any>({
     series: [],
     categories: [],
   });
@@ -17,11 +14,10 @@ const Area = ({ data }: any) => {
   useEffect(() => {
     if (data && data.length > 0) {
       const monthRevenueMap: Record<string, number> = {};
-
       data.forEach((item: any) => {
         if (item.status === "delivered") {
           const date = new Date(item.createdAt);
-          const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`; // Format: MM-YYYY
+          const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
           const revenue = item.priceProd * item.quantityProd;
 
           if (!monthRevenueMap[monthYear]) {
@@ -31,20 +27,16 @@ const Area = ({ data }: any) => {
         }
       });
 
-      // Tạo mảng chứa tất cả 12 tháng của năm hiện tại
       const year = new Date().getFullYear();
       const allMonths = Array.from(
         { length: 12 },
         (_, i) => `${i + 1}-${year}`
       );
-
-      // Đảm bảo rằng tất cả các tháng có mặt trong dữ liệu
       const categories = allMonths.map((monthYear) => {
         const [month, year] = monthYear.split("-");
         return `${month}/${year}`;
       });
 
-      // Thêm dữ liệu 0 cho các tháng không có dữ liệu
       const seriesData = allMonths.map(
         (monthYear) => monthRevenueMap[monthYear] || 0
       );
@@ -64,16 +56,6 @@ const Area = ({ data }: any) => {
       type: "area",
       toolbar: {
         show: false,
-        tools: {
-          download: false,
-          selection: false,
-          zoom: false,
-          zoomin: false,
-          zoomout: false,
-          pan: false,
-          reset: false,
-          customIcons: [],
-        },
       },
     },
     grid: {
@@ -134,30 +116,13 @@ const Area = ({ data }: any) => {
     },
     legend: {
       show: true,
-      showForSingleSeries: false,
-      showForNullSeries: true,
-      showForZeroSeries: true,
       position: "top",
       horizontalAlign: "right",
-      floating: false,
       fontSize: "12px",
       fontWeight: 500,
-      offsetX: 0,
-      offsetY: 0,
-      labels: {
-        colors: "#fff",
-        useSeriesColors: false,
-      },
-      // Removed 'markers' as it was causing type errors
       itemMargin: {
         horizontal: 10,
         vertical: 0,
-      },
-      onItemClick: {
-        toggleDataSeries: true,
-      },
-      onItemHover: {
-        highlightDataSeries: true,
       },
     },
   };
