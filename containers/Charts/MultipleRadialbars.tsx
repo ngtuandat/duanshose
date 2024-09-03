@@ -103,7 +103,6 @@ const MultipleRadialbars = () => {
   return (
     <div className="bg-product rounded-lg p-6 pb-0">
       <p className="mb-10 text-lg font-bold">Bán Theo Giới Tính</p>
-      {console.log(series, "series")}
       <ApexCharts
         options={Object(options)}
         series={series}
