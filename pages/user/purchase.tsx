@@ -85,82 +85,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
   const [contentReview, setContentReview] = useState<string>("");
   const [nameUser, setNameUser] = useState<string>("");
 
-  // const handleAddReview = async () => {
-  //   try {
-  //     if (!currentStar) {
-  //       setErrStar("Hãy chọn số sao bạn muốn");
-  //       return;
-  //     }
-
-  //     const commentUser = {
-  //       idProduct: router.query.product,
-  //       rating: Number(currentStar) + 1,
-  //       name: nameUser,
-  //       content: contentReview,
-  //     };
-
-  //     await addReview(commentUser);
-
-  //     if (router.query.product) {
-  //       // fetchDetail(router.query.product);
-  //       fetchRating(String(router.query.product));
-  //     }
-
-  //     setOpenModalReview(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // const handleAddReview = async () => {
-  //   try {
-  //     if (!currentStar) {
-  //       setErrStar("Hãy chọn số sao bạn muốn");
-  //       return;
-  //     }
-
-  //     const commentUser = {
-  //       idProduct: router.query.product,
-  //       rating: Number(currentStar) + 1,
-  //       name: nameUser,
-  //       content: contentReview,
-  //     };
-
-  //     const response = await addReview(commentUser);
-
-  //     if (response.status === 200) {
-  //       if (router.query.product) {
-  //         fetchRating(String(router.query.product));
-  //       }
-  //       setOpenModalReview(false);
-  //     } else {
-  //       // Handle unexpected status codes
-  //       toast.error(`Failed to add review: ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding review:", error);
-  //     toast.error("Có lỗi xảy ra khi thêm đánh giá.");
-  //   }
-  // };
-  // const fetchDetailProduct = async (id: string | string[]) => {
-  //   try {
-  //     const res = await getDetailProduct(String(id));
-  //     setDataProduct(res.data.detail);
-  //     setSizeValue(res.data.detail.size[0]);
-  //     setColorCheck(res.data.detail.color[0]);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (token) {
-  //     const decoded: any = jwt_decode(token);
-  //     fetchCart(decoded.id);
-  //   }
-  //   if (router.query.product) {
-  //     fetchDetailProduct(router.query.product);
-  //   }
-  // }, []);
-
   const fetchPurchase = async (id: string) => {
     try {
       const res = await getPurchaseOrder(id);
@@ -170,34 +94,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       toast.error("Không thể lấy dữ liệu đơn hàng.");
     }
   };
-
-  // const handleUpdateOrderStatus = async (id: string, status: string) => {
-  //   setLoadingCancel(true);
-  //   try {
-  //     if (token) {
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         const decoded: any = jwt_decode(token);
-  //         await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false); // Close return modal if open
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     } else {
-  //       const res = await deleteOrderGuest(id);
-  //       if (res.status === 200) {
-  //         await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false); // Close return modal if open
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
-  //   }
-  //   setLoadingCancel(false);
-  // };
 
   const handleUpdateOrderStatus = async (id: string, status: string) => {
     setLoadingCancel(true);
@@ -237,76 +133,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     }
     setLoadingCancel(false);
   };
-
-  // const handleUpdateOrderStatus = async (id: string, status: string) => {
-  //   setLoadingCancel(true);
-  //   try {
-  //     if (token) {
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         const decoded: any = jwt_decode(token);
-  //         // Cập nhật đơn hàng trong danh sách hiện tại mà không thay đổi vị trí
-  //         setListPurchase((prevList: any) => {
-  //           return prevList.map((order: any) =>
-  //             order.id === id ? { ...order, status } : order
-  //           );
-  //         });
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
-  //         setOpenModalConfirm(false);
-
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     } else {
-  //       // Cập nhật trạng thái đơn hàng của khách
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         // Cập nhật lại danh sách đơn hàng của khách
-  //         await handleFindOrderGuest();
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false);
-  //         setOpenModalConfirm(false);
-
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
-  //   }
-  //   setLoadingCancel(false);
-  // };
-
-  // const handleUpdateOrderStatus = async (id: string, status: string) => {
-  //   setLoadingCancel(true);
-  //   try {
-  //     if (token) {
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         const decoded: any = jwt_decode(token);
-  //         await fetchPurchase(decoded.id); // Cập nhật lại danh sách đơn hàng
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
-  //         setOpenModalConfirm(false);
-
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     } else {
-  //       const res = await deleteOrderGuest(id);
-  //       if (res.status === 200) {
-  //         await handleFindOrderGuest(); // Cập nhật lại danh sách đơn hàng của khách
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false);
-  //         setOpenModalConfirm(false); // Đóng modal trả hàng nếu mở
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
-  //   }
-  //   setLoadingCancel(false);
-  // };
 
   const handleFindOrderGuest = async () => {
     const res = await getOrderGuestByPhone(phoneFind.slice(1));
@@ -536,7 +362,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-start justify-end space-x-2 text-white mb-5">
+                      <div className="flex items-start justify-end space-x-2 text-white mb-2">
                         <p className="text-sm font-semibold whitespace-nowrap">
                           Thành tiền:
                         </p>
@@ -558,6 +384,9 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                             </p>
                           )}
                         </div>
+                      </div>
+                      <div className="flex justify-end mb-3 text-white">
+                        Chi tiết đơn
                       </div>
                       <div className="flex flex-col items-end">
                         {item?.status === "pending" && (
