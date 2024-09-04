@@ -598,6 +598,48 @@ async function updateBoughtProd(
       return;
     }
 
+    // const voucherDiscount = await prisma.voucher.findFirst({
+    //   where: { id: idVoucher },
+    // });
+
+    // if (!voucherDiscount) {
+    //   res.status(400).json("Invalid voucher ID");
+    //   return;
+    // }
+
+    // const totalProductPrice = cartItems.reduce(
+    //   (acc, cartItem) => acc + cartItem.priceProd,
+    //   0
+    // );
+
+    // let discountPerItem = 0;
+    // if (voucherDiscount.type === "vnd") {
+    //   discountPerItem = voucherDiscount.discount / cartItems.length || 0;
+    // } else if (voucherDiscount.type === "percent") {
+    //   const totalDiscountAmount =
+    //     (totalProductPrice * voucherDiscount.discount) / 100;
+    //   discountPerItem = totalDiscountAmount / cartItems.length || 0;
+    // }
+
+    // const updatedCartItems = cartItems.map((cartItem) => {
+    //   const finalPrice = Math.max(cartItem.priceProd - discountPerItem, 0);
+    //   return {
+    //     id: cartItem.id,
+    //     bought: true,
+    //     finalPrice: finalPrice,
+    //   };
+    // });
+
+    // for (const item of updatedCartItems) {
+    //   await prisma.cart.update({
+    //     where: { id: item.id },
+    //     data: {
+    //       bought: true,
+    //       finalPrice: item.finalPrice,
+    //     },
+    //   });
+    // }
+
     const voucherDiscount = await prisma.voucher.findFirst({
       where: { id: idVoucher },
     });
@@ -607,22 +649,17 @@ async function updateBoughtProd(
       return;
     }
 
-    const totalProductPrice = cartItems.reduce(
-      (acc, cartItem) => acc + cartItem.priceProd,
-      0
-    );
-
-    let discountPerItem = 0;
-    if (voucherDiscount.type === "vnd") {
-      discountPerItem = voucherDiscount.discount / cartItems.length || 0;
-    } else if (voucherDiscount.type === "percent") {
-      const totalDiscountAmount =
-        (totalProductPrice * voucherDiscount.discount) / 100;
-      discountPerItem = totalDiscountAmount / cartItems.length || 0;
-    }
-
     const updatedCartItems = cartItems.map((cartItem) => {
-      const finalPrice = Math.max(cartItem.priceProd - discountPerItem, 0);
+      let finalPrice = cartItem.priceProd;
+
+      if (voucherDiscount.type === "vnd") {
+        finalPrice = Math.max(cartItem.priceProd - voucherDiscount.discount, 0);
+      } else if (voucherDiscount.type === "percent") {
+        const discountAmount =
+          (cartItem.priceProd * voucherDiscount.discount) / 100;
+        finalPrice = Math.max(cartItem.priceProd - discountAmount, 0);
+      }
+
       return {
         id: cartItem.id,
         bought: true,

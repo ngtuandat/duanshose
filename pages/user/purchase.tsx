@@ -380,6 +380,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           </p>
                           {item.finalPrice !== item.priceProd && (
                             <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
+                              {console.log(item.finalPrice, "loghogia")}
                               {item.finalPrice?.toLocaleString("vi")} đ
                             </p>
                           )}

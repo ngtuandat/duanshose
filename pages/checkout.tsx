@@ -650,6 +650,8 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
         console.log(voucherUsed, "voucherUsed");
 
         discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+
+        console.log(discountAmount, "discountAmount");
       }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
@@ -721,20 +723,6 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   // useEffect(() => {
   //   // fetchDetailProduct(idPrd);
   // }, []);
-
-  const getDetailProducts = async (ids: string[]) => {
-    try {
-      const responses = await Promise.all(
-        ids.map(async (id) => {
-          const res = await getDetailProduct(id);
-          return res.data.detail;
-        })
-      );
-      // setDataProduct(responses.flat());
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   // useEffect(() => {
   //   if (idPrd.length > 0) {

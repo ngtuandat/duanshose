@@ -166,6 +166,9 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     const endIndex = startIndex + itemsPerPage;
 
     return filteredPurchases.slice(startIndex, endIndex).map((item, index) => {
+      {
+        console.log(item, "logdulieu");
+      }
       return [
         <> {startIndex + index + 1}</>,
         <div className="text-primary font-bold">
@@ -180,7 +183,14 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
             src={item.imageProd}
           />
         </div>,
-        <p>{item?.priceProd.toLocaleString("vi")} đ</p>,
+        <>
+          {item.finalPrice !== item.priceProd ? (
+            <p>{item?.finalPrice.toLocaleString("vi")} đ</p>
+          ) : (
+            <p>{item?.priceProd.toLocaleString("vi")} đ</p>
+          )}
+        </>,
+        // <p>{item?.priceProd.toLocaleString("vi")} đ</p>,
         <p>{item.quantityProd}</p>,
         <>{dateFormat(item?.updatedAt, "HH:MM dd/mm/yyyy")}</>,
         <span

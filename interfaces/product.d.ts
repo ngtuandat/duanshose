@@ -121,7 +121,7 @@ export interface PurchaseProps {
     | "returns";
   createdAt: string;
   updatedAt: string;
-  finalPrice?: number;
+  finalPrice: number;
   warehouse: number;
   user: {
     id: string;
