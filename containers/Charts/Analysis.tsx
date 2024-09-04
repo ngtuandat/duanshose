@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
 
 interface AnalysisProps {
@@ -8,16 +8,24 @@ interface AnalysisProps {
   percent: string;
 }
 
-const randomColor = ["rgb(0,170,85)", "rgb(0,184,217)", "rgb(248,167,2)"];
-
 const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
   const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+  // Giá trị tham chiếu (baseline), có thể thay đổi để phù hợp với ngữ cảnh của bạn
+  const baseline = 0;
+
+  // Dữ liệu cho biểu đồ
+  const data = [baseline, parameter];
+
+  // Tạo dữ liệu series
   const series = [
     {
       name: "",
-      data: [25, 66, 41, 89, 63, 25, 44, 12, 36],
+      data: data,
     },
   ];
+
+  // Xác định kiểu đường và cấu hình y-axis
   const options = {
     chart: {
       type: "line",
@@ -25,7 +33,6 @@ const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
         enabled: true,
       },
     },
-
     tooltip: {
       fixed: {
         enabled: false,
@@ -37,18 +44,46 @@ const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
       x: {
         show: false,
       },
-      y: {},
+      y: {
+        formatter: (val: number) => `${val}`,
+      },
     },
     stroke: {
       show: true,
       curve: "smooth",
-      lineCap: "butt",
-      width: 2,
-      colors: color,
+      lineCap: "round",
+      width: 3,
+      colors: [color],
       dashArray: 0,
     },
     colors: [color],
+    yaxis: {
+      min: Math.min(...data) - 5, // Điều chỉnh khoảng cách tối thiểu
+      max: Math.max(...data) + 5, // Điều chỉnh khoảng cách tối đa
+    },
+    xaxis: {
+      categories: ["Baseline", "Current"], // Nhãn cho các điểm dữ liệu
+    },
+    markers: {
+      size: 6,
+      colors: [color],
+      strokeColor: "#fff",
+      strokeWidth: 2,
+      hover: {
+        size: 8,
+      },
+    },
+    grid: {
+      show: true,
+      borderColor: "#e0e0e0",
+      strokeDashArray: 5,
+    },
   };
+
+  // Xác định kích thước biểu đồ
+  const chartHeight = "40%";
+  const chartWidth = "60%";
+
   return (
     <div className="bg-product p-6 pr-0 rounded-lg flex items-center justify-between">
       <div className="space-y-4">
@@ -81,8 +116,8 @@ const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
           options={Object(options)}
           type="line"
           series={series}
-          height="40%"
-          width="60%"
+          height={chartHeight}
+          width={chartWidth}
         />
       </div>
     </div>

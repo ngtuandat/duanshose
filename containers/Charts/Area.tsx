@@ -132,9 +132,9 @@ const Area = ({ data }: any) => {
       <div className="mb-5">
         <p className="text-lg font-bold">Bán Hàng Theo Tháng</p>
         <p className="text-sm font-medium text-[rgb(187,195,202)]">
-          (+43%){" "}
+          {/* (+43%){" "} */}
           <span className="text-[rgb(145,158,171)] font-normal">
-            so với tháng trước
+            Doanh thu thực
           </span>
         </p>
       </div>
