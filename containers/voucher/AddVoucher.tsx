@@ -270,7 +270,7 @@ const AddVoucher = ({
           } cursor-text `}
           htmlFor="quantity"
         >
-          Số lượng.
+          Số lượng
         </label>
         {validatorMess?.quantity && (
           <i className="text-red-500 text-xs pl-1">{validatorMess?.quantity}</i>
