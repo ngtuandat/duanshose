@@ -121,6 +121,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [listVoucher, setListVoucher] =
     useState<{ voucher: DataVoucherProps }[]>();
   const token = Cookies.get("token");
+  console.log(listVoucher, "listVoucher");
 
   const shipFree = new Date();
   shipFree.setDate(shipFree.getDate() + 2);
@@ -1158,7 +1159,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                       Bạn không còn voucher nào!
                     </div>
                   ) : (
-                    <div className=" space-y-3 py-2 pr-1">
+                    <div className="space-y-3 py-2 pr-1">
                       {listVoucher?.map((item, idx) => {
                         const today = new Date();
                         const expiryDate = new Date(item.voucher.expiryDate);
@@ -1166,36 +1167,45 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                         const daysRemaining = Math.ceil(
                           timeDiff / (1000 * 60 * 60 * 24)
                         );
+
+                        // Kiểm tra nếu voucher loại VND và giảm giá lớn hơn tổng phụ thu
+                        const shouldDisplayVoucher = !(
+                          item.voucher.type === "vnd" &&
+                          item.voucher.discount > previewPrice
+                        );
+
                         return (
-                          <div
-                            key={idx}
-                            className="rounded-lg border-green-400/40 border p-2 flex items-center justify-between"
-                          >
-                            <div className="space-y-3">
-                              <div className="font-medium">
-                                Giảm{" "}
-                                {item.voucher.discount.toLocaleString("vi")}
-                                {item.voucher.type === "vnd" ? "đ" : "%"}
+                          shouldDisplayVoucher && (
+                            <div
+                              key={idx}
+                              className="rounded-lg border-green-400/40 border p-2 flex items-center justify-between"
+                            >
+                              <div className="space-y-3">
+                                <div className="font-medium">
+                                  Giảm{" "}
+                                  {item.voucher.discount.toLocaleString("vi")}
+                                  {item.voucher.type === "vnd" ? "đ" : "%"}
+                                </div>
+                                <div className="text-white/60 text-sm">
+                                  Hạn sử dụng còn {daysRemaining} ngày
+                                </div>
                               </div>
-                              <div className="text-white/60 text-sm">
-                                Hạn sử dụng còn {daysRemaining} ngày
-                              </div>
+                              <Button
+                                onClick={() => setVoucherUsed(item.voucher)}
+                                className="rounded-xl text-sm"
+                                label={
+                                  voucherUsed?.code === item.voucher.code
+                                    ? "Đã dùng"
+                                    : "Dùng"
+                                }
+                                variant={
+                                  voucherUsed?.code === item.voucher.code
+                                    ? "outline"
+                                    : "primary"
+                                }
+                              />
                             </div>
-                            <Button
-                              onClick={() => setVoucherUsed(item.voucher)}
-                              className="rounded-xl text-sm"
-                              label={
-                                voucherUsed?.code === item.voucher.code
-                                  ? "Đã dùng"
-                                  : "Dùng"
-                              }
-                              variant={
-                                voucherUsed?.code === item.voucher.code
-                                  ? "outline"
-                                  : "primary"
-                              }
-                            />
-                          </div>
+                          )
                         );
                       })}
                     </div>
@@ -1203,6 +1213,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                 </div>
               </div>
             )}
+
             <div className="bg-[rgb(33,43,54)] rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <p className="text-lg font-bold">Tóm Tắt Đơn Hàng</p>
