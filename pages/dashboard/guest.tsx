@@ -1,15 +1,13 @@
-import { ReactElement, useEffect, useMemo, useState, useRef } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import Card from "../../components/Card";
 import ContentHeader from "../../components/Header/ContentHeader";
 import MainAdmin from "../../components/Layouts/MainAdmin";
 import LoadingPage from "../../components/Loading/LoadingPage";
 import Table from "../../components/Table";
-import { useRouter } from "next/router";
 import { getOrderGuestAll, updateStatusGuest } from "../../services/guest";
 import toast from "react-hot-toast";
 import DropDown from "../../components/DropDown";
 import dateFormat from "dateformat";
-import ModalDetail from "../../components/Modal/ModalDetail";
 import ModalDetailVisitor from "../../components/Modal/ModalDetailVisitor";
 
 const Guest = ({ loading }: { loading: Boolean }) => {
@@ -33,6 +31,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     { title: "Đang giao hàng", value: "shipped" },
     { title: "Đã giao thành công", value: "delivered" },
     { title: "Đã hủy", value: "cancelled" },
+    { title: "Trả hàng", value: "returns" },
   ];
 
   const statusOrder = [
@@ -46,7 +45,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
 
   const [dataPurchase, setDataPurchase] = useState<any[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null); // Thay `any` bằng kiểu dữ liệu cụ thể của bạn
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const fetchAllPurchase = async () => {
     try {
@@ -62,22 +61,12 @@ const Guest = ({ loading }: { loading: Boolean }) => {
   }, []);
 
   const getFilteredStatusList = (currentStatus: string) => {
+    if (currentStatus === "returns") {
+      // Chỉ hiển thị "Trả hàng" nếu trạng thái hiện tại là "returns"
+      return [{ title: "Trả hàng", value: "returns" }];
+    }
+
     const currentIndex = statusOrder.indexOf(currentStatus);
-
-    if (currentStatus === "cancelled") {
-      return [{ title: "Đã hủy", value: "cancelled" }];
-    }
-
-    if (currentStatus === "delivered") {
-      return listStatus.filter((status) => status.value === "delivered");
-    }
-
-    if (currentStatus === "pending" || currentStatus === "processing") {
-      return listStatus.filter(
-        (status) => statusOrder.indexOf(status.value) >= currentIndex
-      );
-    }
-
     return listStatus.filter(
       (status) => statusOrder.indexOf(status.value) >= currentIndex
     );
@@ -108,7 +97,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
   };
 
   const dataSourcePurchase = useMemo(() => {
-    return dataPurchase.map((item, index) => {
+    return [...dataPurchase].reverse().map((item, index) => {
       let product;
       try {
         const productsArray = JSON.parse(item.products);

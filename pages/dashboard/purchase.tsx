@@ -185,7 +185,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         </div>,
         <>
           {item.finalPrice !== item.priceProd ? (
-            <p>{item?.finalPrice.toLocaleString("vi")} đ</p>
+            <p>{item?.finalPrice?.toLocaleString("vi")} đ</p>
           ) : (
             <p>{item?.priceProd.toLocaleString("vi")} đ</p>
           )}

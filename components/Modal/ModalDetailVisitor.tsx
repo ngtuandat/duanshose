@@ -25,7 +25,7 @@ const ModalDetailVisitor: FC<ModalDetailVisitorProps> = ({
           <strong>Địa chỉ :</strong> {orderDetail.buyerAddress}
         </p>
         <p className="text-lg font-semibold text-gray-300">
-          <strong>Số điện thoại :0</strong> {orderDetail.buyerPhone}
+          <strong>Số điện thoại :</strong> 0{orderDetail.buyerPhone}
         </p>
         <p className="text-lg font-semibold text-gray-300">
           <strong>Trạng thái :</strong> {orderDetail.status}
