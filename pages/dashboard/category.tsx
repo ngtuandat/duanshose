@@ -15,7 +15,7 @@ const Category = ({ loading }: { loading: Boolean }) => {
   const columnCategory = ["Số thứ tự", "Tên", ""];
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [dataCategory, setDataCategory] = useState<any[]>();
+  const [dataCategory, setDataCategory] = useState<any[]>([]);
   const [openConfirm, setOpenConfirm] = useState(false); // State cho modal xác nhận
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null); // State cho ID danh mục cần xóa
   const [isLoading, setIsLoading] = useState(false); // State cho trạng thái loading
@@ -28,7 +28,7 @@ const Category = ({ loading }: { loading: Boolean }) => {
 
   useEffect(() => {
     handleGetAllCategory();
-  }, [openCreate, openEdit]);
+  }, []);
 
   const handleEdit = (category: any) => {
     setCategoryEdit(category);
@@ -47,7 +47,9 @@ const Category = ({ loading }: { loading: Boolean }) => {
         const res = await deleteCategory(categoryToDelete);
         if (res?.status === 200) {
           toast.success("Xoá thành công danh mục!");
-          handleGetAllCategory();
+          setDataCategory((prev) =>
+            prev.filter((item) => item.id !== categoryToDelete)
+          );
           setOpenConfirm(false); // Đóng modal xác nhận
         } else {
           toast.error("Xoá danh mục thất bại!");
@@ -58,6 +60,19 @@ const Category = ({ loading }: { loading: Boolean }) => {
         setIsLoading(false); // Kết thúc loading
       }
     }
+  };
+
+  // Cập nhật danh sách category khi thêm hoặc sửa
+  const handleUpdateCategory = (category: any, isNew: boolean) => {
+    setDataCategory((prev) => {
+      if (isNew) {
+        return [...prev, category]; // Thêm danh mục mới
+      } else {
+        return prev.map(
+          (item) => (item.id === category.id ? category : item) // Cập nhật danh mục đã chỉnh sửa
+        );
+      }
+    });
   };
 
   const dataSourceCategory = useMemo(() => {
@@ -109,12 +124,16 @@ const Category = ({ loading }: { loading: Boolean }) => {
         open={openCreate}
         setOpen={setOpenCreate}
       >
-        <AddCategory handleClose={() => setOpenCreate(false)} />
+        <AddCategory
+          handleClose={() => setOpenCreate(false)}
+          handleUpdateCategory={handleUpdateCategory} // Truyền hàm cập nhật xuống AddCategory
+        />
       </Modal>
       <Modal title="Sửa category" open={openEdit} setOpen={setOpenEdit}>
         <AddCategory
           categoryEdit={categoryEdit}
           handleClose={() => setOpenEdit(false)}
+          handleUpdateCategory={handleUpdateCategory} // Truyền hàm cập nhật xuống AddCategory
         />
       </Modal>
       {openConfirm && (
