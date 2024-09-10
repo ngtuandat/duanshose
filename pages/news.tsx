@@ -58,7 +58,7 @@ const News = () => {
             onClick={() => goToPage(index + 1)}
             className={`px-4 py-2 rounded ${
               currentPage === index + 1
-                ? "bg-blue-600 text-white"
+                ? "bg-[#17A34A] text-white"
                 : "bg-gray-300 text-gray-800"
             }`}
           >
