@@ -26,12 +26,14 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
 
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false); // State cho modal xác nhận
+  const [openConfirm, setOpenConfirm] = useState(false);
   const [dataVoucher, setDataVoucher] = useState<DataVoucherProps[]>();
   const [voucherEdit, setVoucherEdit] = useState<DataVoucherProps>();
   const [voucherIdToDelete, setVoucherIdToDelete] = useState<string | null>(
     null
-  ); // ID voucher cần xóa
+  );
+  const [activeTab, setActiveTab] = useState("active");
+  const [voucherType, setVoucherType] = useState<"vnd" | "percent">("vnd");
 
   const handleGetAllVoucher = async () => {
     const res = await GetFullVoucher();
@@ -48,8 +50,8 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
   };
 
   const handleDelete = (id: string) => {
-    setVoucherIdToDelete(id); // Lưu ID voucher cần xóa
-    setOpenConfirm(true); // Mở modal xác nhận
+    setVoucherIdToDelete(id);
+    setOpenConfirm(true);
   };
 
   const confirmDelete = async () => {
@@ -59,61 +61,115 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
         toast.success("Xóa thành công voucher!");
         handleGetAllVoucher();
       }
-      setOpenConfirm(false); // Đóng modal xác nhận
-      setVoucherIdToDelete(null); // Xóa ID voucher đã lưu
+      setOpenConfirm(false);
+      setVoucherIdToDelete(null);
     }
   };
 
-  const dataSourceVoucher = useMemo(() => {
+  const filteredDataVoucher = useMemo(() => {
     if (!dataVoucher) return [[]];
-    return dataVoucher.map((item, idx) => [
-      <> {idx + 1}</>,
-      <div>
-        Giảm giá {item.discount.toLocaleString("vi")}
-        {item.type === "vnd" ? "đ" : "%"}
-      </div>,
-      <div className="text-primary font-bold">{item.code}</div>,
-      <div className="text-red-500 font-medium">
-        - {item.discount.toLocaleString("vi")}{" "}
-        {item.type === "vnd" ? "VND" : "%"}
-      </div>,
-      <div>{dateFormat(item.publishDate, "HH:MM dd/mm/yyyy")}</div>,
-      <div>{dateFormat(item.expiryDate, "HH:MM dd/mm/yyyy")}</div>,
-      <div className="flex items-center gap-3">
-        <p className="w-full flex items-center justify-center">
-          <span
-            onClick={() => handleEdit(item)}
-            className="text-xl cursor-pointer hover:text-green-500 rounded-full hover:bg-[rgba(145,158,171,0.08)] p-1"
-          >
-            <AiOutlineEdit />
-          </span>
-        </p>
-        <p className="w-full flex items-center justify-center">
-          <span
-            onClick={() => handleDelete(item.id)}
-            className="text-xl cursor-pointer hover:text-red-500 rounded-full hover:bg-[rgba(145,158,171,0.08)] p-1"
-          >
-            <AiOutlineDelete />
-          </span>
-        </p>
-      </div>,
-    ]);
-  }, [dataVoucher]);
+    return dataVoucher
+      .filter((item) =>
+        activeTab === "active"
+          ? new Date(item.expiryDate) > new Date()
+          : new Date(item.expiryDate) <= new Date()
+      )
+      .filter((item) => item.type === voucherType)
+      .map((item, idx) => [
+        <> {idx + 1}</>,
+        <div>
+          Giảm giá {item.discount.toLocaleString("vi")}
+          {item.type === "vnd" ? "đ" : "%"}
+        </div>,
+        <div className="text-primary font-bold">{item.code}</div>,
+        <div className="text-red-500 font-medium">
+          - {item.discount.toLocaleString("vi")}{" "}
+          {item.type === "vnd" ? "VND" : "%"}
+        </div>,
+        <div>{dateFormat(item.publishDate, "HH:MM dd/mm/yyyy")}</div>,
+        <div>{dateFormat(item.expiryDate, "HH:MM dd/mm/yyyy")}</div>,
+        <div className="flex items-center gap-3">
+          <p className="w-full flex items-center justify-center">
+            <span
+              onClick={() => handleEdit(item)}
+              className="text-xl cursor-pointer hover:text-green-500 rounded-full hover:bg-[rgba(145,158,171,0.08)] p-1"
+            >
+              <AiOutlineEdit />
+            </span>
+          </p>
+          <p className="w-full flex items-center justify-center">
+            <span
+              onClick={() => handleDelete(item.id)}
+              className="text-xl cursor-pointer hover:text-red-500 rounded-full hover:bg-[rgba(145,158,171,0.08)] p-1"
+            >
+              <AiOutlineDelete />
+            </span>
+          </p>
+        </div>,
+      ]);
+  }, [dataVoucher, activeTab, voucherType]);
 
   return (
     <div>
       {loading && <LoadingPage />}
       <ContentHeader title="Quản lý voucher" name="Danh sách voucher" />
+      <div className="flex space-x-4 mb-5">
+        <button
+          className={`p-2 px-4 rounded-lg transition-colors duration-300 ${
+            activeTab === "active"
+              ? "bg-green-500 text-white shadow-lg"
+              : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+          }`}
+          onClick={() => setActiveTab("active")}
+        >
+          Voucher
+        </button>
+        <button
+          className={`p-2 px-4 rounded-lg transition-colors duration-300 ${
+            activeTab === "expired"
+              ? "bg-green-500 text-white shadow-lg"
+              : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+          }`}
+          onClick={() => setActiveTab("expired")}
+        >
+          Hết hạn
+        </button>
+      </div>
+
       <Card>
         <Card.Content>
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between">
             <Button
               onClick={() => setOpenCreate(true)}
               className="mb-5"
               label="Tạo voucher"
             />
+            <div className="bg-gray-400 flex items-center justify-center rounded-full px-[14px] py-2 mb-5">
+              <div className="flex">
+                <button
+                  className={`p-1 px-3 text-sm transition-all ${
+                    voucherType === "vnd"
+                      ? "bg-green-500 text-white shadow-lg rounded-full transform scale-105"
+                      : "text-gray-800"
+                  }`}
+                  onClick={() => setVoucherType("vnd")}
+                >
+                  VND
+                </button>
+                <button
+                  className={`p-1 px-4 text-sm transition-all ${
+                    voucherType === "percent"
+                      ? "bg-green-500 text-white shadow-lg rounded-full transform scale-105"
+                      : "text-gray-800"
+                  }`}
+                  onClick={() => setVoucherType("percent")}
+                >
+                  %
+                </button>
+              </div>
+            </div>
           </div>
-          <Table columns={columnVocher} dataSource={dataSourceVoucher} />
+          <Table columns={columnVocher} dataSource={filteredDataVoucher} />
         </Card.Content>
       </Card>
       <Modal title="Thêm voucher mới" open={openCreate} setOpen={setOpenCreate}>

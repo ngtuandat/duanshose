@@ -68,7 +68,7 @@ const AddVoucher = ({
 
     // Kiểm tra số lượng
     if (quantity <= 0) {
-      mess.quantity = "Hãy nhập số lượng hợp lệ";
+      mess.quantity = "Số Lượng khác 0,là số dương,hãy nhập số lượng hợp lệ";
     }
 
     setValidatorMess(mess);
@@ -254,7 +254,7 @@ const AddVoucher = ({
 
       <div className="relative mb-4">
         <input
-          value={quantity}
+          value={quantity === 0 ? "" : quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
           id="quantity"
           type="number"

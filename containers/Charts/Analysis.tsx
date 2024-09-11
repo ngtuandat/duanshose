@@ -89,7 +89,7 @@ const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
       <div className="space-y-4">
         <p className="text-sm font-semibold">{name}</p>
         <p className="font-bold text-3xl">{parameter.toLocaleString("vi")}</p>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <img
             src={
               percent.includes("+")
@@ -109,7 +109,7 @@ const Analysis = ({ name, parameter, color, percent }: AnalysisProps) => {
               so với tuần trước
             </span>
           </p>
-        </div>
+        </div> */}
       </div>
       <div className="mr-2">
         <ApexCharts

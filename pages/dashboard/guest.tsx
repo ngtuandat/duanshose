@@ -173,9 +173,65 @@ const Guest = ({ loading }: { loading: Boolean }) => {
   }, [dataPurchase, currentPage]);
 
   // Hàm tính toán thống kê
+  // const calculateStats = () => {
+  //   if (!startDate || !endDate)
+  //     return { totalOrders: 0, totalAmount: 0, totalQuantity: 0 };
+
+  //   // Điều chỉnh thời gian khi ngày bắt đầu và kết thúc giống nhau
+  //   const start = new Date(startDate);
+  //   const end = new Date(endDate);
+
+  //   if (start.toDateString() === end.toDateString()) {
+  //     start.setHours(0, 0, 0, 0); // 0h ngày bắt đầu
+  //     end.setHours(23, 59, 59, 999); // 23h59 ngày kết thúc
+  //   } else {
+  //     end.setHours(23, 59, 59, 999); // Đảm bảo giờ kết thúc là cuối ngày
+  //   }
+
+  //   const filteredOrders = dataPurchase.filter((item) => {
+  //     const orderDate = new Date(item.updatedAt);
+  //     return (
+  //       item.status === "delivered" && orderDate >= start && orderDate <= end
+  //     );
+  //   });
+
+  //   const totalOrders = filteredOrders.length;
+  //   const totalAmount = filteredOrders.reduce((sum, item) => {
+  //     let product;
+  //     try {
+  //       const productsArray = JSON.parse(item.products);
+  //       product = productsArray[0];
+  //     } catch (error) {
+  //       console.error("Error parsing JSON:", error);
+  //       product = {};
+  //     }
+  //     return sum + product.quantity * product.price;
+  //   }, 0);
+
+  //   const totalQuantity = filteredOrders.reduce((sum, item) => {
+  //     let product;
+  //     try {
+  //       const productsArray = JSON.parse(item.products);
+  //       product = productsArray[0];
+  //     } catch (error) {
+  //       console.error("Error parsing JSON:", error);
+  //       product = {};
+  //     }
+  //     return sum + product.quantity;
+  //   }, 0);
+
+  //   return { totalOrders, totalAmount, totalQuantity };
+  // };
   const calculateStats = () => {
     if (!startDate || !endDate)
-      return { totalOrders: 0, totalAmount: 0, totalQuantity: 0 };
+      return {
+        totalOrders: 0,
+        totalAmount: 0,
+        totalQuantity: 0,
+        shippingOrders: 0,
+        shippingQuantity: 0,
+        shippingAmount: 0,
+      };
 
     // Điều chỉnh thời gian khi ngày bắt đầu và kết thúc giống nhau
     const start = new Date(startDate);
@@ -188,6 +244,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
       end.setHours(23, 59, 59, 999); // Đảm bảo giờ kết thúc là cuối ngày
     }
 
+    // Đơn hàng đã giao
     const filteredOrders = dataPurchase.filter((item) => {
       const orderDate = new Date(item.updatedAt);
       return (
@@ -220,11 +277,61 @@ const Guest = ({ loading }: { loading: Boolean }) => {
       return sum + product.quantity;
     }, 0);
 
-    return { totalOrders, totalAmount, totalQuantity };
+    // Đơn hàng đang giao
+    const shippingOrdersData = dataPurchase.filter((item) => {
+      const orderDate = new Date(item.updatedAt);
+      return (
+        item.status !== "delivered" &&
+        item.status !== "cancelled" &&
+        item.status !== "returns" &&
+        orderDate >= start &&
+        orderDate <= end
+      );
+    });
+
+    const shippingOrders = shippingOrdersData.length;
+    const shippingAmount = shippingOrdersData.reduce((sum, item) => {
+      let product;
+      try {
+        const productsArray = JSON.parse(item.products);
+        product = productsArray[0];
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        product = {};
+      }
+      return sum + product.quantity * product.price;
+    }, 0);
+
+    const shippingQuantity = shippingOrdersData.reduce((sum, item) => {
+      let product;
+      try {
+        const productsArray = JSON.parse(item.products);
+        product = productsArray[0];
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        product = {};
+      }
+      return sum + product.quantity;
+    }, 0);
+
+    return {
+      totalOrders,
+      totalAmount,
+      totalQuantity,
+      shippingOrders,
+      shippingAmount,
+      shippingQuantity,
+    };
   };
 
-  const { totalOrders, totalAmount, totalQuantity } = calculateStats();
-
+  const {
+    totalOrders,
+    totalAmount,
+    totalQuantity,
+    shippingOrders,
+    shippingAmount,
+    shippingQuantity,
+  } = calculateStats();
   return (
     <div>
       {loading && <LoadingPage />}
@@ -314,19 +421,37 @@ const Guest = ({ loading }: { loading: Boolean }) => {
                   name="Đơn hàng thành công"
                   parameter={totalOrders}
                   color="#F8A804"
-                  percent="+2.6%"
+                  percent=""
                 />
                 <Analysis
                   name="Sản phẩm đã bán"
                   parameter={totalQuantity}
                   color="rgb(0,170,85)"
-                  percent="+2.6%"
+                  percent=""
                 />
                 <Analysis
                   name="Doanh thu thực"
                   parameter={totalAmount}
                   color="rgb(0,184,217)"
-                  percent="-0.1%"
+                  percent=""
+                />
+                <Analysis
+                  name="Đơn hàng đang giao"
+                  parameter={shippingOrders}
+                  color="#F8A804"
+                  percent=""
+                />
+                <Analysis
+                  name="Sản phẩm đang giao"
+                  parameter={shippingQuantity}
+                  color="rgb(0,170,85)"
+                  percent=""
+                />
+                <Analysis
+                  name="Doanh thu tạm tính"
+                  parameter={shippingAmount}
+                  color="rgb(0,184,217)"
+                  percent=""
                 />
               </div>
               {/* <p>
