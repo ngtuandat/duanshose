@@ -26,7 +26,7 @@ const Role: React.FC<IProps> = (props) => {
         setSelected(false);
       } else if (option === "User" && count <= 1) {
         toast.error("Phải có ít nhất một admin.");
-        return;
+        return; // Nếu không thoả điều kiện thì thoát ra luôn
       }
 
       setSelectValue(option);
@@ -75,12 +75,23 @@ const Role: React.FC<IProps> = (props) => {
                 <Menu.Item key={idx}>
                   {({ active }) => (
                     <p
-                      onClick={() => handleUpdate(option)}
+                      onClick={() => {
+                        if (option === "User" && count <= 1) {
+                          // Chặn không cho chọn User khi count <= 1
+                          toast.error("Phải có ít nhất một admin.");
+                          return;
+                        }
+                        handleUpdate(option);
+                      }}
                       className={`cursor-pointer rounded-md block py-1.5 px-2 text-sm font-medium text-white ${
                         active ? "bg-[rgba(145,158,171,0.10)]" : ""
                       } ${
                         selectValue === option
                           ? "bg-[rgba(145,158,171,0.16)]"
+                          : ""
+                      } ${
+                        option === "User" && count <= 1
+                          ? "opacity-50 cursor-not-allowed"
                           : ""
                       }`}
                     >
