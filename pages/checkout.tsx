@@ -73,9 +73,11 @@ const listCity = [
 
 const Checkout = ({ loading }: { loading: Boolean }) => {
   const router = useRouter();
+  const [isLoadding, setIsLoadding] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
+
   // const [dataProduct, setDataProduct] = useState<any[]>([]);
   const [saveQuantity, setSaveQuantity] = useState<number | null>(null);
 
@@ -501,6 +503,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   //   }
   // };
   const handleBoughtProd = async ({ isPay }: { isPay?: boolean }) => {
+    setIsLoadding(true);
     console.log({ voucherUsed });
     try {
       if (token) {
@@ -563,6 +566,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   console.log({ listProductBuy });
 
   const handlePayment = async () => {
+    setIsLoadding(true);
     setOpenModalPayment(true);
   };
 
@@ -1275,8 +1279,24 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
               </button>
             )}
             {currentTab === tabs[2] && (
+              // <button
+              //   onClick={() => {
+              //     optionPayment.includes("VNPAY")
+              //       ? handlePayment()
+              //       : handleBoughtProd({ isPay: false });
+              //   }}
+              //   className={`${
+              //     countCard === 0
+              //       ? "text-[rgba(145,158,171,0.8)] cursor-default pointer-events-none select-none bg-[rgba(145,158,171,0.24)]"
+              //       : "bg-green-600 hover:bg-green-700 text-white"
+              //   }  w-full py-3 rounded-md font-semibold mt-4`}
+              // >
+              //   {optionPayment.includes("VNPAY") ? "Thanh toán" : "Đặt Hàng"}
+              // </button>
               <button
                 onClick={() => {
+                  if (isLoadding) return; // Ngăn chặn nhấp chuột khi đang xử lý
+                  setIsLoadding(true);
                   optionPayment.includes("VNPAY")
                     ? handlePayment()
                     : handleBoughtProd({ isPay: false });
@@ -1284,10 +1304,41 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                 className={`${
                   countCard === 0
                     ? "text-[rgba(145,158,171,0.8)] cursor-default pointer-events-none select-none bg-[rgba(145,158,171,0.24)]"
+                    : loading
+                    ? "bg-gray-500 cursor-default pointer-events-none" // Thay đổi màu nền khi đang loading
                     : "bg-green-600 hover:bg-green-700 text-white"
-                }  w-full py-3 rounded-md font-semibold mt-4`}
+                } w-full py-3 rounded-md font-semibold mt-4`}
+                disabled={isLoadding} // Vô hiệu hóa nút khi đang loading
               >
-                {optionPayment.includes("VNPAY") ? "Thanh toán" : "Đặt Hàng"}
+                {isLoadding ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0z"
+                      ></path>
+                    </svg>
+                    Đang xử lý...
+                  </span>
+                ) : optionPayment.includes("VNPAY") ? (
+                  "Thanh toán"
+                ) : (
+                  "Đặt Hàng"
+                )}
               </button>
             )}
           </div>

@@ -76,6 +76,50 @@ const AddVoucher = ({
     return false;
   };
 
+  // const handleCreateVoucher = async () => {
+  //   const hasErrors = validatorForm();
+  //   if (hasErrors) {
+  //     // Nếu có lỗi validation, không thực hiện gửi yêu cầu API
+  //     return;
+  //   }
+
+  //   setLoadingCreate(true);
+  //   try {
+  //     if (voucherEdit) {
+  //       const voucherNew = {
+  //         id: voucherEdit.id,
+  //         discount: Number(discount),
+  //         expiryDate: new Date(expiryDate).toISOString(),
+  //         publishDate: new Date(publishDate).toISOString(),
+  //         type: typeActive,
+  //       };
+
+  //       const res = await EditVoucher(voucherNew);
+  //       if (res.status === 200) {
+  //         toast.success("Sửa voucher thành công!");
+  //         handleClose();
+  //       }
+  //     } else {
+  //       const voucherCreate = {
+  //         discount: Number(discount),
+  //         expiryDate: new Date(expiryDate).toISOString(),
+  //         publishDate: new Date(publishDate).toISOString(),
+  //         quantity,
+  //         type: typeActive,
+  //       };
+
+  //       const res = await CreateVoucher(voucherCreate);
+  //       if (res.status === 200) {
+  //         toast.success("Tạo mới voucher thành công!");
+  //         handleClose();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   setLoadingCreate(false);
+  // };
+
   const handleCreateVoucher = async () => {
     const hasErrors = validatorForm();
     if (hasErrors) {
@@ -85,12 +129,21 @@ const AddVoucher = ({
 
     setLoadingCreate(true);
     try {
+      // Kiểm tra nếu ngày bắt đầu và ngày kết thúc giống nhau
+      const publishDateObj = new Date(publishDate);
+      const expiryDateObj = new Date(expiryDate);
+
+      if (publishDateObj.getTime() === expiryDateObj.getTime()) {
+        // Đặt ngày hết hạn là 23h59 cùng ngày
+        expiryDateObj.setHours(23, 59, 59, 999);
+      }
+
       if (voucherEdit) {
         const voucherNew = {
           id: voucherEdit.id,
           discount: Number(discount),
-          expiryDate: new Date(expiryDate).toISOString(),
-          publishDate: new Date(publishDate).toISOString(),
+          expiryDate: expiryDateObj.toISOString(),
+          publishDate: publishDateObj.toISOString(),
           type: typeActive,
         };
 
@@ -102,8 +155,8 @@ const AddVoucher = ({
       } else {
         const voucherCreate = {
           discount: Number(discount),
-          expiryDate: new Date(expiryDate).toISOString(),
-          publishDate: new Date(publishDate).toISOString(),
+          expiryDate: expiryDateObj.toISOString(),
+          publishDate: publishDateObj.toISOString(),
           quantity,
           type: typeActive,
         };
