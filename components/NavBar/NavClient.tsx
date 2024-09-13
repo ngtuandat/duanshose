@@ -2,8 +2,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 const NavClient = () => {
+  const token = Cookies.get("token");
   const router = useRouter();
   console.log(router, "routerxxx");
   const path = router.pathname;
@@ -37,8 +39,8 @@ const NavClient = () => {
       label: "Liên Hệ",
     },
     {
-      url: "/checkout",
-      label: <FaShoppingCart />,
+      url: token ? "/checkout" : "/user/purchase",
+      label: token ? <FaShoppingCart /> : "Đơn Mua",
     },
     // {
     //   url: "/user/profile",

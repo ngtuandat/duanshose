@@ -10,7 +10,7 @@ const Product = ({ loading }: { loading: Boolean }) => {
     <>
       {loading && <LoadingPage />}
       <CustomHeader title="Sản phẩm">
-        <title>Sản phẩm | Cuc Shoes</title>
+        <title>Sản phẩm | FitFusionZone</title>
       </CustomHeader>
       <div className="text-white">
         <FilterContent />

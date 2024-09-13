@@ -5,7 +5,7 @@ interface TableProps {
   /**
    * Data record array to be displayed
    */
-  dataSource: (ReactNode | string)[][];
+  dataSource: (ReactNode | string | any)[][];
   /**
    * Columns of table
    */

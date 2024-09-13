@@ -1,67 +1,71 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { CategoryValidator, VoucherValidator } from "../interfaces/voucher";
+import { CategoryValidator } from "../interfaces/voucher";
 import Button from "../components/Button";
-import { CreateVoucher } from "../services/voucher";
 import { createCategory, editCategory } from "../services/category";
 
 const AddCategory = ({
   handleClose,
   categoryEdit,
+  handleUpdateCategory,
 }: {
   handleClose: () => void;
   categoryEdit?: any;
+  handleUpdateCategory?: (category: any, isNew?: any) => void;
 }) => {
   const [name, setName] = useState("");
-
   const [loadingCreate, setLoadingCreate] = useState(false);
-
   const [validatorMess, setValidatorMess] = useState<CategoryValidator>();
 
+  // Hàm kiểm tra form
   const validatorForm = () => {
     const mess: any = {};
-
     if (!name) {
       mess.name = "Hãy nhập tên phân loại";
     }
-
     setValidatorMess(mess);
     if (Object.keys(mess).length > 0) return true;
     return false;
   };
 
-  const handleCreateVoucher = async () => {
+  // Hàm xử lý tạo hoặc chỉnh sửa danh mục
+  const handleCreateCategory = async () => {
     setLoadingCreate(true);
     try {
-      validatorForm();
-      if (categoryEdit) {
-        const categoryNew = {
-          id: categoryEdit.id,
-          name: name,
-        };
+      // Kiểm tra form
+      if (validatorForm()) {
+        setLoadingCreate(false); // Dừng loading nếu form không hợp lệ
+        return;
+      }
 
+      if (categoryEdit) {
+        // Nếu là chỉnh sửa danh mục
+        const categoryNew = { id: categoryEdit.id, name };
         const res = await editCategory(categoryNew);
         if (res.status === 200) {
           toast.success("Sửa category thành công!");
-          handleClose();
+          handleUpdateCategory?.(categoryNew, false); // Cập nhật danh mục đã chỉnh sửa
+          handleClose(); // Đóng modal sau khi hoàn thành
         }
       } else {
-        const categoryCreate = {
-          name,
-        };
-
+        // Nếu là tạo mới danh mục
+        const categoryCreate = { name };
         const res = await createCategory(categoryCreate);
         if (res.status === 200) {
           toast.success("Tạo mới category thành công!");
-          handleClose();
+          handleUpdateCategory?.(res.data, true); // Cập nhật danh mục mới
+          handleClose(); // Đóng modal sau khi hoàn thành
         }
       }
     } catch (error) {
       console.log(error);
+      toast.error("Có lỗi xảy ra!");
+    } finally {
+      setLoadingCreate(false); // Tắt trạng thái loading
     }
-    setLoadingCreate(false);
   };
 
+  // Gán tên danh mục khi chỉnh sửa
   useEffect(() => {
     if (categoryEdit) {
       setName(categoryEdit.name);
@@ -98,7 +102,7 @@ const AddCategory = ({
       <div className="flex items-center justify-center">
         <Button
           loading={loadingCreate}
-          onClick={handleCreateVoucher}
+          onClick={handleCreateCategory}
           label={categoryEdit ? "Lưu" : "Tạo"}
         />
       </div>

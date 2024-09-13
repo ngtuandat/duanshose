@@ -66,6 +66,13 @@ const ManageAccount = ({ loading }: { loading: Boolean }) => {
     fetchUsers(router.query);
   }, [router.query]);
 
+  const handleRoleChange = () => {
+    fetchUsers(router.query); // Làm mới dữ liệu sau khi cập nhật quyền
+  };
+
+  var abc = users.filter((user: any) => user.admin).length;
+  console.log(abc, "loghocai");
+
   const dataSource = useMemo(() => {
     return users.map((item: ListUser, index: number) => {
       return [
@@ -74,11 +81,17 @@ const ManageAccount = ({ loading }: { loading: Boolean }) => {
         item?.email,
         <>{dateFormat(item?.createdAt, "HH:MM dd/mm/yyyy")}</>,
         <>
-          <Role role={item?.admin} id={item?.id} />
+          <Role
+            count={abc}
+            role={item?.admin}
+            id={item?.id}
+            onRoleChange={handleRoleChange}
+          />
         </>,
       ];
     });
   }, [users]);
+
   return (
     <div>
       {loading && <LoadingPage />}

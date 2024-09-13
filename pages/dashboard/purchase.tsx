@@ -93,7 +93,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     null
   );
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 10;
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -166,6 +166,9 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     const endIndex = startIndex + itemsPerPage;
 
     return filteredPurchases.slice(startIndex, endIndex).map((item, index) => {
+      {
+        console.log(item, "logdulieu");
+      }
       return [
         <> {startIndex + index + 1}</>,
         <div className="text-primary font-bold">
@@ -180,7 +183,14 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
             src={item.imageProd}
           />
         </div>,
-        <p>{item?.priceProd.toLocaleString("vi")} đ</p>,
+        <>
+          {item.finalPrice !== item.priceProd ? (
+            <p>{item?.finalPrice?.toLocaleString("vi")} đ</p>
+          ) : (
+            <p>{item?.priceProd.toLocaleString("vi")} đ</p>
+          )}
+        </>,
+        // <p>{item?.priceProd.toLocaleString("vi")} đ</p>,
         <p>{item.quantityProd}</p>,
         <>{dateFormat(item?.updatedAt, "HH:MM dd/mm/yyyy")}</>,
         <span
@@ -265,7 +275,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg"
           disabled={currentPage === 1}
         >
           Trang trước
@@ -277,7 +287,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
-          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg"
           disabled={currentPage === totalPages}
         >
           Trang sau

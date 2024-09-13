@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import Link from "next/dist/client/link";
 import { useRouter } from "next/dist/client/router";
 import { SyntheticEvent, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import validator from "validator";
@@ -11,6 +12,7 @@ import { registerFailed } from "../redux/authSlice";
 
 const Register = () => {
   const [firstName, setFirstName] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -61,26 +63,59 @@ const Register = () => {
     return false;
   };
 
+  // const handleRegister = async (e: SyntheticEvent) => {
+  //   setLoading(true);
+  //   e.preventDefault();
+  //   try {
+  //     const valid = validatorForm();
+
+  //     if (!valid) {
+  //       try {
+  //         const newAcc = {
+  //           firstName: firstName,
+  //           lastName: lastName,
+  //           email: email,
+  //           password: password,
+  //         };
+  //         await registerUser(newAcc, dispatch, router);
+  //         toast.success("Đăng ký tài khoản thành công");
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const handleRegister = async (e: SyntheticEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const valid = validatorForm();
 
       if (!valid) {
+        const newAcc = {
+          firstName,
+          lastName,
+          email,
+          password,
+        };
+
         try {
-          const newAcc = {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-          };
           await registerUser(newAcc, dispatch, router);
+          toast.success("Đăng ký tài khoản thành công");
         } catch (error) {
-          console.log(error);
+          console.error("Đăng ký thất bại:", error);
+          toast.error("Đăng ký tài khoản thất bại. Vui lòng thử lại.");
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Lỗi kiểm tra dữ liệu:", error);
+      toast.error("Lỗi kiểm tra dữ liệu. Vui lòng kiểm tra lại thông tin.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,7 +135,7 @@ const Register = () => {
       <div className="bg-[rgb(22,28,36)] w-[90%] lg:w-2/4 xl:w-2/5 shadow-2xl rounded-xl py-8 md:py-12 text-xl mt-8 px-5 md:px-12 flex flex-col justify-center z-50">
         <div className="space-y-2">
           <h1 className=" text-white text-2xl sm:font-medium sm:text-3xl text-center">
-            Chào mừng đến với Cuc Shoes
+            Chào mừng đến với FitFusionZone
           </h1>
         </div>
         <form
@@ -248,10 +283,37 @@ const Register = () => {
               </button>
             </Link>
             <button
+              disabled={loading}
               type="submit"
               className="bg-[rgb(0,171,85)] px-3 text-white md:px-14 text-lg rounded-full py-2 hover:bg-opacity-75 font-semibold"
             >
-              Đăng ký
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0z"
+                    ></path>
+                  </svg>
+                  Đăng ký..
+                </span>
+              ) : (
+                " Đăng ký"
+              )}
             </button>
           </div>
         </form>

@@ -10,7 +10,7 @@ const SignUp = ({ loading }: { loading: Boolean }) => {
     <>
       {loading && <LoadingPage />}
       <CustomHeader>
-        <title>Register | Cuc Shoes</title>
+        <title>Register | FitFusionZone</title>
       </CustomHeader>
       <Register />
     </>

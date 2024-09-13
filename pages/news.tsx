@@ -25,7 +25,7 @@ const News = () => {
   return (
     <div className="px-4 py-8">
       <CustomHeader>
-        <title>Tin Tức - Sự kiện | Cuc Shoes</title>
+        <title>Tin Tức - Sự kiện | FitFusionZone</title>
       </CustomHeader>
       <div className="text-white text-3xl font-bold mb-8 text-center">
         Tin Tức - Sự kiện
@@ -58,7 +58,7 @@ const News = () => {
             onClick={() => goToPage(index + 1)}
             className={`px-4 py-2 rounded ${
               currentPage === index + 1
-                ? "bg-blue-600 text-white"
+                ? "bg-[#17A34A] text-white"
                 : "bg-gray-300 text-gray-800"
             }`}
           >

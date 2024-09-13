@@ -66,7 +66,7 @@ const menuAdmin = [
     icon: <MdCategory />,
   },
   {
-    label: "Quản lý đánh giá",
+    label: "Quản lý bình luận",
     href: "/dashboard/review",
     icon: <FaPenAlt />,
   },

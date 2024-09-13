@@ -35,18 +35,18 @@ const HeaderAdmin = () => {
   }, [token]);
   return (
     <div className="flex items-center h-full text-[rgb(145,158,171)] select-none">
-      <div className="rounded-full hover:bg-[rgba(145,158,171,0.08)] hover:scale-105 p-2 flex items-center justify-center cursor-pointer">
+      {/* <div className="rounded-full hover:bg-[rgba(145,158,171,0.08)] hover:scale-105 p-2 flex items-center justify-center cursor-pointer">
         <FiSearch className="text-lg" />
-      </div>
+      </div> */}
       <div className="flex-1 flex items-center space-x-3 justify-end">
-        <div className="cursor-pointer rounded-full hover:bg-[rgba(145,158,171,0.08)] hover:scale-105">
+        {/* <div className="cursor-pointer rounded-full hover:bg-[rgba(145,158,171,0.08)] hover:scale-105">
           <div className="p-2">
             <img src="/images/svg/flag_vn.svg" alt="" />
           </div>
         </div>
         <div className="p-2 cursor-pointer rounded-full hover:bg-[rgba(145,158,171,0.08)] hover:scale-105">
           <IoMdNotifications className="text-xl" />
-        </div>
+        </div> */}
         <MenuDropIcon
           logout
           menu={menuAccout}

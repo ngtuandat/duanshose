@@ -140,19 +140,25 @@ const ManageProduct = ({ loading }: { loading: Boolean }) => {
       return [
         <> {count === 0 ? index + 1 : count++}</>,
         <p>{item?.name}</p>,
-        <div className="flex items-center">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: item?.description?.slice(0, 20),
-            }}
-          />
-          <p
-            className="cursor-pointer"
-            onClick={() => handleMoreDesc(item?.description)}
-          >
-            ... Xem thêm
-          </p>
-        </div>,
+        <>
+          {item?.description ? (
+            <div className="flex items-center ">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: item?.description?.slice(0, 20),
+                }}
+              />
+              <p
+                className="cursor-pointer"
+                onClick={() => handleMoreDesc(item?.description)}
+              >
+                ... Xem thêm
+              </p>
+            </div>
+          ) : (
+            "Chưa có mô tả"
+          )}
+        </>,
         <>
           {item?.size?.map((size, idx) => (
             <p key={idx}>
@@ -182,12 +188,13 @@ const ManageProduct = ({ loading }: { loading: Boolean }) => {
           {item?.listImage.map((img) => (
             <img
               key={img}
-              className="w-1/2 cursor-pointer rounded-lg object-cover"
+              className="w-full max-w-xs h-auto cursor-pointer rounded-lg object-cover"
               onClick={() => handleModalImgMain(img)}
               src={img}
             />
           ))}
         </>,
+
         <p>{item?.price.toLocaleString("vi")} đ</p>,
         <>{dateFormat(item?.createdAt, "HH:MM dd/mm/yyyy")}</>,
         <p className="w-full flex items-center justify-center">

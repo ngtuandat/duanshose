@@ -73,21 +73,22 @@ const listCity = [
 
 const Checkout = ({ loading }: { loading: Boolean }) => {
   const router = useRouter();
+  const [isLoadding, setIsLoadding] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
-  const [dataProduct, setDataProduct] = useState<any[]>([]);
-  const [saveQuantity, setSaveQuantity] = useState<number | null>(null);
-  console.log(saveQuantity, "saveQuantity");
 
-  useEffect(() => {
-    listProductBuy.forEach((item) => {
-      const product = dataProduct.find((elm) => elm.id === item.idProd);
-      if (product && saveQuantity !== product.quantity) {
-        setSaveQuantity(product.quantity);
-      }
-    });
-  }, [dataProduct, listProductBuy]);
+  // const [dataProduct, setDataProduct] = useState<any[]>([]);
+  const [saveQuantity, setSaveQuantity] = useState<number | null>(null);
+
+  // useEffect(() => {
+  //   listProductBuy.forEach((item) => {
+  //     const product = dataProduct.find((elm) => elm?.id === item.idProd);
+  //     if (product && saveQuantity !== product.quantity) {
+  //       setSaveQuantity(product.quantity);
+  //     }
+  //   });
+  // }, [dataProduct, listProductBuy]);
 
   const [quantityProdGuest, setQuantityProdGuest] = useState(1);
   const [listTabOver, setListTabOver] = useState<string[]>([]);
@@ -102,13 +103,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [mailAddress, setMailAddress] = useState<ChooseAddress>();
   const [validatorMess, setValidatorMess] = useState<ValidatorAddress>();
   const [voucherUsed, setVoucherUsed] = useState<DataVoucherProps>();
-  const idPrd = useMemo(
-    () => listProductBuy.map((item) => item.idProd),
-    [listProductBuy]
-  );
+  // const idPrd = useMemo(
+  //   () => listProductBuy.map((item) => item.idProd),
+  //   [listProductBuy]
+  // );
 
-  console.log(idPrd, "logidPrd");
-  console.log(dataProduct, "dataProduct");
+  // console.log(dataProduct, "dataProduct");
   console.log(voucherUsed, "voucherUsed");
   const [optionDelivery, setOptionDelivery] = useState<string>(
     "Giao hàng tiêu chuẩn (Miễn Phí)"
@@ -123,6 +123,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [listVoucher, setListVoucher] =
     useState<{ voucher: DataVoucherProps }[]>();
   const token = Cookies.get("token");
+  console.log(listVoucher, "listVoucher");
 
   const shipFree = new Date();
   shipFree.setDate(shipFree.getDate() + 2);
@@ -168,18 +169,39 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     quantity: number
   ) => {
     try {
-      const productUpdate = { idProd, idUser };
-      if (quantity >= 1) {
+      if (quantity > 1) {
+        const productUpdate = { idProd, idUser };
         const res = await miniusQuantityCart(productUpdate);
         if (res.status === 200 && token) {
           const decoded: any = jwt_decode(token);
           fetchCart(decoded.id);
         }
+      } else {
+        toast.error("Số lượng sản phẩm không thể nhỏ hơn 1");
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const handleMinus = async (
+  //   idProd: string,
+  //   idUser: string,
+  //   quantity: number
+  // ) => {
+  //   try {
+  //     const productUpdate = { idProd, idUser };
+  //     if (quantity >= 1) {
+  //       const res = await miniusQuantityCart(productUpdate);
+  //       if (res.status === 200 && token) {
+  //         const decoded: any = jwt_decode(token);
+  //         fetchCart(decoded.id);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handlePlus = async (idProd: string, idUser: string) => {
     try {
@@ -314,7 +336,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       return [
         <div className="flex items-center space-x-2">
           <img
-            className="w-16 h-16 rounded-lg"
+            className="w-16 h-16 rounded-lg "
             src={item?.imageProd}
             alt={item?.nameProd}
           />
@@ -352,14 +374,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
             <BiPlus onClick={() => handlePlus(item?.idProd, item?.userId)} />
           </button>
         </div>,
-        <div>
-          {dataProduct.map((elm) => {
-            if (elm.id === item.idProd) {
-              return <span key={elm.id}>{elm.quantity}</span>;
-            }
-            return null;
-          })}
-        </div>,
+        <div>{item.productQuantity}</div>,
 
         // <div>
         //   {dataProduct.map((elm) => elm.id === item.idProd && elm.quantity)}
@@ -509,6 +524,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   //   }
   // };
   const handleBoughtProd = async ({ isPay }: { isPay?: boolean }) => {
+    setIsLoadding(true);
     console.log({ voucherUsed });
     try {
       if (token) {
@@ -522,21 +538,21 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           });
         }
 
-        if (saveQuantity !== null) {
-          listProductBuy.forEach((item) => {
-            const product = dataProduct.find((elm) => elm.id === item.idProd);
-            if (product) {
-              const remainingQuantity = product.quantity - item.quantityProd;
-              setSaveQuantity(remainingQuantity);
-            } else {
-              console.log("Product not found in dataProduct.");
-            }
-          });
-        } else {
-          console.log(
-            "saveQuantity is null, cannot update the remaining quantity."
-          );
-        }
+        // if (saveQuantity !== null) {
+        //   listProductBuy.forEach((item) => {
+        //     const product = dataProduct.find((elm) => elm.id === item.idProd);
+        //     if (product) {
+        //       const remainingQuantity = product.quantity - item.quantityProd;
+        //       setSaveQuantity(remainingQuantity);
+        //     } else {
+        //       console.log("Product not found in dataProduct.");
+        //     }
+        //   });
+        // } else {
+        //   console.log(
+        //     "saveQuantity is null, cannot update the remaining quantity."
+        //   );
+        // }
 
         console.log(123123878, "hshs");
         setOpenModalBought(true);
@@ -571,6 +587,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   console.log({ listProductBuy });
 
   const handlePayment = async () => {
+    setIsLoadding(true);
     setOpenModalPayment(true);
   };
 
@@ -659,6 +676,8 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
         console.log(voucherUsed, "voucherUsed");
 
         discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+
+        console.log(discountAmount, "discountAmount");
       }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
@@ -692,13 +711,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
       let discountAmount = 0;
       if (voucherUsed?.type === "vnd") {
         discountAmount = voucherUsed.discount;
-      }
-      //  else if (voucherUsed?.type === "percent") {
-      //   console.log(totalProductPrice, "totalProductPrice");
-      //   console.log(voucherUsed, "voucherUsed");
+      } else if (voucherUsed?.type === "percent") {
+        console.log(totalProductPrice, "totalProductPrice");
+        console.log(voucherUsed, "voucherUsed");
 
-      //   discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
-      // }
+        discountAmount = (totalProductPrice * voucherUsed.discount) / 100;
+      }
 
       const totalPrice = totalProductPrice + deliveryFee - discountAmount;
 
@@ -732,31 +750,17 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   //   // fetchDetailProduct(idPrd);
   // }, []);
 
-  const getDetailProducts = async (ids: string[]) => {
-    try {
-      const responses = await Promise.all(
-        ids.map(async (id) => {
-          const res = await getDetailProduct(id);
-          return res.data.detail;
-        })
-      );
-      setDataProduct(responses.flat());
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (idPrd.length > 0) {
-      getDetailProducts(idPrd);
-    }
-  }, [idPrd]);
+  // useEffect(() => {
+  //   if (idPrd.length > 0) {
+  //     getDetailProducts(idPrd);
+  //   }
+  // }, [idPrd]);
 
   return (
     <>
       {loading && <LoadingPage />}
       <CustomHeader title="Checkout">
-        <title>Checkout | Cuc Shoes</title>
+        <title>Checkout | FitFusionZone</title>
       </CustomHeader>
       <ModalCancel
         open={openModalCancelProduct}
@@ -1180,7 +1184,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                       Bạn không còn voucher nào!
                     </div>
                   ) : (
-                    <div className=" space-y-3 py-2 pr-1">
+                    <div className="space-y-3 py-2 pr-1">
                       {listVoucher?.map((item, idx) => {
                         const today = new Date();
                         const expiryDate = new Date(item.voucher.expiryDate);
@@ -1188,36 +1192,45 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                         const daysRemaining = Math.ceil(
                           timeDiff / (1000 * 60 * 60 * 24)
                         );
+
+                        // Kiểm tra nếu voucher loại VND và giảm giá lớn hơn tổng phụ thu
+                        const shouldDisplayVoucher = !(
+                          item.voucher.type === "vnd" &&
+                          item.voucher.discount > previewPrice
+                        );
+
                         return (
-                          <div
-                            key={idx}
-                            className="rounded-lg border-green-400/40 border p-2 flex items-center justify-between"
-                          >
-                            <div className="space-y-3">
-                              <div className="font-medium">
-                                Giảm{" "}
-                                {item.voucher.discount.toLocaleString("vi")}
-                                {item.voucher.type === "vnd" ? "đ" : "%"}
+                          shouldDisplayVoucher && (
+                            <div
+                              key={idx}
+                              className="rounded-lg border-green-400/40 border p-2 flex items-center justify-between"
+                            >
+                              <div className="space-y-3">
+                                <div className="font-medium">
+                                  Giảm{" "}
+                                  {item.voucher.discount.toLocaleString("vi")}
+                                  {item.voucher.type === "vnd" ? "đ" : "%"}
+                                </div>
+                                <div className="text-white/60 text-sm">
+                                  Hạn sử dụng còn {daysRemaining} ngày
+                                </div>
                               </div>
-                              <div className="text-white/60 text-sm">
-                                Hạn sử dụng còn {daysRemaining} ngày
-                              </div>
+                              <Button
+                                onClick={() => setVoucherUsed(item.voucher)}
+                                className="rounded-xl text-sm"
+                                label={
+                                  voucherUsed?.code === item.voucher.code
+                                    ? "Đã dùng"
+                                    : "Dùng"
+                                }
+                                variant={
+                                  voucherUsed?.code === item.voucher.code
+                                    ? "outline"
+                                    : "primary"
+                                }
+                              />
                             </div>
-                            <Button
-                              onClick={() => setVoucherUsed(item.voucher)}
-                              className="rounded-xl text-sm"
-                              label={
-                                voucherUsed?.code === item.voucher.code
-                                  ? "Đã dùng"
-                                  : "Dùng"
-                              }
-                              variant={
-                                voucherUsed?.code === item.voucher.code
-                                  ? "outline"
-                                  : "primary"
-                              }
-                            />
-                          </div>
+                          )
                         );
                       })}
                     </div>
@@ -1225,6 +1238,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                 </div>
               </div>
             )}
+
             <div className="bg-[rgb(33,43,54)] rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <p className="text-lg font-bold">Tóm Tắt Đơn Hàng</p>
@@ -1286,8 +1300,24 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
               </button>
             )}
             {currentTab === tabs[2] && (
+              // <button
+              //   onClick={() => {
+              //     optionPayment.includes("VNPAY")
+              //       ? handlePayment()
+              //       : handleBoughtProd({ isPay: false });
+              //   }}
+              //   className={`${
+              //     countCard === 0
+              //       ? "text-[rgba(145,158,171,0.8)] cursor-default pointer-events-none select-none bg-[rgba(145,158,171,0.24)]"
+              //       : "bg-green-600 hover:bg-green-700 text-white"
+              //   }  w-full py-3 rounded-md font-semibold mt-4`}
+              // >
+              //   {optionPayment.includes("VNPAY") ? "Thanh toán" : "Đặt Hàng"}
+              // </button>
               <button
                 onClick={() => {
+                  if (isLoadding) return; // Ngăn chặn nhấp chuột khi đang xử lý
+                  setIsLoadding(true);
                   optionPayment.includes("VNPAY")
                     ? handlePayment()
                     : handleBoughtProd({ isPay: false });
@@ -1295,10 +1325,41 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                 className={`${
                   countCard === 0
                     ? "text-[rgba(145,158,171,0.8)] cursor-default pointer-events-none select-none bg-[rgba(145,158,171,0.24)]"
+                    : loading
+                    ? "bg-gray-500 cursor-default pointer-events-none" // Thay đổi màu nền khi đang loading
                     : "bg-green-600 hover:bg-green-700 text-white"
-                }  w-full py-3 rounded-md font-semibold mt-4`}
+                } w-full py-3 rounded-md font-semibold mt-4`}
+                disabled={isLoadding} // Vô hiệu hóa nút khi đang loading
               >
-                {optionPayment.includes("VNPAY") ? "Thanh toán" : "Đặt Hàng"}
+                {isLoadding ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0z"
+                      ></path>
+                    </svg>
+                    Đang xử lý...
+                  </span>
+                ) : optionPayment.includes("VNPAY") ? (
+                  "Thanh toán"
+                ) : (
+                  "Đặt Hàng"
+                )}
               </button>
             )}
           </div>

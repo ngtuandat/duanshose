@@ -9,7 +9,7 @@ const ContentHeader = ({ title, name }: ContentHeaderProps) => {
   return (
     <>
       <CustomHeader>
-        <title>{title} | Cuc Shoes</title>
+        <title>{title} | FitFusionZone</title>
       </CustomHeader>
       <div>
         <h1 className="text-xl mb-6 font-bold text-white mt-1">{name}</h1>

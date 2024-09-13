@@ -63,7 +63,6 @@ export interface ProductBuy {
   color: string;
   quantity: number;
   image: string | undefined;
-  warehouse: number;
 }
 
 export interface RatingStarProps {
@@ -81,7 +80,7 @@ export interface listProductBuyProps {
   sizeProd: number;
   idProd: string;
   userId: string;
-  warehouse: number;
+  productQuantity: number;
 }
 
 export interface IdProdCart {
@@ -122,7 +121,7 @@ export interface PurchaseProps {
     | "returns";
   createdAt: string;
   updatedAt: string;
-  finalPrice?: number;
+  finalPrice: number;
   warehouse: number;
   user: {
     id: string;

@@ -21,7 +21,10 @@ const columnProduct = [
 
 const Dashboard = ({ loading }: { loading: Boolean }) => {
   const currentDate = new Date();
-  const currentMonth = currentDate.toISOString().slice(0, 7); // YYYY-MM
+  const [data, setData] = useState([]);
+  const [sellWell, setSellWell] = useState<any>([]);
+  console.log(sellWell, "sellWell");
+
   const currentDay = currentDate.toISOString().slice(0, 10); // YYYY-MM-DD
 
   const [countProd, setCountProd] = useState(0);
@@ -29,21 +32,28 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalEstimatedPrice, setTotalEstimatedPrice] = useState(0);
   const [selling, setSelling] = useState<any[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(
-    currentMonth
-  );
   const [selectedDate, setSelectedDate] = useState<string | null>(currentDay);
+  console.log(sellWell, "sellWell");
+
   const [selectedEndDate, setSelectedEndDate] = useState<string | null>(
     currentDay
   );
   const fetchAllPurchase = async (
-    month: string | null,
     date: string | null,
     endDate: string | null
   ) => {
     try {
       const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
       const allProducts = res.data.result;
+      setData(allProducts);
+      setSelling(res.data.result);
+      const deliveredProductsSellWell = allProducts.filter(
+        (product: PurchaseProps) => product.status === "delivered"
+      );
+
+      setSellWell(deliveredProductsSellWell);
+
+      console.log(allProducts, "allProducts");
 
       // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
       const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
@@ -55,14 +65,11 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       const filteredProducts = allProducts.filter((product: PurchaseProps) => {
         const productDate = new Date(product.createdAt);
 
-        // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
-        const isWithinMonth =
-          month === null ||
-          productDate.getMonth() === new Date(month).getMonth();
+        // Lọc theo ngày bắt đầu và ngày kết thúc
         const isWithinDateRange =
           productDate >= startDate && productDate <= endDateParsed;
 
-        return isWithinMonth && isWithinDateRange;
+        return isWithinDateRange;
       });
 
       // Loại bỏ các đơn hàng ở trạng thái cancelled và returns
@@ -113,8 +120,11 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
       // Tạo map để tính tổng doanh thu của từng sản phẩm đã bán
       const productMap = new Map<string, any>();
 
-      deliveredProducts.forEach((item: PurchaseProps) => {
+      deliveredProductsSellWell.forEach((item: PurchaseProps) => {
         const key = `${item.nameProd}-${item.sizeProd}-${item.colorProd}`;
+        {
+          console.log(productMap, "productMap");
+        }
         if (productMap.has(key)) {
           const existingProduct = productMap.get(key);
           existingProduct.quantitySold += item.quantityProd;
@@ -131,24 +141,36 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
         }
       });
 
-      // Sắp xếp sản phẩm theo số lượng bán được giảm dần
-      const soldProducts = Array.from(productMap.values()).sort(
-        (a, b) => b.quantitySold - a.quantitySold
-      );
-      setSelling(soldProducts);
+      // Sắp xếp sản phẩm theo số lượng bán được giảm dần, nếu số lượng bằng nhau thì sắp xếp theo doanh thu giảm dần
+      const soldProducts = Array.from(productMap.values()).sort((a, b) => {
+        if (b.quantitySold === a.quantitySold) {
+          return b.totalRevenue - a.totalRevenue;
+        }
+        return b.quantitySold - a.quantitySold;
+      });
+
+      setSellWell(soldProducts);
     } catch (error) {
       console.log(error);
     }
   };
 
   // const fetchAllPurchase = async (
-  //   month: string | null,
   //   date: string | null,
   //   endDate: string | null
   // ) => {
   //   try {
   //     const res = await getPurchaseAll(); // Gọi API để lấy tất cả dữ liệu từ backend
   //     const allProducts = res.data.result;
+  //     setData(allProducts);
+  //     setSelling(allProducts);
+  //     const deliveredProductsSellWell = allProducts.filter(
+  //       (product: PurchaseProps) => product.status === "delivered"
+  //     );
+
+  //     setSellWell(deliveredProductsSellWell);
+
+  //     console.log(allProducts, "allProducts");
 
   //     // Xác định ngày bắt đầu và kết thúc để lọc dữ liệu
   //     const startDate = date ? new Date(date) : new Date("1900-01-01"); // Ngày bắt đầu
@@ -160,21 +182,24 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   //     const filteredProducts = allProducts.filter((product: PurchaseProps) => {
   //       const productDate = new Date(product.createdAt);
 
-  //       // Lọc theo tháng, ngày bắt đầu và ngày kết thúc
-  //       const isWithinMonth =
-  //         month === null ||
-  //         productDate.getMonth() === new Date(month).getMonth();
+  //       // Lọc theo ngày bắt đầu và ngày kết thúc
   //       const isWithinDateRange =
   //         productDate >= startDate && productDate <= endDateParsed;
 
-  //       return isWithinMonth && isWithinDateRange;
+  //       return isWithinDateRange;
   //     });
 
-  //     const deliveredProducts = filteredProducts.filter(
+  //     // Loại bỏ các đơn hàng ở trạng thái cancelled và returns
+  //     const validProducts = filteredProducts.filter(
+  //       (product: PurchaseProps) =>
+  //         product.status !== "cancelled" && product.status !== "returns"
+  //     );
+
+  //     const deliveredProducts = validProducts.filter(
   //       (product: PurchaseProps) => product.status === "delivered"
   //     );
 
-  //     const nonDeliveredProducts = filteredProducts.filter(
+  //     const nonDeliveredProducts = validProducts.filter(
   //       (product: PurchaseProps) => product.status !== "delivered"
   //     );
 
@@ -241,13 +266,8 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
   // };
 
   useEffect(() => {
-    fetchAllPurchase(selectedMonth, selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedMonth, selectedDate hoặc selectedEndDate thay đổi
-  }, [selectedMonth, selectedDate, selectedEndDate]);
-
-  // Hàm xử lý khi người dùng thay đổi tháng
-  const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedMonth(event.target.value); // Cập nhật giá trị selectedMonth khi người dùng thay đổi tháng
-  };
+    fetchAllPurchase(selectedDate, selectedEndDate); // Gọi hàm fetchAllPurchase khi selectedDate hoặc selectedEndDate thay đổi
+  }, [selectedDate, selectedEndDate]);
 
   // Hàm xử lý khi người dùng thay đổi ngày
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,38 +279,44 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
     setSelectedEndDate(event.target.value); // Cập nhật giá trị selectedEndDate khi người dùng thay đổi ngày kết thúc
   };
 
+  const groupedSellWell = sellWell.reduce((acc: any, item: any) => {
+    const foundIndex = acc.findIndex(
+      (i: any) => i.productName === item.productName
+    );
+    if (foundIndex >= 0) {
+      acc[foundIndex].quantitySold += item.quantitySold;
+      acc[foundIndex].totalRevenue += item.totalRevenue;
+    } else {
+      acc.push({ ...item });
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="text-white">
       {loading && <LoadingPage />}
       <CustomHeader>
         <title>DashBoard</title>
       </CustomHeader>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn tháng:</label>
-        <input
-          type="month"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedMonth || ""}
-          onChange={handleMonthChange}
-        />
-      </div>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn ngày bắt đầu:</label>
-        <input
-          type="date"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedDate || ""}
-          onChange={handleDateChange}
-        />
-      </div>
-      <div className="flex my-6 items-center">
-        <label className="mr-2">Chọn ngày kết thúc:</label>
-        <input
-          type="date"
-          className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
-          value={selectedEndDate || ""}
-          onChange={handleEndDateChange}
-        />
+      <div className="flex items-center space-x-5">
+        <div className="flex my-6 flex-col items-start">
+          <label className="mr-2">Chọn ngày bắt đầu:</label>
+          <input
+            type="date"
+            className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+            value={selectedDate || ""}
+            onChange={handleDateChange}
+          />
+        </div>
+        <div className="flex my-6 flex-col items-start">
+          <label className="mr-2">Chọn ngày kết thúc:</label>
+          <input
+            type="date"
+            className="px-2 py-1 rounded-md border border-gray-300 bg-[#212A36]"
+            value={selectedEndDate || ""}
+            onChange={handleEndDateChange}
+          />
+        </div>
       </div>
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
         <Analysis
@@ -306,7 +332,7 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           percent="-0.1%"
         />
       </div>
-      <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
         <Analysis
           name="Sản phẩm đã bán"
           parameter={countProd}
@@ -319,103 +345,71 @@ const Dashboard = ({ loading }: { loading: Boolean }) => {
           color="rgb(0,184,217)"
           percent="-0.1%"
         />
-        <Analysis
-          name="Lợi nhuận bán hàng"
-          parameter={totalPrice / 2 - 500}
-          color="rgb(248,167,2)"
-          percent="+0.6%"
-        />
       </div>
-      <div className="grid grid-cols-3 gap-6 mt-6">
-        <div className="col-span-3 lg:col-span-1">
+      <div className=" mt-6">
+        {/* <div className="col-span-3 lg:col-span-1">
           <MultipleRadialbars />
-        </div>
+        </div> */}
         <div className="col-span-3 lg:col-span-2">
-          <Area />
+          <Area data={data} />
         </div>
       </div>
       <div className="text-lg flex justify-center py-6 font-bold">
         Sản phẩm bán Chạy
       </div>
-      <div>
-        <div className={`flex flex-col `}>
-          <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
-            <div
-              id="table-scroll"
-              className="inline-block w-[94%] overflow-x-auto py-2 align-middle md:mx-6 lg:mx-8"
-            >
-              <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-[rgb(51,61,72)]">
+
+      <div className="overflow-x-auto">
+        <div className="flex flex-col">
+          <div className="py-2 -mx-4 sm:-mx-6 lg:-mx-8 ">
+            <div className="inline-block min-w-full align-middle">
+              <div className="relative overflow-hidden shadow-lg rounded-lg ring-1 ring-black ring-opacity-10 ">
+                <table className="table-auto divide-y divide-gray-300 min-w-full">
+                  <thead className="bg-gray-800 text-gray-200">
                     <tr>
                       {columnProduct.map((column, index) => (
                         <th
                           key={index}
                           scope="col"
-                          className={`py-3.5 pl-4 pr-3 w-fit text-left text-sm font-semibold ${
-                            String(column).includes("Tên")
-                              ? "text-white"
-                              : "text-[rgb(145,158,171)]"
-                          }`}
+                          className="py-3.5 px-4 text-center text-sm font-semibold whitespace-nowrap min-w-[150px] max-w-[250px] overflow-auto text-ellipsis"
                         >
                           {column}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="bg-[rgb(33,43,54)]">
-                    {selling.map((item: any, index) => (
-                      <tr key={index}>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                  <tbody className="divide-y divide-gray-700 bg-gray-900">
+                    {groupedSellWell.map((item: any, index: any) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-800 transition-colors duration-200"
+                      >
+                        <td className="whitespace-nowrap py-4 px-4 text-sm font-medium text-gray-300 text-center">
                           {index + 1}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
-                          <div className="space-x-1 flex">
-                            {item.productName}
-                          </div>
+                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-300">
+                          {item.productName}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.size}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
                           {item.color}
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
-                          <div className="ml-8">{item.quantitySold}</div>
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
+                          {item.quantitySold}
                         </td>
-                        <td>
-                          <img
-                            className="w-10 h-10 rounded-md"
-                            src={item.imagesProd}
-                            alt=""
-                          />
+                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-300  flex items-center justify-center">
+                          <div className="relative h-24 w-24">
+                            <img
+                              src={item.imagesProd}
+                              alt={item.productName}
+                              className="absolute inset-0 w-full h-full object-contain rounded-lg border bg-white border-gray-600 shadow-md"
+                            />
+                          </div>
                         </td>
-                        <td
-                          className={
-                            "whitespace-nowrap min-w-[105px] w-fit px-3 py-4 text-sm bg-[rgb(33,43,54)] text-white"
-                          }
-                        >
-                          {item.totalRevenue}
+
+                        <td className="whitespace-nowrap text-center px-4 py-4 text-sm text-gray-300">
+                          {item.totalRevenue?.toLocaleString("vi")} đ
                         </td>
                       </tr>
                     ))}

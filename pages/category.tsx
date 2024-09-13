@@ -7,7 +7,7 @@ const Category = () => {
   return (
     <div>
       <CustomHeader>
-        <title>Danh mục | Cuc Shoes</title>
+        <title>Danh mục | FitFusionZone</title>
       </CustomHeader>
       <div className="text-white text-2xl font-bold">Danh mục</div>
       <Footer />
