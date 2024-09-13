@@ -169,18 +169,39 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
     quantity: number
   ) => {
     try {
-      const productUpdate = { idProd, idUser };
-      if (quantity >= 1) {
+      if (quantity > 1) {
+        const productUpdate = { idProd, idUser };
         const res = await miniusQuantityCart(productUpdate);
         if (res.status === 200 && token) {
           const decoded: any = jwt_decode(token);
           fetchCart(decoded.id);
         }
+      } else {
+        toast.error("Số lượng sản phẩm không thể nhỏ hơn 1");
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const handleMinus = async (
+  //   idProd: string,
+  //   idUser: string,
+  //   quantity: number
+  // ) => {
+  //   try {
+  //     const productUpdate = { idProd, idUser };
+  //     if (quantity >= 1) {
+  //       const res = await miniusQuantityCart(productUpdate);
+  //       if (res.status === 200 && token) {
+  //         const decoded: any = jwt_decode(token);
+  //         fetchCart(decoded.id);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handlePlus = async (idProd: string, idUser: string) => {
     try {
