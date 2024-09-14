@@ -35,7 +35,7 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
     null
   );
   const [activeTab, setActiveTab] = useState("active");
-  const [voucherType, setVoucherType] = useState<"vnd" | "percent">("vnd");
+  const [voucherType, setVoucherType] = useState<"vnd" | "percent">("percent");
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,15 +87,35 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
   };
 
   // Lọc dữ liệu theo tab (active/expired) và loại voucher (vnd/percent)
+  // const filteredDataVoucher = useMemo(() => {
+  //   if (!dataVoucher) return [];
+  //   return dataVoucher
+  //     .filter((item) =>
+  //       activeTab === "active"
+  //         ? new Date(item.expiryDate) > new Date()
+  //         : new Date(item.expiryDate) <= new Date()
+  //     )
+  //     .filter((item) => item.type === voucherType);
+  // }, [dataVoucher, activeTab, voucherType]);
+
   const filteredDataVoucher = useMemo(() => {
     if (!dataVoucher) return [];
-    return dataVoucher
-      .filter((item) =>
-        activeTab === "active"
-          ? new Date(item.expiryDate) > new Date()
-          : new Date(item.expiryDate) <= new Date()
-      )
-      .filter((item) => item.type === voucherType);
+
+    // Lọc theo active/expired và loại voucher (vnd/percent)
+    return (
+      dataVoucher
+        .filter((item) =>
+          activeTab === "active"
+            ? new Date(item.expiryDate) > new Date()
+            : new Date(item.expiryDate) <= new Date()
+        )
+        .filter((item) => item.type === voucherType)
+        // Sắp xếp theo createdAt từ mới nhất đến cũ nhất (không sắp xếp theo discount)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+    );
   }, [dataVoucher, activeTab, voucherType]);
 
   // Tính toán lại tổng số trang dựa trên dữ liệu đã lọc
@@ -184,16 +204,6 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
             <div className="bg-gray-400 flex items-center justify-center rounded-full px-[14px] py-2 mb-5">
               <div className="flex">
                 <button
-                  className={`p-1 px-3 text-sm transition-all ${
-                    voucherType === "vnd"
-                      ? "bg-green-500 text-white shadow-lg rounded-full transform scale-105"
-                      : "text-gray-800"
-                  }`}
-                  onClick={() => setVoucherType("vnd")}
-                >
-                  VND
-                </button>
-                <button
                   className={`p-1 px-4 text-sm transition-all ${
                     voucherType === "percent"
                       ? "bg-green-500 text-white shadow-lg rounded-full transform scale-105"
@@ -202,6 +212,16 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
                   onClick={() => setVoucherType("percent")}
                 >
                   %
+                </button>
+                <button
+                  className={`p-1 px-3 text-sm transition-all ${
+                    voucherType === "vnd"
+                      ? "bg-green-500 text-white shadow-lg rounded-full transform scale-105"
+                      : "text-gray-800"
+                  }`}
+                  onClick={() => setVoucherType("vnd")}
+                >
+                  VND
                 </button>
               </div>
             </div>

@@ -6,12 +6,12 @@ import toast from "react-hot-toast";
 
 const listType = [
   {
-    title: "VND",
-    value: "vnd",
-  },
-  {
     title: "%",
     value: "percent",
+  },
+  {
+    title: "VND",
+    value: "vnd",
   },
 ];
 
