@@ -27,7 +27,11 @@ import Link from "next/link";
 import { AiOutlineCheck, AiOutlineEdit } from "react-icons/ai";
 import { getProfile } from "../services/user";
 import { ProfileProps } from "../interfaces/user";
-import { FaRegAddressCard } from "react-icons/fa";
+import {
+  FaArrowCircleLeft,
+  FaArrowCircleRight,
+  FaRegAddressCard,
+} from "react-icons/fa";
 import Modal from "../components/Modal";
 import DropMenu from "../components/DropMenu";
 import { BsCheck } from "react-icons/bs";
@@ -110,6 +114,8 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
 
   // console.log(dataProduct, "dataProduct");
   console.log(voucherUsed, "voucherUsed");
+  const VOUCHERS_PER_PAGE = 8;
+
   const [optionDelivery, setOptionDelivery] = useState<string>(
     "Giao hàng tiêu chuẩn (Miễn Phí)"
   );
@@ -120,8 +126,12 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   const [itemCancel, setItemCancel] = useState<listProductBuyProps>();
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [openModalPayment, setOpenModalPayment] = useState(false);
-  const [listVoucher, setListVoucher] =
-    useState<{ voucher: DataVoucherProps }[]>();
+  // const [listVoucher, setListVoucher] =
+  //   useState<{ voucher: DataVoucherProps }[]>();
+  const [listVoucher, setListVoucher] = useState<
+    { voucher: DataVoucherProps }[]
+  >([]);
+
   const token = Cookies.get("token");
   console.log(listVoucher, "listVoucher");
 
@@ -755,6 +765,30 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   //     getDetailProducts(idPrd);
   //   }
   // }, [idPrd]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Tính tổng số trang
+  const totalPages = Math.ceil(listVoucher?.length / VOUCHERS_PER_PAGE);
+
+  // Lấy voucher cho trang hiện tại
+  const currentVouchers = listVoucher?.slice(
+    (currentPage - 1) * VOUCHERS_PER_PAGE,
+    currentPage * VOUCHERS_PER_PAGE
+  );
+
+  // Xử lý chuyển sang trang trước
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Xử lý chuyển sang trang sau
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
     <>
@@ -1185,7 +1219,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                     </div>
                   ) : (
                     <div className="space-y-3 py-2 pr-1">
-                      {listVoucher?.map((item, idx) => {
+                      {currentVouchers?.map((item, idx) => {
                         const today = new Date();
                         const expiryDate = new Date(item.voucher.expiryDate);
                         const timeDiff = expiryDate.getTime() - today.getTime();
@@ -1233,8 +1267,33 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
                           )
                         );
                       })}
+
+                      {/* Phân trang */}
                     </div>
                   )}
+                </div>
+                <div className="flex justify-between mt-4">
+                  <button
+                    className={`btn btn-primary ${
+                      currentPage === 1 && "opacity-50"
+                    }`}
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    <FaArrowCircleLeft size={24} />
+                  </button>
+                  <span className="text-sm text-white">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    className={`btn btn-primary ${
+                      currentPage === totalPages && "opacity-50"
+                    }`}
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    <FaArrowCircleRight size={24} />
+                  </button>
                 </div>
               </div>
             )}

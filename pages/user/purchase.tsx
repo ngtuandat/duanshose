@@ -155,89 +155,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
     }
   };
 
-  // const handleUpdateOrderStatus = async (id: string, status: string) => {
-  //   setLoadingCancel(true);
-  //   try {
-  //     let res;
-
-  //     if (token) {
-  //       // Nếu có token, gọi API cập nhật trạng thái đơn hàng của người dùng đã đăng nhập
-  //       res = await updateOrderStatus(id, status);
-  //     } else {
-  //       // Nếu không có token, gọi API cập nhật trạng thái đơn hàng của khách
-  //       if (status === "cancelled") {
-  //         res = await updateStatusGuest({ id, status: "cancelled" });
-  //       } else {
-  //         // Nếu không phải trạng thái "cancelled", không cần thay đổi
-  //         res = await updateStatusGuest({ id, status });
-  //       }
-  //     }
-
-  //     if (res.status === 200) {
-  //       // Cập nhật danh sách đơn hàng trong UI
-  //       setListPurchase((prevList: any) =>
-  //         prevList?.map((order: any) =>
-  //           order.id === id ? { ...order, status } : order
-  //         )
-  //       );
-
-  //       // Đóng các modal nếu mở
-  //       setOpenModalCancel(false);
-  //       setOpenModalReturn(false);
-  //       setOpenModalConfirm(false);
-
-  //       // Hiển thị thông báo thành công
-  //       toast.success("Đã cập nhật trạng thái đơn hàng");
-  //     } else {
-  //       toast.error("Không thể cập nhật trạng thái đơn hàng");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
-  //   } finally {
-  //     setLoadingCancel(false);
-  //   }
-  // };
-
-  // const handleUpdateOrderStatus = async (id: string, status: string) => {
-  //   setLoadingCancel(true);
-  //   try {
-  //     if (token) {
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         const decoded: any = jwt_decode(token);
-  //         // Cập nhật đơn hàng trong danh sách hiện tại mà không thay đổi vị trí
-  //         setListPurchase((prevList: any) => {
-  //           return prevList.map((order: any) =>
-  //             order.id === id ? { ...order, status } : order
-  //           );
-  //         });
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false); // Đóng modal trả hàng nếu mở
-  //         setOpenModalConfirm(false);
-
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     } else {
-  //       // Cập nhật trạng thái đơn hàng của khách
-  //       const res = await updateOrderStatus(id, status);
-  //       if (res.status === 200) {
-  //         // Cập nhật lại danh sách đơn hàng của khách
-  //         await handleFindOrderGuest();
-  //         setOpenModalCancel(false);
-  //         setOpenModalReturn(false);
-  //         setOpenModalConfirm(false);
-
-  //         toast.success("Đã cập nhật trạng thái đơn hàng");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng");
-  //   }
-  //   setLoadingCancel(false);
-  // };
-
   const handleFindOrderGuest = useCallback(async (phone: string) => {
     try {
       const res = await getOrderGuestByPhone(phone.slice(1)); // Ví dụ: slice(1) để loại bỏ ký tự đầu tiên
@@ -270,34 +187,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       handleFindOrderGuest(phoneFind);
     }
   };
-
-  // const handleFindOrderGuest = async () => {
-  //   if (!phoneFind) {
-  //     // Nếu số điện thoại bị xóa (chuỗi rỗng), xoá danh sách sản phẩm
-  //     setListPurchaseGuest([]);
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await getOrderGuestByPhone(phoneFind.slice(1)); // Ví dụ: slice(1) để loại bỏ ký tự đầu tiên
-  //     if (res.data.error) {
-  //       toast.error(res.data.error);
-  //     } else {
-  //       setListPurchaseGuest(res.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching guest orders:", error);
-  //   }
-  // };
-
-  // const handleFindOrderGuest = async () => {
-  //   const res = await getOrderGuestByPhone(phoneFind.slice(1));
-  //   if (res.data.error) {
-  //     toast.error(res.data.error);
-  //   } else {
-  //     setListPurchaseGuest(res.data);
-  //   }
-  // };
 
   const checkAndUpdateOrderStatus = async (orders: PurchaseProps[]) => {
     const now = new Date();
