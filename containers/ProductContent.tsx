@@ -106,7 +106,7 @@ const ProductContent = () => {
 
   return (
     <>
-      <div className="text-[30px] flex justify-center font-light text-white mt-5 mb-5">
+<div className="text-[30px] flex justify-center font-light text-white mt-5 mb-5">
         Danh Mục Sản Phẩm.
       </div>
       <div>
@@ -178,7 +178,7 @@ const ProductContent = () => {
       <PaginationClient
         current={Number(router.query.page || 1)}
         pageSize={limitValue}
-        total={totalProduct}
+total={totalProduct}
         onChange={onChangePage}
       />
       <Footer />
