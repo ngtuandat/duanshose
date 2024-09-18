@@ -199,8 +199,8 @@ const Guest = ({ loading }: { loading: Boolean }) => {
           {item.status === "requestreturn" && (
             <div className="flex">
               <Button
-                className="bg-green-600 text-white px-4 py-2 rounded-lg"
-                loading={isLoading}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                // loading={isLoading}
                 onClick={() =>
                   handleItemSelected(
                     { title: "Chấp Nhận", value: "returns" },
@@ -210,7 +210,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
                 label="Chấp Nhận"
               />
               <Button
-                loading={isLoading}
+                // loading={isLoading}
                 onClick={() =>
                   handleItemSelected(
                     { title: "Từ Chối", value: "delivered" },

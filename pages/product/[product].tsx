@@ -39,9 +39,11 @@ import LoadingBtn from "../../components/Loading/LoadingBtn";
 import { useCountCart } from "../../hooks/useCountCart";
 import { useCart } from "../../contexts/cart/CartContext";
 import PaginationClient from "../../components/Pagination/PaginationClient";
+import Button from "../../components/Button";
 const tabs = ["description", "review"];
 
 const ProductDetail = ({ loading }: { loading: Boolean }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [colorCheck, setColorCheck] = useState<string>("");
   const [sizeValue, setSizeValue] = useState<number>();
   const [quantity, setQuantity] = useState<number>(1);
@@ -146,6 +148,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
   const onChangePage = (page: number) => {};
 
   const handleBuyNow = async () => {
+    setIsLoading(true);
     try {
       if (token) {
         const decoded: any = jwt_decode(token);
@@ -362,7 +365,9 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                 {loadAddProd ? <LoadingBtn /> : <MdOutlineAddShoppingCart />}
                 <p>Thêm vào giỏ hàng</p>
               </button>
-              <button
+              <Button
+                label="Mua ngay"
+                loading={isLoading}
                 onClick={() => {
                   dataProduct &&
                     dataProduct?.quantity > 0 &&
@@ -375,10 +380,8 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                   quantity <= dataProduct?.quantity
                     ? " bg-green-500  hover:shadow-[0_15px_20px_-15px] hover:shadow-green-500 cursor-pointer"
                     : "bg-slate-500 cursor-default"
-                } flex-1 px-5 py-3 text-base font-bold rounded-lg`}
-              >
-                <p>Mua ngay</p>
-              </button>
+                } flex-1 px-5 py-[12px] text-base font-bold rounded-lg`}
+              />
             </div>
           </div>
         </div>

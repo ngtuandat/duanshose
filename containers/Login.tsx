@@ -4,9 +4,11 @@ import { SyntheticEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
+import Button from "../components/Button";
 import { loginUserCheck } from "../redux/apiReq";
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [typePass, setTypePass] = useState("password");
@@ -19,6 +21,7 @@ const Login = () => {
   );
 
   const handleLogin = async (e: SyntheticEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       if (email && password) {
@@ -107,12 +110,13 @@ const Login = () => {
               <p>Trở về</p>
             </button>
           </Link>
-          <button
-            type="submit"
-            className="bg-[rgb(0,171,85)] w-[116px] md:w-[204px] px-3 text-white md:px-14 text-lg rounded-full py-2 hover:bg-opacity-75 font-semibold"
-          >
-            Đăng nhập
-          </button>
+          <Button
+            loading={isLoading}
+            submit
+            label="Đăng nhập"
+            // type="submit"
+            className="bg-[rgb(0,171,85)] w-[116px] whitespace-nowrap md:w-[204px] px-3 text-white md:px-14 text-lg rounded-full py-2 hover:bg-opacity-75 font-semibold"
+          />
         </div>
       </form>
 
