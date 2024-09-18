@@ -428,6 +428,7 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   };
   const dataSourceCartGuest = useMemo(() => {
     return listProductBuy.map((item: any, idx) => {
+      console.log(item, "itemxxx");
       return [
         <div className="flex items-center space-x-2">
           <img
@@ -465,6 +466,8 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
             <BiPlus onClick={handleIncreaseQuantity} />
           </button>
         </div>,
+        <div>{item?.productQuantity}</div>,
+
         <div>{(item?.price * item?.quantity).toLocaleString("vi")} đ</div>,
         <div
           // onClick={() => handleDeleteProdCart(item?.idProd, item?.userId)}

@@ -46,6 +46,7 @@ const listStatus = [
   { title: "Đã giao thành công", value: "delivered" },
   { title: "Đã hủy", value: "cancelled" },
   { title: "Trả hàng", value: "returns" },
+  { title: "Yêu cầu trả hàng", value: "requestreturn" },
 ];
 
 const statusOrder = [
@@ -55,6 +56,7 @@ const statusOrder = [
   "delivered",
   "cancelled",
   "returns",
+  "requestreturn",
 ];
 
 interface ReviewModalProps {
@@ -293,6 +295,22 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         setOpen={setOpenModalReturn}
         title="Bạn có muốn trả hàng không?"
       >
+        <div className="mt-4">
+          <p className="text-sm text-gray-600">
+            Nội quy trả hàng:
+            <ul className="list-disc list-inside mt-2">
+              <li>Sản phẩm phải còn nguyên tem mác và chưa qua sử dụng.</li>
+              <li>
+                Đơn hàng trả hàng phải được thực hiện trong vòng 7 ngày kể từ
+                ngày nhận hàng.
+              </li>
+              <li>
+                Vui lòng giữ lại biên lai mua hàng và hóa đơn để việc trả hàng
+                được xử lý nhanh chóng.
+              </li>
+            </ul>
+          </p>
+        </div>
         <div className="flex items-center justify-center gap-10 mt-10">
           <Button
             onClick={() => setOpenModalReturn(false)}
@@ -302,7 +320,9 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           />
           <Button
             onClick={() => {
-              itemCancel && handleUpdateOrderStatus(itemCancel?.id, "returns");
+              if (itemCancel) {
+                handleUpdateOrderStatus(itemCancel?.id, "requestreturn");
+              }
             }}
             className="w-40"
             label="Trả Hàng"
@@ -310,6 +330,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           />
         </div>
       </ModalCancel>
+
       <ModalCancel
         open={openModalConfirm}
         setOpen={setOpenModalConfirm}

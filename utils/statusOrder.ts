@@ -69,6 +69,8 @@ export const getOrderStatusInVietnamese = (status: string) => {
       return "Đã hủy";
     case "returns":
       return "Trả hàng";
+    case "requestreturn":
+      return "Yêu cầu trả hàng";
     default:
       return status; // Nếu trạng thái không khớp, trả về giá trị gốc
   }

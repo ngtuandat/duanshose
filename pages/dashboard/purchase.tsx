@@ -12,6 +12,7 @@ import dateFormat from "dateformat";
 import DropDown from "../../components/DropDown";
 import { updateStatus } from "../../services/purchase";
 import toast from "react-hot-toast";
+import Button from "../../components/Button";
 
 const columnPurchase = [
   "Số thứ tự",
@@ -25,6 +26,7 @@ const columnPurchase = [
   "Ngày bán",
   "Trạng thái",
   "Chi Tiết",
+  "",
 ];
 
 const listStatus = [
@@ -34,6 +36,7 @@ const listStatus = [
   { title: "Đã giao thành công", value: "delivered" },
   { title: "Đã hủy", value: "cancelled" },
   { title: "Trả hàng", value: "returns" },
+  { title: "Yêu cầu trả hàng", value: "requestreturn" },
 ];
 
 const statusOrder = [
@@ -43,6 +46,7 @@ const statusOrder = [
   "delivered",
   "cancelled",
   "returns",
+  "requestreturn",
 ];
 
 // const getFilteredStatusList = (currentStatus: string) => {
@@ -86,6 +90,7 @@ const getFilteredStatusList = (currentStatus: string) => {
 };
 
 const Purchase = ({ loading }: { loading: Boolean }) => {
+  const [isLoading, setisLoading] = useState(false);
   const [dataPurchase, setDataPurchase] = useState<PurchaseProps[]>([]);
   console.log(dataPurchase, "dataPurchase");
   const [openModal, setOpenModal] = useState(false);
@@ -126,23 +131,22 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
   //   }
   // };
 
-  const handleItemSelected = async (
-    selectedItem: { title: string; value: string },
-    id: string
-  ) => {
+  const handleItemSelected = async (id: string, newStatus: string) => {
+    setisLoading(true);
     try {
-      const res = await updateStatus({ id, status: selectedItem.value });
+      const res = await updateStatus({ id, status: newStatus });
       if (res.status === 200) {
         toast.success("Cập nhật trạng thái đơn hàng thành công!");
-        // Cập nhật dữ liệu mà không làm mới toàn bộ bảng
         setDataPurchase((prevData: any) =>
           prevData.map((item: any) =>
-            item.id === id ? { ...item, status: selectedItem.value } : item
+            item.id === id ? { ...item, status: newStatus } : item
           )
         );
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setisLoading(false);
     }
   };
 
@@ -198,7 +202,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         >
           <DropDown
             onChange={(selectedItem) =>
-              handleItemSelected(selectedItem, item.id)
+              handleItemSelected(item.id, selectedItem.value)
             }
             listData={getFilteredStatusList(item.status)}
             defaultValue={item.status}
@@ -211,6 +215,30 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         >
           Chi tiết
         </button>,
+        <>
+          {item.status === "requestreturn" && (
+            <div className="flex">
+              <Button
+                className="bg-green-600 text-white px-4 py-2 rounded-lg"
+                loading={isLoading}
+                onClick={() => handleItemSelected(item.id, "returns")}
+                label="Chấp Nhận"
+              />
+              {/* <Button
+                onClick={() => handleItemSelected(item.id, "returns")}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg"
+              >
+                Chấp nhận
+              </But> */}
+              <Button
+                loading={isLoading}
+                onClick={() => handleItemSelected(item.id, "delivered")}
+                className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-lg ml-2"
+                label="Từ Chối"
+              />
+            </div>
+          )}
+        </>,
       ];
     });
   }, [dataPurchase, searchTerm, selectedStatus, currentPage]);

@@ -11,13 +11,16 @@ export default function PaymentForm({
   voucher?: DataVoucherProps;
   price: number;
 }) {
+  console.log(price, "lôdfjdf");
   const [amount, setAmount] = useState(price.toString());
   const [bankCode, setBankCode] = useState("NCB");
   const [orderDescription, setOrderDescription] = useState("");
   const [orderType, setOrderType] = useState("Mua hàng");
   const [language, setLanguage] = useState("vn");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     e.preventDefault();
 
     try {
@@ -134,7 +137,12 @@ export default function PaymentForm({
           </div>
 
           <div>
-            <Button label="Thanh toán" submit className="w-full" />
+            <Button
+              loading={isLoading}
+              label="Thanh toán"
+              submit
+              className="w-full"
+            />
           </div>
         </form>
       </div>

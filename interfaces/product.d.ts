@@ -118,7 +118,8 @@ export interface PurchaseProps {
     | "cancelled"
     | "shipped"
     | "delivered"
-    | "returns";
+    | "returns"
+    | "requestreturn";
   createdAt: string;
   updatedAt: string;
   finalPrice: number;

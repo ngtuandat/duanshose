@@ -11,6 +11,7 @@ import dateFormat from "dateformat";
 import ModalDetailVisitor from "../../components/Modal/ModalDetailVisitor";
 import { format } from "date-fns";
 import Analysis from "../../containers/Charts/Analysis";
+import Button from "../../components/Button";
 
 const Guest = ({ loading }: { loading: Boolean }) => {
   const columnPurchase = [
@@ -25,6 +26,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     "Ngày bán",
     "Trạng thái",
     "Chi tiết",
+    "",
   ];
 
   const listStatus = [
@@ -34,6 +36,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     { title: "Đã giao thành công", value: "delivered" },
     { title: "Huỷ Đơn", value: "cancelled" },
     { title: "Trả hàng", value: "returns" },
+    { title: "Yêu cầu trả hàng", value: "requestreturn" },
   ];
 
   const statusOrder = [
@@ -43,9 +46,21 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     "delivered",
     "cancelled",
     "returns",
+    "requestreturn",
   ];
 
+  interface Product {
+    name: string | undefined;
+    size: string | undefined;
+    color: string | undefined;
+    image: string | undefined;
+    price: number | undefined;
+    quantity: number | undefined;
+  }
+
   const [dataPurchase, setDataPurchase] = useState<any[]>([]);
+  const [isLoading, setisLoading] = useState(false);
+
   console.log(dataPurchase, "dataPurchasexxx");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,6 +117,7 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     selectedItem: { title: string; value: string },
     id: string
   ) => {
+    setisLoading(true);
     try {
       const res = await updateStatusGuest({ id, status: selectedItem.value });
       if (res.status === 200) {
@@ -127,28 +143,37 @@ const Guest = ({ loading }: { loading: Boolean }) => {
     const endIndex = startIndex + itemsPerPage;
 
     return dataPurchase.slice(startIndex, endIndex).map((item, index) => {
-      let product;
+      // let product;
+      let product: Product | undefined;
       try {
         const productsArray = JSON.parse(item.products);
         product = productsArray[0];
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        product = {};
+        // product = {};
+        product = undefined;
       }
+      console.log(product, "llogdulieu");
 
+      const productName = product?.name || "N/A";
+      const productSize = product?.size || "N/A";
+      const productColor = product?.color || "N/A";
+      const productImage = product?.image || "";
+      const productQuantity = product?.quantity ?? 0; // Use default value of 0 if undefined
+      const productPrice = product?.price ?? 0;
       return [
         <> {startIndex + index + 1}</>,
         <div className="text-primary font-bold">{item.buyerName}</div>,
-        <div>{product.name}</div>,
-        <div>{product.size}</div>,
-        <div>{product.color}</div>,
+        <div>{productName}</div>,
+        <div>{productSize}</div>,
+        <div>{productColor}</div>,
         <img
           className="w-full max-w-xs h-auto cursor-pointer rounded-lg object-cover"
-          src={product.image}
-          alt={product.name || "Product Image"}
+          src={productImage}
+          alt={productImage || "Product Image"}
         />,
-        <p>{(product?.quantity * product?.price).toLocaleString("vi")} đ</p>,
-        <p>{product.quantity}</p>,
+        <p>{(productQuantity * productPrice).toLocaleString("vi")} đ</p>,
+        <p>{productQuantity}</p>,
         <>{dateFormat(item?.updatedAt, "HH:MM dd/mm/yyyy")}</>,
         <span
           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold`}
@@ -168,6 +193,34 @@ const Guest = ({ loading }: { loading: Boolean }) => {
         >
           Chi tiết
         </button>,
+        <>
+          {item.status === "requestreturn" && (
+            <div className="flex">
+              <Button
+                className="bg-green-600 text-white px-4 py-2 rounded-lg"
+                loading={isLoading}
+                onClick={() =>
+                  handleItemSelected(
+                    { title: "Chấp Nhận", value: "returns" },
+                    item.id
+                  )
+                }
+                label="Chấp Nhận"
+              />
+              <Button
+                loading={isLoading}
+                onClick={() =>
+                  handleItemSelected(
+                    { title: "Từ Chối", value: "delivered" },
+                    item.id
+                  )
+                }
+                className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-lg ml-2"
+                label="Từ Chối"
+              />
+            </div>
+          )}
+        </>,
       ];
     });
   }, [dataPurchase, currentPage]);
@@ -254,27 +307,35 @@ const Guest = ({ loading }: { loading: Boolean }) => {
 
     const totalOrders = filteredOrders.length;
     const totalAmount = filteredOrders.reduce((sum, item) => {
-      let product;
+      let product: Product | undefined;
       try {
         const productsArray = JSON.parse(item.products);
         product = productsArray[0];
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        product = {};
+        product = undefined;
       }
-      return sum + product.quantity * product.price;
+      // Nếu sản phẩm hợp lệ
+      if (product && product.price && product.quantity) {
+        return sum + product.price * product.quantity;
+      }
+      return sum;
     }, 0);
 
     const totalQuantity = filteredOrders.reduce((sum, item) => {
-      let product;
+      let product: Product | undefined;
       try {
         const productsArray = JSON.parse(item.products);
         product = productsArray[0];
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        product = {};
+        product = undefined;
       }
-      return sum + product.quantity;
+      // Nếu sản phẩm hợp lệ
+      if (product && product.quantity) {
+        return sum + product.quantity;
+      }
+      return sum;
     }, 0);
 
     // Đơn hàng đang giao
@@ -291,27 +352,35 @@ const Guest = ({ loading }: { loading: Boolean }) => {
 
     const shippingOrders = shippingOrdersData.length;
     const shippingAmount = shippingOrdersData.reduce((sum, item) => {
-      let product;
+      let product: Product | undefined;
       try {
         const productsArray = JSON.parse(item.products);
         product = productsArray[0];
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        product = {};
+        product = undefined;
       }
-      return sum + product.quantity * product.price;
+      // Nếu sản phẩm hợp lệ
+      if (product && product.price && product.quantity) {
+        return sum + product.price * product.quantity;
+      }
+      return sum;
     }, 0);
 
     const shippingQuantity = shippingOrdersData.reduce((sum, item) => {
-      let product;
+      let product: Product | undefined;
       try {
         const productsArray = JSON.parse(item.products);
         product = productsArray[0];
       } catch (error) {
         console.error("Error parsing JSON:", error);
-        product = {};
+        product = undefined;
       }
-      return sum + product.quantity;
+      // Nếu sản phẩm hợp lệ
+      if (product && product.quantity) {
+        return sum + product.quantity;
+      }
+      return sum;
     }, 0);
 
     return {
@@ -454,16 +523,6 @@ const Guest = ({ loading }: { loading: Boolean }) => {
                   percent=""
                 />
               </div>
-              {/* <p>
-                <strong>Tổng số đơn hàng:</strong> {totalOrders}
-              </p>
-              <p>
-                <strong>Tổng số tiền:</strong>{" "}
-                {totalAmount.toLocaleString("vi")} đ
-              </p>
-              <p>
-                <strong>Tổng số lượng sản phẩm:</strong> {totalQuantity}
-              </p> */}
             </div>
           </div>
         </div>
