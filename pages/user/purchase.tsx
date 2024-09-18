@@ -28,7 +28,10 @@ import {
   updateStatusGuest,
 } from "../../services/guest";
 import { FaPencilAlt } from "react-icons/fa";
-import { getOrderStatusInVietnamese } from "../../utils/statusOrder";
+import {
+  getOrderStatusInVietnamese,
+  getStatusColor,
+} from "../../utils/statusOrder";
 import { useRouter } from "next/router";
 import RatingReview from "../../components/Rating/RatingReview";
 import Modal from "../../components/Modal";
@@ -77,6 +80,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
   const [openModalCancel, setOpenModalCancel] = useState(false);
   const [openModalReturn, setOpenModalReturn] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const [openModalRequestreturn, setopenModalRequestreturn] = useState(false);
   const [openWriteReview, setOpenWriteReview] = useState(false);
 
   const [searchTriggered, setSearchTriggered] = useState(false);
@@ -143,6 +147,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
         setOpenModalCancel(false);
         setOpenModalReturn(false);
         setOpenModalConfirm(false);
+        setopenModalRequestreturn(false);
 
         // Hiển thị thông báo thành công
         toast.success("Đã cập nhật trạng thái đơn hàng");
@@ -354,6 +359,29 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
           />
         </div>
       </ModalCancel>
+      <ModalCancel
+        open={openModalRequestreturn}
+        setOpen={setopenModalRequestreturn}
+        title="Xác nhận huỷ trả hàng?"
+      >
+        <div className="flex items-center justify-center gap-10 mt-10">
+          <Button
+            onClick={() => setOpenModalConfirm(false)}
+            className="w-40"
+            label="Đóng"
+            variant="outline"
+          />
+          <Button
+            onClick={() => {
+              itemCancel &&
+                handleUpdateOrderStatus(itemCancel?.id, "delivered");
+            }}
+            className="w-40"
+            label="Xác Nhận"
+            loading={loadingCancel}
+          />
+        </div>
+      </ModalCancel>
 
       {/* {!token && (
         <div className="flex items-center justify-center gap-2 mb-5">
@@ -382,18 +410,21 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       {token ? (
         <div className="w-full lg:w-2/3 mx-auto pb-8">
           <div className="flex text-white justify-between py-7 bg-[#212B36] mb-5 px-4 rounded-xl">
-            {listStatus.map((item) => (
-              <div
-                key={item.value}
-                className={`hover:cursor-pointer hover:text-green-500 ${
-                  selectedStatus === item.value ? "text-green-500" : ""
-                }`}
-                onClick={() => setSelectedStatus(item.value)}
-              >
-                {item.title}
-              </div>
-            ))}
+            {listStatus
+              .filter((item) => item.value !== "requestreturn")
+              .map((item) => (
+                <div
+                  key={item.value}
+                  className={`hover:cursor-pointer hover:text-green-500 ${
+                    selectedStatus === item.value ? "text-green-500" : ""
+                  }`}
+                  onClick={() => setSelectedStatus(item.value)}
+                >
+                  {item.title}
+                </div>
+              ))}
           </div>
+
           {filteredPurchase.length > 0 || filteredPurchaseGuest.length > 0 ? (
             <div>
               {(filteredPurchase.length > 0
@@ -401,10 +432,16 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                 : filteredPurchaseGuest
               ).map((item: any, idx: any) => (
                 <div
-                  className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 "
+                  className={`bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6 ${
+                    item.status === "requestreturn" && "border border-red-500"
+                  }`}
                   key={idx}
                 >
-                  <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
+                  <div
+                    className={`mb-3 flex items-center justify-end space-x-2 text-sm  ${getStatusColor(
+                      item.status
+                    )}`}
+                  >
                     <BsTruck /> <p>{getOrderStatusInVietnamese(item.status)}</p>
                   </div>
                   <div className="flex flex-col lg:flex-row items-start justify-between">
@@ -471,6 +508,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                         {item?.status === "pending" && (
                           <div className="flex items-center space-x-4">
                             <Button
+                              className="bg-red-500 hover:bg-red-600"
                               onClick={() => {
                                 setItemCancel(item);
                                 setOpenModalCancel(true);
@@ -493,11 +531,11 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           </div>
                         )}
                         <div className="">
-                          {openWriteReview && <ReviewDone />}
                           {isReturnable(new Date(item.createdAt)) &&
                             item?.status === "delivered" && (
-                              <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-4 ">
                                 <Button
+                                  className="bg-orange-500 hover:bg-orange-600"
                                   onClick={() => {
                                     setItemCancel(item);
                                     setOpenModalReturn(true); // Open return modal
@@ -508,6 +546,19 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                               </div>
                             )}
                         </div>
+                        {item?.status === "requestreturn" && (
+                          <div className="flex items-center space-x-4">
+                            <Button
+                              className="bg-gray-500 hover:bg-gray-600"
+                              onClick={() => {
+                                setItemCancel(item);
+                                setopenModalRequestreturn(true);
+                              }}
+                              icon={<FaPencilAlt />}
+                              label="Huỷ Trả Hàng"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -614,6 +665,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           {item?.status === "pending" && (
                             <div className="flex items-center space-x-4">
                               <Button
+                                className="bg-red-500 hover:bg-red-600"
                                 onClick={() => {
                                   setItemCancel(item);
                                   setOpenModalCancel(true);

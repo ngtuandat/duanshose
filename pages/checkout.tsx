@@ -428,7 +428,6 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
   };
   const dataSourceCartGuest = useMemo(() => {
     return listProductBuy.map((item: any, idx) => {
-      console.log(item, "itemxxx");
       return [
         <div className="flex items-center space-x-2">
           <img
@@ -1466,12 +1465,16 @@ const Checkout = ({ loading }: { loading: Boolean }) => {
           </Modal>
         </div>
       </section>
+      {console.log(voucherUsed, "totalPriceOrder")}
       <Modal
         open={openModalPayment}
         setOpen={setOpenModalPayment}
         title="Thanh toán đơn hàng"
       >
-        <PaymentForm price={totalPriceOrder} voucher={voucherUsed} />
+        <PaymentForm
+          price={token ? totalPriceOrder : totalHauntPriceOrder}
+          voucher={voucherUsed}
+        />
       </Modal>
     </>
   );

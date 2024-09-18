@@ -29,7 +29,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
       vnp_ReturnUrl: `${
         process.env.NEXT_PUBLIC_DOMAIN
-      }/checkout?tab=3&voucher=${JSON.stringify(voucher)}`,
+      }/checkout?tab=3&voucher=${JSON.stringify(voucher.code)}`,
     };
     console.log({ voucherReq: voucher });
     const ipAddr =

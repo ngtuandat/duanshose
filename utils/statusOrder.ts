@@ -1,19 +1,22 @@
 import { OrderStatus } from "../lib/enum";
 
 export const getStatusColor = (status: string) => {
+  console.log(status, "jdhjksahdjk");
   switch (status) {
     case OrderStatus.Pending:
       return "text-yellow-500";
     case OrderStatus.Processing:
       return "text-blue-500";
     case OrderStatus.Shipped:
-      return "text-purple-500";
+      return "text-blue-500";
     case OrderStatus.Delivered:
       return "text-green-500";
     case OrderStatus.Cancelled:
       return "text-red-500";
     case OrderStatus.Returns: // Thêm trường hợp cho "Trả hàng"
-      return "text-orange-500"; // Chọn màu phù hợp
+      return "text-red-500";
+    case OrderStatus.RequestReturn: // Yêu cầu trả hàng
+      return "text-red-500";
     default:
       return "text-gray-500";
   }

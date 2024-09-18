@@ -432,7 +432,7 @@ const ProductDetail = ({ loading }: { loading: Boolean }) => {
                         key={idx}
                         className="flex items-center space-x-4 mt-3"
                       >
-                        <p className="flex items-center font-semibold min-w-[30px]">
+                        <p className="flex items-center font-semibold  min-w-[30px]">
                           <span className="text-sm">{item?.star}</span>
                           <TiStarFullOutline className="text-yellow-500 ml-1" />
                         </p>
