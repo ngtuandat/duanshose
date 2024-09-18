@@ -4,7 +4,7 @@ const LoadingPage = () => {
   return (
     <div className="bg-[rgb(22,28,36)] z-[9999] text-white fixed inset-0 flex justify-center items-center">
       <img
-        src="/images/logo.svg"
+        src="/images/logo1.svg"
         className="animate-scale w-14 h-w-14 fixed"
         alt=""
       />

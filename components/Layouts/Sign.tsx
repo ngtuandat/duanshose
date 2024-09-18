@@ -9,7 +9,7 @@ const Sign = ({ children }: ChildrenProps) => {
       <div className="bg-[rgb(22,28,36)] h-screen">
         <header className="fixed flex justify-start items-center px-10 h-20 top-0 right-0 left-0">
           <Link href="/">
-            <img src="/images/logo.svg" className="h-10 w-10" alt="" />
+            <img src="/images/logo1.svg" className="h-12 w-12" alt="" />
           </Link>
         </header>
         <div className="h-full bg-sign-dark flex justify-center items-center">

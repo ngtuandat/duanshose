@@ -88,7 +88,7 @@ const NavClientMb = ({
     <div>
       <div className="block ">
         <div className="my-6 mx-5">
-          <Image src="/images/logo.svg" alt="logo" width={40} height={40} />
+          <Image src="/images/logo1.svg" alt="logo" width={40} height={40} />
         </div>
 
         <nav className="flex flex-col">

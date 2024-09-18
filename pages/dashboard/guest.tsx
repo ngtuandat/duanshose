@@ -95,6 +95,15 @@ const Guest = ({ loading }: { loading: Boolean }) => {
   }, []);
 
   const getFilteredStatusList = (currentStatus: string) => {
+    if (currentStatus === "requestreturn") {
+      return [
+        {
+          title: "Yêu cầu trả hàng",
+          value: "requestreturn",
+        },
+      ]; // Chỉ hiển thị trạng thái "requestreturn" nếu trạng thái hiện tại là "requestreturn"
+    }
+
     if (
       currentStatus === "returns" ||
       currentStatus === "delivered" ||
@@ -109,11 +118,33 @@ const Guest = ({ loading }: { loading: Boolean }) => {
         },
       ];
     }
+
     const currentIndex = statusOrder.indexOf(currentStatus);
-    return listStatus.filter(
-      (status) => statusOrder.indexOf(status.value) >= currentIndex
-    );
+    return listStatus
+      .filter((status) => statusOrder.indexOf(status.value) >= currentIndex)
+      .filter((status) => status.value !== "requestreturn"); // Loại bỏ "requestreturn" nếu trạng thái hiện tại không phải là "requestreturn"
   };
+
+  // const getFilteredStatusList = (currentStatus: string) => {
+  //   if (
+  //     currentStatus === "returns" ||
+  //     currentStatus === "delivered" ||
+  //     currentStatus === "cancelled"
+  //   ) {
+  //     return [
+  //       {
+  //         title:
+  //           listStatus.find((status) => status.value === currentStatus)
+  //             ?.title || "",
+  //         value: currentStatus,
+  //       },
+  //     ];
+  //   }
+  //   const currentIndex = statusOrder.indexOf(currentStatus);
+  //   return listStatus.filter(
+  //     (status) => statusOrder.indexOf(status.value) >= currentIndex
+  //   );
+  // };
 
   const handleItemSelected = async (
     selectedItem: { title: string; value: string },

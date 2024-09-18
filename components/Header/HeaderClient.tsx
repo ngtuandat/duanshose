@@ -59,7 +59,7 @@ const HeaderClient = () => {
         className={`h-full flex items-center justify-between max-w-lg sm:max-w-2xl md:max-w-3xl lg:max-w-[1200px] mx-auto px-2`}
       >
         <Link href="/">
-          <Image src="/images/logo.svg" alt="logo" width={40} height={40} />
+          <Image src="/images/logo1.svg" alt="logo" width={80} height={80} />
         </Link>
         <div className="hidden lg:flex items-center space-x-5">
           <NavClient />

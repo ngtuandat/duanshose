@@ -80,16 +80,36 @@ const getFilteredStatusList = (currentStatus: string) => {
     return listStatus.filter((status) => status.value === "delivered");
   }
 
-  if (currentStatus === "pending" || currentStatus === "processing") {
-    return listStatus.filter(
-      (status) => statusOrder.indexOf(status.value) >= currentIndex
-    );
+  if (currentStatus === "requestreturn") {
+    return listStatus;
   }
 
-  return listStatus.filter(
-    (status) => statusOrder.indexOf(status.value) >= currentIndex
-  );
+  return listStatus
+    .filter((status) => statusOrder.indexOf(status.value) >= currentIndex)
+    .filter((status) => status.value !== "requestreturn");
 };
+
+// const getFilteredStatusList = (currentStatus: string) => {
+//   const currentIndex = statusOrder.indexOf(currentStatus);
+
+//   if (currentStatus === "cancelled") {
+//     return [{ title: "Đã hủy", value: "cancelled" }];
+//   }
+
+//   if (currentStatus === "delivered") {
+//     return listStatus.filter((status) => status.value === "delivered");
+//   }
+
+//   if (currentStatus === "pending" || currentStatus === "processing") {
+//     return listStatus.filter(
+//       (status) => statusOrder.indexOf(status.value) >= currentIndex
+//     );
+//   }
+
+//   return listStatus.filter(
+//     (status) => statusOrder.indexOf(status.value) >= currentIndex
+//   );
+// };
 
 const Purchase = ({ loading }: { loading: Boolean }) => {
   const [isLoading, setisLoading] = useState(false);

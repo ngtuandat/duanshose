@@ -156,11 +156,11 @@ const NavAdmin = ({
         <div className={`${zoomOutMenu ? "px-1.5" : "px-5"}`}>
           {zoomOutMenu ? (
             <div className="w-full flex items-center justify-center my-4">
-              <img src="/images/logo.svg" className="w-10 h-10" alt="" />
+              <img src="/images/logo1.svg" className="w-10 h-10" alt="" />
             </div>
           ) : (
             <div className="pt-6 pb-4">
-              <img src="/images/logo.svg" className="w-10 h-10" alt="" />
+              <img src="/images/logo1.svg" className="w-10 h-10" alt="" />
               <div className="flex w-full items-center space-x-4 px-5 py-4 bg-[rgba(145,158,171,0.12)] rounded-lg mt-[22px]">
                 <img
                   src="/images/avatar_admin.jpg"
