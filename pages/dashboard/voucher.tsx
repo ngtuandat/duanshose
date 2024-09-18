@@ -201,7 +201,7 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
               className="mb-5"
               label="Tạo voucher"
             />
-            <div className="bg-gray-400 flex items-center justify-center rounded-full px-[14px] py-2 mb-5">
+            {/* <div className="bg-gray-400 flex items-center justify-center rounded-full px-[14px] py-2 mb-5">
               <div className="flex">
                 <button
                   className={`p-1 px-4 text-sm transition-all ${
@@ -224,7 +224,7 @@ const Voucher = ({ loading }: { loading: Boolean }) => {
                   VND
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
           <Table columns={columnVocher} dataSource={paginatedData} />
           <div className="flex justify-center mt-4">

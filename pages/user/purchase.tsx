@@ -40,6 +40,7 @@ import { useCart } from "../../contexts/cart/CartContext";
 import ReviewDone from "../../containers/ReviewDone";
 import Link from "next/link";
 import Footer from "../../components/Footer";
+import OrderDetailModal from "../../components/Modal/OrderDetailModal";
 
 const listStatus = [
   { title: "Tất cả", value: "all" },
@@ -71,6 +72,9 @@ interface ReviewModalProps {
 }
 
 const Purchase = ({ loading }: { loading: Boolean }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
   const router = useRouter();
   const token = Cookies.get("token");
   const { count, fetchCart } = useCart();
@@ -107,6 +111,12 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
       console.error("Lỗi khi lấy đơn hàng:", error);
       toast.error("Không thể lấy dữ liệu đơn hàng.");
     }
+  };
+
+  const handleViewDetail = (order: any) => {
+    console.log(order, "jkhsdjks");
+    setSelectedOrder(order);
+    setOpenModal(true);
   };
 
   const handleUpdateOrderStatus = async (id: string, status: string) => {
@@ -502,9 +512,12 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           )}
                         </div>
                       </div>
-                      <div className="flex justify-end mb-3 text-white">
+                      <button
+                        className="text-blue-500"
+                        onClick={() => handleViewDetail(item)}
+                      >
                         Chi tiết đơn
-                      </div>
+                      </button>
                       <div className="flex flex-col items-end">
                         {item?.status === "pending" && (
                           <div className="flex items-center space-x-4">
@@ -729,6 +742,12 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
               })}
         </div>
       )}
+      {console.log(selectedOrder, "selectedOrder")}
+      <OrderDetailModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        orderDetail={selectedOrder}
+      />
       {/* <Footer /> */}
     </div>
   );

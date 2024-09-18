@@ -9,10 +9,10 @@ const listType = [
     title: "%",
     value: "percent",
   },
-  {
-    title: "VND",
-    value: "vnd",
-  },
+  // {
+  //   title: "VND",
+  //   value: "vnd",
+  // },
 ];
 
 const AddVoucher = ({

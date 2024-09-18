@@ -165,6 +165,13 @@ async function getListProductPurchase(res: NextApiResponse, id: string) {
       orderBy: {
         updatedAt: "desc",
       },
+      include: {
+        user: {
+          include: {
+            profile: true,
+          },
+        },
+      },
     });
     res.status(200).json({ result });
   } catch (error) {

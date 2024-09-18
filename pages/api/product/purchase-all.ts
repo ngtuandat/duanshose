@@ -15,7 +15,11 @@ async function getAllPurchase(res: NextApiResponse) {
         updatedAt: "desc",
       },
       include: {
-        user: true,
+        user: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     res.status(200).json({ result });

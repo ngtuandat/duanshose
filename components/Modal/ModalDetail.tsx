@@ -86,17 +86,22 @@ const ModalDetail = ({ open, setOpen, product }: ModalDetailProps) => {
                         className="w-32 h-32 object-contain rounded-lg border-2 border-gray-600"
                       />
                     )}
-                    <div>
-                      <p>
-                        {console.log(product, "jkdfhsjks")}
-                        <strong className="text-lg">
-                          Địa chỉ người mua:
-                        </strong>{" "}
-                        {product?.user?.address || "Chưa có địa chỉ"}
+                    <div className="space-y-1">
+                      <p className="space-x-3">
+                        <strong className="text-lg">Tên người mua : </strong>
+                        {product?.user?.firstName +
+                          " " +
+                          product?.user?.lastName || "Chưa có số điện thoại"}
                       </p>
                       <p>
-                        <strong className="text-lg">Số điện thoại:</strong>{" "}
-                        {product?.user?.phone || "Chưa có số điện thoại"}
+                        <strong className="text-lg">Số điện thoại : </strong> 0
+                        {product?.user?.profile?.phoneNumber ||
+                          "Chưa có số điện thoại"}
+                      </p>{" "}
+                      <p>
+                        {console.log(product, "jkdfhsjks")}
+                        <strong className="text-lg">Địa chỉ :</strong>{" "}
+                        {product?.user?.profile?.address || "Chưa có địa chỉ"}
                       </p>
                     </div>
                   </div>
