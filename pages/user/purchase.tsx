@@ -506,14 +506,13 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                           </p>
                           {item.finalPrice !== item.priceProd && (
                             <p className="text-sm text-red-500 font-semibold whitespace-nowrap">
-                              {console.log(item.finalPrice, "loghogia")}
                               {item.finalPrice?.toLocaleString("vi")} đ
                             </p>
                           )}
                         </div>
                       </div>
                       <button
-                        className="text-blue-500"
+                        className="text-blue-500 w-full my-2 flex justify-end"
                         onClick={() => handleViewDetail(item)}
                       >
                         Chi tiết đơn
