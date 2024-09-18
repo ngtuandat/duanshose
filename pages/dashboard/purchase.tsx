@@ -32,7 +32,8 @@ const columnPurchase = [
 const listStatus = [
   { title: "Đang chờ", value: "pending" },
   { title: "Đang xử lý", value: "processing" },
-  { title: "Đang giao hàng", value: "shipped" },
+  { title: "Chờ giao hàng", value: "shipped" },
+  { title: "Đã giao", value: "transferred" },
   { title: "Đã giao thành công", value: "delivered" },
   { title: "Đã hủy", value: "cancelled" },
   { title: "Trả hàng", value: "returns" },
@@ -43,6 +44,7 @@ const statusOrder = [
   "pending",
   "processing",
   "shipped",
+  "transferred",
   "delivered",
   "cancelled",
   "returns",

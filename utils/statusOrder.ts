@@ -9,6 +9,8 @@ export const getStatusColor = (status: string) => {
       return "text-blue-500";
     case OrderStatus.Shipped:
       return "text-blue-500";
+    case OrderStatus.Transferred:
+      return "text-blue-500";
     case OrderStatus.Delivered:
       return "text-green-500";
     case OrderStatus.Cancelled:
@@ -65,7 +67,9 @@ export const getOrderStatusInVietnamese = (status: string) => {
     case "processing":
       return "Đang xử lý";
     case "shipped":
-      return "Đang giao hàng";
+      return "Chờ giao hàng";
+    case "transferred":
+      return "Đã giao";
     case "delivered":
       return "Đã giao thành công";
     case "cancelled":

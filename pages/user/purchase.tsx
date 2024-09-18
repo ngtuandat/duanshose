@@ -45,7 +45,8 @@ const listStatus = [
   { title: "Tất cả", value: "all" },
   { title: "Đang chờ", value: "pending" },
   { title: "Đang xử lý", value: "processing" },
-  { title: "Đang giao hàng", value: "shipped" },
+  { title: "Chờ giao hàng", value: "shipped" },
+  { title: "Đã giao", value: "transferred" },
   { title: "Đã giao thành công", value: "delivered" },
   { title: "Đã hủy", value: "cancelled" },
   { title: "Trả hàng", value: "returns" },
@@ -288,7 +289,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
               itemCancel &&
                 handleUpdateOrderStatus(itemCancel?.id, "cancelled");
             }}
-            className="w-40"
+            className="w-40 bg-red-500 hover:bg-red-600 text-white"
             label="Huỷ Đơn"
             loading={loadingCancel}
           />
@@ -329,7 +330,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                 handleUpdateOrderStatus(itemCancel?.id, "requestreturn");
               }
             }}
-            className="w-40"
+            className="w-40 bg-orange-500 hover:bg-orange-600 text-white"
             label="Trả Hàng"
             loading={loadingCancel}
           />
@@ -353,7 +354,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
               itemCancel &&
                 handleUpdateOrderStatus(itemCancel?.id, "delivered");
             }}
-            className="w-40"
+            className="w-40 bg-blue-500 hover:bg-blue-600 text-white"
             label="Đã Nhận"
             loading={loadingCancel}
           />
@@ -438,7 +439,7 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                   key={idx}
                 >
                   <div
-                    className={`mb-3 flex items-center justify-end space-x-2 text-sm  ${getStatusColor(
+                    className={`mb-3 flex items-center justify-end space-x-2 text-sm   ${getStatusColor(
                       item.status
                     )}`}
                   >
@@ -518,9 +519,10 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                             />
                           </div>
                         )}
-                        {item?.status === "shipped" && (
+                        {item?.status === "transferred" && (
                           <div className="flex items-center space-x-4">
                             <Button
+                              className="bg-blue-500 hover:bg-blue-600 text-white"
                               onClick={() => {
                                 setItemCancel(item);
                                 setOpenModalConfirm(true);
@@ -599,7 +601,11 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                     className="bg-[rgb(33,43,54)] rounded-xl mb-4 last:mb-0 p-6"
                     key={idx}
                   >
-                    <div className="mb-3 flex items-center justify-end space-x-2 text-green-500 text-sm">
+                    <div
+                      className={`mb-3 flex items-center justify-end space-x-2 text-sm ${getStatusColor(
+                        item.status
+                      )}`}
+                    >
                       <BsTruck />{" "}
                       <p>{getOrderStatusInVietnamese(item.status)}</p>
                     </div>
@@ -675,9 +681,10 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                               />
                             </div>
                           )}
-                          {item?.status === "shipped" && (
+                          {item?.status === "transferred" && (
                             <div className="flex items-center space-x-4">
                               <Button
+                                className="bg-blue-500 hover:bg-blue-600 text-white"
                                 onClick={() => {
                                   setItemCancel(item);
                                   setOpenModalConfirm(true);
@@ -687,10 +694,24 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
                               />
                             </div>
                           )}
+                          {item?.status === "requestreturn" && (
+                            <div className="flex items-center space-x-4">
+                              <Button
+                                className="bg-gray-500 hover:bg-gray-600"
+                                onClick={() => {
+                                  setItemCancel(item);
+                                  setopenModalRequestreturn(true);
+                                }}
+                                icon={<FaPencilAlt />}
+                                label="Huỷ Trả Hàng"
+                              />
+                            </div>
+                          )}
                           {isReturnable(new Date(item.createdAt)) &&
                             item?.status === "delivered" && (
                               <div className="flex items-center space-x-4">
                                 <Button
+                                  className="bg-orange-500 hover:bg-orange-600 text-white"
                                   onClick={() => {
                                     setItemCancel(item);
                                     setOpenModalReturn(true); // Open return modal
