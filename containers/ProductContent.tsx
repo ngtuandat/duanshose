@@ -58,7 +58,7 @@ const ProductContent = () => {
         const uniqueCategories = Array.from(
           new Set(data.product.map((p: any) => p.category.name))
         );
-        setCategories(uniqueCategories);
+        setCategories(["Tất cả", ...uniqueCategories]); // Thêm "Tất cả" vào danh sách
       } catch (error) {
         console.log(error);
       }
@@ -79,12 +79,13 @@ const ProductContent = () => {
   }, [token]);
 
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
+    setSelectedCategory(category === "Tất cả" ? null : category);
     // Reset to the first page when changing category
     router.push(
       {
         query: {
           page: 1,
+          category: category,
         },
       },
       undefined,
@@ -116,7 +117,10 @@ const ProductContent = () => {
               key={index}
               onClick={() => handleCategoryClick(item)}
               className={`flex items-center cursor-pointer font-bold w-44 h-24 justify-center text-xl rounded-lg ${
-                selectedCategory === item ? "text-[#20AB55] " : " text-ưhite"
+                selectedCategory === item ||
+                (item === "Tất cả" && !selectedCategory)
+                  ? "text-[#20AB55]"
+                  : "text-white"
               }`}
               style={{ minWidth: "124px" }}
             >
