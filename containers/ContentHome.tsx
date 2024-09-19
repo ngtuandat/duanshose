@@ -316,7 +316,7 @@ const ContentHome = () => {
           Danh Mục Sản Phẩm.
         </div>
         <div className="flex justify-center overflow-x-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 justify-center items-center">
+          <div className="flex flex-wrap justify-center gap-4">
             {categoryProducts.slice(0, 6).map((item, index) => (
               <div
                 key={index}
@@ -326,7 +326,7 @@ const ContentHome = () => {
                     ? "text-[#20AB55] bg-black"
                     : "text-black"
                 }`}
-                style={{ minWidth: "120px" }} // Adjust minWidth as needed
+                style={{ minWidth: "120px", textAlign: "center" }}
               >
                 <div className="text-center">{item.toUpperCase()}</div>
               </div>

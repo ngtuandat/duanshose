@@ -741,7 +741,6 @@ const Purchase = ({ loading }: { loading: Boolean }) => {
               })}
         </div>
       )}
-      {console.log(selectedOrder, "selectedOrder")}
       <OrderDetailModal
         open={openModal}
         onClose={() => setOpenModal(false)}

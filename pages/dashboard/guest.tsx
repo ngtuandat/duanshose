@@ -77,13 +77,29 @@ const Guest = ({ loading }: { loading: Boolean }) => {
   const [startDate, setStartDate] = useState<Date | null>(today);
   const [endDate, setEndDate] = useState<Date | null>(today);
 
+  // const fetchAllPurchase = async () => {
+  //   try {
+  //     const res = await getOrderGuestAll();
+  //     const sortedData = res.data.sort(
+  //       (a: any, b: any) =>
+  //         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  //     );
+  //     setDataPurchase(sortedData);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const fetchAllPurchase = async () => {
     try {
       const res = await getOrderGuestAll();
+
+      // Sắp xếp theo thời gian từ mới nhất đến cũ nhất
       const sortedData = res.data.sort(
         (a: any, b: any) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
+
       setDataPurchase(sortedData);
     } catch (error) {
       console.log(error);

@@ -78,6 +78,11 @@ const listCity = [
 const Checkout = ({ loading }: { loading: Boolean }) => {
   const router = useRouter();
   const [isLoadding, setIsLoadding] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [listProductBuy, setListProductBuy] = useState<any[]>([]);
